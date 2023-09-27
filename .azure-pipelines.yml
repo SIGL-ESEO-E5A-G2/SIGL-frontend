@@ -18,7 +18,6 @@ stages:
   displayName: Quality
   jobs:
     - job: Qbuild
-      continueOnError: ${{ parameters.NO_QUALITY_FAIL }}
       steps:
           - script: |
               # Check if the innovation_default Docker network exists
