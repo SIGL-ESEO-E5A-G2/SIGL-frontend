@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+    # Application Container
+  sigl-front:
+    build: ./build
+    volumes:
+      - ./:/var/workspace/sigl-front
+    networks:
+      - sigl_network
+    # env_file:
+    #   - ./.env
+
+networks:
+  sigl_network:
+    external:
+      name: sigl_network
+

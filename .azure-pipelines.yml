@@ -1,0 +1,34 @@
+trigger:
+  tags:
+    include:
+      - "*.*.*"
+  branches:
+    include:
+      - "*"
+    
+pool:
+  name: Azure Pipelines
+
+variables:
+  - name: project_name
+    value: 'sigl-frontend'
+
+stages:
+- stage: Quality
+  displayName: Quality
+  jobs:
+    - job: Qbuild
+      steps:
+          - script: |
+              # Check if the innovation_default Docker network exists
+              if ! docker network inspect sigl_network >/dev/null 2>&1; then
+                # Create the Docker network
+                docker network create sigl_network
+              fi
+            displayName: 'Check and Create Docker Network'
+
+          - task: DockerCompose@0
+            displayName: docker-compose
+            inputs:
+              dockerComposeFile: $(Build.SourcesDirectory)/app.qbuild.yml
+              dockerComposeCommand: up --build --force-recreate --remove-orphans --exit-code-from $(project_name)

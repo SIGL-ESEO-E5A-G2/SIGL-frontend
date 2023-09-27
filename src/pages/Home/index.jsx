@@ -2,9 +2,9 @@
 function PageHome({
 
 }) {
-    return <>
+  return <>
         Home
-    </>
+  </>;
 }
 
 export default PageHome;
