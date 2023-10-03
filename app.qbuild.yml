@@ -13,6 +13,5 @@ services:
 
 networks:
   sigl_network:
-    external:
-      name: sigl_network
+    external: true
 
