@@ -2,7 +2,7 @@ version: '3'
 
 services:
     # Application Container
-  sigl-front:
+  sigl-frontend:
     build: ./build
     volumes:
       - ./:/var/workspace/sigl-front
