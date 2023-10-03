@@ -1,10 +1,7 @@
 trigger:
-  tags:
-    include:
-      - "*.*.*"
   branches:
     include:
-      - "*"
+      - develop
     
 pool:
   name: Azure Pipelines
