@@ -1,10 +1,8 @@
 
-function PageLogin({
+export default function ({
 
 }) {
     return <>
         Login
     </>
 }
-
-export default PageLogin;

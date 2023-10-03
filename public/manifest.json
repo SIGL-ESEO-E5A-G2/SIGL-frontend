@@ -1,0 +1,11 @@
+{
+    "short_name": "SIGL",
+    "name": "SIGL",
+    "icons": [
+        {
+            "src": "./images/favicon.ico",
+            "sizes": "516x516",
+            "type": "image/x-icon"
+        }
+    ]
+}
