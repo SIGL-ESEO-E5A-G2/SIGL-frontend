@@ -1,10 +1,8 @@
 
-function PageHome({
+export default function ({
 
 }) {
-  return <>
-        Home
-  </>;
+    return <>
+        Hello world!
+    </>
 }
-
-export default PageHome;
