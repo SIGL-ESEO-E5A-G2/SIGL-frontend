@@ -1,6 +1,6 @@
 
-export default function ({ }) {
-    return <>
-        {/* TODO */}
-    </>
+export default function NavBar({ }) {
+  return <>
+    {/* TODO */}
+  </>;
 }
