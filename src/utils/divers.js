@@ -5,7 +5,7 @@
  * @param {*} obj
  * @return {boolean}
  */
-// function isFunc(obj) {
-//   const fn = () => { };
-//   return obj instanceof fn;
-// }
+export function isFunc(obj) {
+  const fn = () => { };
+  return obj instanceof fn;
+}
