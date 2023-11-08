@@ -3,11 +3,13 @@ import "../css/menu.css";
 import Dropdown from "react-bootstrap/Dropdown";
 import { HouseDoorFill, Person } from "react-bootstrap-icons";
 
+import { applicationTitle } from "../data/constantes";
+
 export default function ({ }) {
     return <div className="menu-container">
         <div className="menu-title">
             <HouseDoorFill size="40px" />
-            <h1>Journal de Formation</h1>
+            <h1>{applicationTitle}</h1>
         </div>
 
         <div className="menu-user">

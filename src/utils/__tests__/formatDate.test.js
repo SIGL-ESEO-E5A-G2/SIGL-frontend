@@ -1,4 +1,3 @@
-import { expect, test } from 'vitest';
 import { dateString } from '../formatDate';
 
 test('check if fn is fn', () => {
