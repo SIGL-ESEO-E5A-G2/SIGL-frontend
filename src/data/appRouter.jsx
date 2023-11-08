@@ -4,6 +4,7 @@ import Home from "../pages/Home";
 import Login from "../pages/Login";
 import CreationUtilisateur from "../pages/CreationUtilisateur";
 import CoordinatriceAlternance from "../pages/CoordinatriceAlternance";
+import Admin from "../pages/Admin";
 import Error from "../pages/Error";
 
 export default [
@@ -27,6 +28,10 @@ export default [
             {
                 path: "coordinatriceAlternance",
                 element: <CoordinatriceAlternance />
+            },
+            {
+                path: "admin",
+                element: <Admin />
             }
         ]
     }
