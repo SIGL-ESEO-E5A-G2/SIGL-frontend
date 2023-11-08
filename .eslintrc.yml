@@ -9,4 +9,9 @@ parserOptions:
   sourceType: module
 plugins:
   - react
-rules: {}
+rules:
+  react/react-in-jsx-scope: "off"
+  react/jsx-uses-react: "off"
+  react/prop-types: "off"
+  max-len: ["error", 110, 4]
+  require-jsdoc: 0

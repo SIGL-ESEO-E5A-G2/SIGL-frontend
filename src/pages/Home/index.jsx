@@ -1,8 +1,8 @@
 
-export default function ({
+export default function Home({
 
 }) {
-    return <>
+  return <>
         Hello world!
-    </>
+  </>;
 }
