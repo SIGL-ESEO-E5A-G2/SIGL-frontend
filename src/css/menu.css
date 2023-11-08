@@ -1,0 +1,24 @@
+.menu-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 90px;
+    display: flex;
+    align-items: center;
+    background-color: lightgrey;
+    color: black;
+}
+
+.menu-title {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-left: 20px;
+    margin-right: auto;
+}
+
+.menu-user {
+    margin-left: auto;
+    margin-right: 20px;
+}
