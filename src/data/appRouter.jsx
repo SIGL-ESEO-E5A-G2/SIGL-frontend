@@ -2,6 +2,7 @@ import App from "../App";
 
 import Home from "../pages/Home";
 import Login from "../pages/Login";
+import CreationUtilisateur from "../pages/CreationUtilisateur";
 import Error from "../pages/Error";
 
 export default [
@@ -17,6 +18,10 @@ export default [
             {
                 path: "login",
                 element: <Login />
+            },
+            {
+                path: "creationUtilisateur",
+                element: <CreationUtilisateur />
             }
         ]
     }
