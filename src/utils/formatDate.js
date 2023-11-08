@@ -1,10 +1,10 @@
-import { locale } from "../data/constantes";
+import {locale} from '../data/constantes';
 
 /**
- * 
- * @param {Date} date 
- * @returns {string}
+ *
+ * @param {Date} date
+ * @return {string}
  */
 export function dateString(date) {
-    return date?.toLocaleDateString(locale);
+  return date?.toLocaleDateString(locale);
 }
