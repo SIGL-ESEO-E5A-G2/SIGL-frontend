@@ -10,7 +10,7 @@ import axios from 'axios';
 export async function request(url, method = "get", data) {
     return axios({
         method: method,
-        url: "http://http://20.216.183.45/api" + url,
+        url: process.env.URL_BACK + url,
         data: data
     });
 }

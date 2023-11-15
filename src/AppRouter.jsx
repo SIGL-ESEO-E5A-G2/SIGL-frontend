@@ -12,7 +12,7 @@ import unauthentifiedUser from './data/router/unauthentifiedUser.data';
 import appRouter from './data/router/aprentisRouter.data';
 
 export default function ({ }) {
-    const [user] = useContext(UserContext);
+    const user = useContext(UserContext);
 
     const router = useMemo(() => {
         return createBrowserRouter(user ? user.router : appRouter);
