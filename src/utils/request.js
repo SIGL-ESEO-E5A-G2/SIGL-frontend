@@ -10,7 +10,8 @@ import axios from 'axios';
 export async function request(url, method = "get", data) {
     return axios({
         method: method,
-        url: process.env.URL_BACK + url,
+        url: url,
+        baseURL: process.env.REACT_APP_URL_BACK,
         data: data
     });
 }

@@ -1,10 +1,11 @@
 import App from '../../App';
 import Error from '../../pages/Error';
+import Home from '../../pages/Home';
 
 export default [
     {
         path: "/",
-        element: <App />,
+        element: <Home />,
         errorElement: <Error code={404} />,
         children: []
     }

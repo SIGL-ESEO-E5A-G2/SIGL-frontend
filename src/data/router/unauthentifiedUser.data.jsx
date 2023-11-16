@@ -1,13 +1,13 @@
-import Error from "../../pages/Error";
-import Login from "../../pages/Login";
+import Login from '../../pages/Login';
 
-import UnauthentifiedApp from "../../UnauthentifiedApp";
+import App from '../../App';
+
+import submitLoginForm from '../../pages/Login/submitLoginForm';
 
 export default [
     {
-        path: "/",
-        element: <UnauthentifiedApp />,
-        errorElement: <Error code={404} />,
+        path: "",
+        element: <>Hello world</>,
         children: [
             {
                 path: "login",

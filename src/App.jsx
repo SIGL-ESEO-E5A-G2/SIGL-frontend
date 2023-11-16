@@ -1,18 +1,27 @@
-import { Outlet } from 'react-router-dom';
-
 import Menu from "./components/Menu";
-import UserConnected from "./components/UserConnected";
+
+import { UserContext } from "./context/UserContext";
+
+import AppRouter from "./AppRouter";
+import UnauthentifiedAppRouter from "./UnauthentifiedAppRouter";
+
+import useUser from "./hooks/useUser";
 
 function App() {
-  return <>
-    <UserConnected>
-      <Menu />
-    </UserConnected>
+  const [user, loadUser] = useUser();
 
-    <div style={{ padding: "120px 0px 0px 30px" }}>
-      <Outlet />
-    </div>
-  </>
+  return <UserContext.Provider value={user}>
+    {
+      user?.router ? <>
+        <Menu />
+
+        <div style={{ padding: "120px 0px 0px 30px" }}>
+          <AppRouter user={user} />
+        </div>
+      </>
+        : <UnauthentifiedAppRouter loadUser={loadUser} />
+    }
+  </UserContext.Provider>
 }
 
 export default App;

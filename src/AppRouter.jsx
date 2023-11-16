@@ -1,24 +1,50 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import { useContext, useMemo } from 'react';
-import {
-    createBrowserRouter,
-    RouterProvider,
-} from 'react-router-dom';
+import { useMemo } from 'react';
 
-import { UserContext } from './context/UserContext';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import Error from './pages/Error';
 
-import unauthentifiedUser from './data/router/unauthentifiedUser.data';
-import appRouter from './data/router/aprentisRouter.data';
 
-export default function ({ }) {
-    const user = useContext(UserContext);
+export default function ({ user }) {
 
-    const router = useMemo(() => {
-        return createBrowserRouter(user ? user.router : appRouter);
+    const userRoutes = useMemo(() => {
+        return user?.router ? user.router : [];
     }, [user]);
 
-    return <UserContext.Provider value={user}>
-        <RouterProvider router={router} />
-    </UserContext.Provider>
+    return <BrowserRouter>
+        <Routes>
+            <Route path='/*' element={<Error code={404} />} />
+
+            {
+                userRoutes.map(item => {
+                    if (!item || item.disabled) return;
+
+                    const path = "/" + item.path + (item.children ? "/*" : "");
+                    return <Route
+                        path={path}
+                        element={<RecursiveRoute item={item} />}
+                    />
+                })
+            }
+        </Routes>
+    </BrowserRouter>
+}
+
+function RecursiveRoute({ item }) {
+    return <Routes>
+        <Route path="/" element={item.element ? item.element : <Error code={404} />} />
+
+        {
+            item.children?.map(child => {
+                if (!child || child.disabled) return;
+
+                const path = "/" + child.path + (child.children ? "/*" : "");
+                return <Route
+                    path={path}
+                    element={<RecursiveRoute item={child} />}
+                />
+            })
+        }
+    </Routes>
 }

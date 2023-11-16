@@ -1,36 +1,64 @@
-import { Link } from "react-router-dom";
-import { Form } from 'react-bootstrap';
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Button, Form } from 'react-bootstrap';
 
-import useUser from '../../hooks/useUser';
+export default function Login({ loadUser }) {
+  const navigate = useNavigate();
 
-export default function Login({
-}) {
-  const [user, loadUser] = useUser();
+  const [error, setError] = useState();
 
-  function handleClick() {
-    loadUser(3);
+  function handleSubmit({ currentTarget: form }) {
+    const email = form['form.email'].value;
+    const password = form['form.password'].value;
+
+    console.log("TAG submit", { email, password });
+
+    loadUser(1);
+
+    // request('/user/', "post", {
+    //   email: email,
+    //   password: password
+    // })
+    //   .then(({ data }) => {
+    //     console.log("user", data);
+    //     // TODO loadUser(user.id);
+    //     navigate('/');
+    //   })
+    //   .catch(e => setError("Une erreure est survenue"))
   }
 
   return <>
     <div className="login template d-flex justify-content-center align-items-center vh-100 bg-primary">
       <div className="form_container p-5 rounded bg-white">
-        <Form method="post">
+        <Form onSubmit={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          handleSubmit(e);
+        }}>
           <h3 className="text-center">Connexion</h3>
-          <div className="mb-2">
-            <label htmlFor="email">Email</label>
-            <input type="email" placeholder="Entrer votre email" className="form-control" />
+
+          <Form.Group className="mb-3" controlId="form.email">
+            <Form.Label>Email</Form.Label>
+            <Form.Control type="email" placeholder="Entrer votre email" required />
+          </Form.Group>
+          <Form.Group className="mb-3" controlId="form.password">
+            <Form.Label>Mot de passe</Form.Label>
+            <Form.Control type="password" placeholder="Entrer votre mot de passe" required />
+          </Form.Group>
+
+          <div className="text-center">
+            {error}
           </div>
-          <div className="mb-2">
-            <label htmlFor="password">Mot de passe</label>
-            <input type="password" placeholder="Entrer votre mot de passe" className="form-control" />
-          </div>
+
           <div className="d-grid">
-            <button type="button" onClick={handleClick} className="btn btn-primary">Se connecter</button>
+            <Button type="submit">Se connecter</Button>
           </div>
-          <p className="text-right">
-            <Link to="sign-up">Créer un compte</Link>
-          </p>
         </Form>
+
+        {/* TODO */}
+        {/* <p className="text-center">
+          <Link to="sign-up">Créer un compte</Link>
+        </p> */}
       </div>
     </div>
   </>
