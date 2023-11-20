@@ -1,4 +1,6 @@
 
-export const applicationTitle = "Journal de Formation";
+export const applicationTitle = "MyApprenticeship";
 
 export const locale = 'fr-FR';
+
+export const tokenSecret = "TODO put in env vars";

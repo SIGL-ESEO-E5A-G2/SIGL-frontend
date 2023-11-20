@@ -14,11 +14,15 @@ export default function Login({ loadUser }) {
     loadUser(email, password)
       .then(() => {
         navigate('/');
-        window.location.reload();
+        // window.location.reload();
       })
-      .catch(({ request: { status } }) => {
-        // TODO better errors with status
-        setError('Une erreure est survenue')
+      .catch(({ response: { data } }) => {
+        let allErrors = Object.values(data);
+        allErrors = allErrors?.length > 0 ? allErrors[0] : allErrors;
+        allErrors = allErrors?.length > 0 ? allErrors[0] : allErrors;
+
+        const message = allErrors || 'Une erreur est survenue';
+        setError(message);
       });
   }
 

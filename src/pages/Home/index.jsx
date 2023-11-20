@@ -28,6 +28,6 @@ export default function Home({
         <UserHome>
             {userMenus}
         </UserHome>
-        Bienvenue {user.role}
+        Bienvenue {user.nomComplet}
     </>
 }

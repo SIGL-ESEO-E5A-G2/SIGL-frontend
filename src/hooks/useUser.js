@@ -1,10 +1,13 @@
 import { useState } from "react";
 
 import { request } from '../utils/request';
+import { encryptData, parseToken } from '../utils/encryption';
 
 import administrateurRouter from '../data/router/administrateurRouter.data';
 import aprentisRouter from '../data/router/aprentisRouter.data';
 import coordinateurAlternanceRouter from '../data/router/coordinateurAlternanceRouter.data';
+import maitreAlternanceRouter from '../data/router/maitreAlternanceRouter.data';
+import tuteurPedagogiqueRouter from '../data/router/tuteurPedagogiqueRouter.data';
 
 
 /**
@@ -14,6 +17,11 @@ import coordinateurAlternanceRouter from '../data/router/coordinateurAlternanceR
 export default function () {
     const [user, setUser] = useState(initUser());
 
+    /**
+     * Enregistre un utilisateur dans le local storage et dans l'applicatio en fonction de son token
+     * 
+     * @param {string} token 
+     */
     function setUserInApp(token) {
         // suppression user (deconnexion)
         if (!token) {
@@ -29,61 +37,99 @@ export default function () {
         setUser(user);
     }
 
+    /**
+     * Connect un utilisateur avec un identifiant mot de passe
+     * @param {string} email 
+     * @param {string} password 
+     */
     async function loadUser(email, password) {
         const token = await fetchToken(email, password);
         setUserInApp(token);
     }
 
+    /**
+     * Nettoie l'utilisateur
+     */
     function clearUser() {
-        return setUserInApp(null);
+        setUserInApp(null);
     }
 
     return [user, loadUser, clearUser];
 }
 
+/**
+ * Initie l'utilisateur en fonction du token stocké dans le localstorage
+ * 
+ * @returns {utilisateur} renvoie l'utilisateur si connecté
+ */
 function initUser() {
     const token = localStorage.getItem("token");
     return token ? getUserFromToken(token) : null;
 }
 
-function getUserFromToken(token) {
-    const user = parseJwt(token);
+/**
+ * Authentifie l'utilisateur et récupère son token
+ * 
+ * @param {string} email 
+ * @param {string} password 
+ * @returns {string} Le token ou une erreur
+ */
+async function fetchToken(email, password) {
+    return request('/authentification/', 'post', {
+        email: email,
+        password: password
+    })
+        .then(({ data }) => {
+            const id = data?.id;
+            if (!id) {
+                throw new Error(`Utilisateur non trouvé`);
+            }
 
+            return request('/utilisateur/' + id, 'get')
+        })
+        .then(({ data }) => encryptData(data));
+}
+
+/**
+ * Récupère l'utilisateur à partir du token et map certaines valeurs comme le router de l'user
+ * 
+ * @param {string} token 
+ * @returns {utilisateur}
+ */
+function getUserFromToken(token) {
+    const user = parseToken(token);
+
+    // check user
     if (!user || !user.id) {
-        throw new Error("Undefined user");
+        throw new Error("Utilisateur non trouvé");
     }
-    user.router = getUserRouter(user.role);
+
+    // map data to user
+    user.router = getUserRouter(user.roles[0]);
+    user.nomComplet = ((user.prenom || '') + ' ' + (user.nom || '')).trim();
 
     return user;
 }
 
+/**
+ * Récupère le router associé à l'utilisateur en fonction de son role
+ * 
+ * @param {number} role 
+ * @returns 
+ */
 function getUserRouter(role) {
-    switch (role) { // TODO remplacer par numero role
-        case "admin":
-            return administrateurRouter;
-        case "coordinateurAlternance":
-            return coordinateurAlternanceRouter;
-        case "aprentis":
+    switch (role) {
+        case 1: // apprentis
             return aprentisRouter;
+        case 2: // tuteur
+            return tuteurPedagogiqueRouter;
+        case 3: // admin
+            return administrateurRouter;
+        case 4: // coordinatrice
+            return coordinateurAlternanceRouter;
+        case 5: // MA
+            return maitreAlternanceRouter;
         default:
-            throw new Error('Role not found');
+            throw new Error(`Role de l'utilisateur non trouvé`);
     }
-}
-
-async function fetchToken(email, password) {
-    return request('/users/', 'get', {  // TODO trouver le bon url
-        email: email,
-        password: password
-    })
-        .then(({ data }) => data);
-}
-
-function parseJwt(token) {
-    var base64Url = token.split('.')[1];
-    var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function (c) {
-        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-    }).join(''));
-
-    return JSON.parse(jsonPayload);
 }

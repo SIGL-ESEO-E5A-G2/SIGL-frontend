@@ -11,9 +11,12 @@ const urlBack = import.meta.env.VITE_URL_BACK;
 export async function request(url, method = "get", data) {
     return axios({
         method: method,
-        url: url,
+        url: url?.endsWith('/') ? url : (url + "/"),
         baseURL: urlBack,
         data: data,
-        timeout: 1000
+        timeout: 1000,
+        headers: {
+            'Content-Type': 'application/json',
+        }
     });
 }
