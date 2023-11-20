@@ -1,35 +1,59 @@
-import { Link } from "react-router-dom";
-import { Form } from 'react-bootstrap';
+import { useState } from "react";
+import { Button, Form } from 'react-bootstrap';
+import { useNavigate } from "react-router-dom";
 
-import useUser from '../../hooks/useUser';
+export default function Login({ loadUser }) {
+  const navigate = useNavigate();
 
-export default function Login({
-}) {
-  const [user, loadUser] = useUser();
+  const [error, setError] = useState();
 
-  function handleClick() {
-    loadUser(3);
+  function handleSubmit({ currentTarget: form }) {
+    const email = form['form.email'].value;
+    const password = form['form.password'].value;
+
+    loadUser(email, password)
+      .then(() => {
+        navigate('/');
+        // window.location.reload();
+      })
+      .catch(({ response: { data } }) => {
+        let allErrors = Object.values(data);
+        allErrors = allErrors?.length > 0 ? allErrors[0] : allErrors;
+        allErrors = allErrors?.length > 0 ? allErrors[0] : allErrors;
+
+        const message = allErrors || 'Une erreur est survenue';
+        setError(message);
+      });
   }
 
   return <>
     <div className="login template d-flex justify-content-center align-items-center vh-100 bg-primary">
       <div className="form_container p-5 rounded bg-white">
-        <Form method="post">
+        <Form
+          onSubmit={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleSubmit(e);
+          }}
+        >
           <h3 className="text-center">Connexion</h3>
-          <div className="mb-2">
-            <label htmlFor="email">Email</label>
-            <input type="email" placeholder="Entrer votre email" className="form-control" />
+
+          <Form.Group className="mb-3" controlId="form.email" onChange={() => setError()}>
+            <Form.Label>Email</Form.Label>
+            <Form.Control type="email" placeholder="Entrer votre email" required />
+          </Form.Group>
+          <Form.Group className="mb-3" controlId="form.password" onChange={() => setError()}>
+            <Form.Label>Mot de passe</Form.Label>
+            <Form.Control type="password" placeholder="Entrer votre mot de passe" required />
+          </Form.Group>
+
+          <div className="text-center text-danger">
+            <p>{error}</p>
           </div>
-          <div className="mb-2">
-            <label htmlFor="password">Mot de passe</label>
-            <input type="password" placeholder="Entrer votre mot de passe" className="form-control" />
-          </div>
+
           <div className="d-grid">
-            <button type="button" onClick={handleClick} className="btn btn-primary">Se connecter</button>
+            <Button type="submit">Se connecter</Button>
           </div>
-          <p className="text-right">
-            <Link to="sign-up">Créer un compte</Link>
-          </p>
         </Form>
       </div>
     </div>

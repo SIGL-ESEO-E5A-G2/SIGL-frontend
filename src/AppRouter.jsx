@@ -1,24 +1,57 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import { useContext, useMemo } from 'react';
-import {
-    createBrowserRouter,
-    RouterProvider,
-} from 'react-router-dom';
+import { useMemo } from 'react';
 
-import { UserContext } from './context/UserContext';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import Error from './pages/Error';
 
-import unauthentifiedUser from './data/router/unauthentifiedUser.data';
-import appRouter from './data/router/aprentisRouter.data';
 
-export default function ({ }) {
-    const user = useContext(UserContext);
+export default function ({ user }) {
 
-    const router = useMemo(() => {
-        return createBrowserRouter(user ? user.router : appRouter);
+    const userRoutes = useMemo(() => {
+        return user?.router ? user.router : [];
     }, [user]);
 
-    return <UserContext.Provider value={user}>
-        <RouterProvider router={router} />
-    </UserContext.Provider>
+    return <BrowserRouter>
+        <Routes>
+            {
+                userRoutes.map(item => {
+                    if (!item || item.disabled) return;
+
+                    const nbChilds = item.children?.filter(child => child && !child.disabled)?.length || 0;
+                    let path = item.path?.replace('/', '');
+                    path = `/${path}${path ? "/" : ""}${nbChilds > 0 ? "*" : ""}`;
+                    return <Route
+                        path={path}
+                        element={<RecursiveRoute item={item} />}
+                    />
+                })
+            }
+        </Routes>
+    </BrowserRouter>
+}
+
+function RecursiveRoute({ item }) {
+    return <Routes>
+        {/* Others display error */}
+        <Route path="/*" element={<Error code={404} />} />
+
+        {/* Element */}
+        <Route path="/" element={item.element} />
+
+        {/* Child elements */}
+        {
+            item.children?.map(child => {
+                if (!child || child.disabled) return;
+
+                const nbChilds = child.children?.filter(subChild => subChild && !subChild.disabled)?.length || 0;
+                let path = child.path?.replace('/', '');
+                path = `/${path}${path ? "/" : ""}${nbChilds > 0 ? "*" : ""}`;
+                return <Route
+                    path={path}
+                    element={<RecursiveRoute item={child} />}
+                />
+            })
+        }
+    </Routes>
 }

@@ -1,4 +1,5 @@
 import axios from 'axios';
+const urlBack = import.meta.env.VITE_URL_BACK;
 
 /**
  * Requete vers le back
@@ -10,7 +11,12 @@ import axios from 'axios';
 export async function request(url, method = "get", data) {
     return axios({
         method: method,
-        url: process.env.URL_BACK + url,
-        data: data
+        url: url?.endsWith('/') ? url : (url + "/"),
+        baseURL: urlBack,
+        data: data,
+        timeout: 1000,
+        headers: {
+            'Content-Type': 'application/json',
+        }
     });
 }
