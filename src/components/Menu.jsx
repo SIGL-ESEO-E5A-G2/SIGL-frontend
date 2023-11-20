@@ -5,7 +5,7 @@ import { HouseDoorFill, Person } from "react-bootstrap-icons";
 
 import { applicationTitle } from "../data/constantes";
 
-export default function ({ }) {
+export default function ({ deconnect }) {
     return <div className="menu-container">
         <div className="menu-title">
             <HouseDoorFill size="40px" />
@@ -19,8 +19,9 @@ export default function ({ }) {
                 </Dropdown.Toggle>
 
                 <Dropdown.Menu>
-                    <Dropdown.Item href="/">Déconnexion</Dropdown.Item>
-                    <Dropdown.Item href="/">Paramètres</Dropdown.Item>
+                    <Dropdown.Item href="/login" onClick={deconnect}>
+                        Déconnexion
+                    </Dropdown.Item>
                 </Dropdown.Menu>
             </Dropdown>
         </div>

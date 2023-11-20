@@ -8,12 +8,12 @@ import UnauthentifiedAppRouter from "./UnauthentifiedAppRouter";
 import useUser from "./hooks/useUser";
 
 function App() {
-  const [user, loadUser] = useUser();
+  const [user, loadUser, clearUser] = useUser();
 
   return <UserContext.Provider value={user}>
     {
       user?.router ? <>
-        <Menu />
+        <Menu deconnect={clearUser} />
 
         <div style={{ padding: "120px 0px 0px 30px" }}>
           <AppRouter user={user} />

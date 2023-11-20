@@ -14,13 +14,13 @@ export default function ({ user }) {
 
     return <BrowserRouter>
         <Routes>
-            <Route path='/*' element={<Error code={404} />} />
-
             {
                 userRoutes.map(item => {
                     if (!item || item.disabled) return;
 
-                    const path = "/" + item.path + (item.children ? "/*" : "");
+                    const nbChilds = item.children?.filter(child => child && !child.disabled)?.length || 0;
+                    let path = item.path?.replace('/', '');
+                    path = `/${path}${path ? "/" : ""}${nbChilds > 0 ? "*" : ""}`;
                     return <Route
                         path={path}
                         element={<RecursiveRoute item={item} />}
@@ -33,13 +33,20 @@ export default function ({ user }) {
 
 function RecursiveRoute({ item }) {
     return <Routes>
-        <Route path="/" element={item.element ? item.element : <Error code={404} />} />
+        {/* Others display error */}
+        <Route path="/*" element={<Error code={404} />} />
 
+        {/* Element */}
+        <Route path="/" element={item.element} />
+
+        {/* Child elements */}
         {
             item.children?.map(child => {
                 if (!child || child.disabled) return;
 
-                const path = "/" + child.path + (child.children ? "/*" : "");
+                const nbChilds = child.children?.filter(subChild => subChild && !subChild.disabled)?.length || 0;
+                let path = child.path?.replace('/', '');
+                path = `/${path}${path ? "/" : ""}${nbChilds > 0 ? "*" : ""}`;
                 return <Route
                     path={path}
                     element={<RecursiveRoute item={child} />}
