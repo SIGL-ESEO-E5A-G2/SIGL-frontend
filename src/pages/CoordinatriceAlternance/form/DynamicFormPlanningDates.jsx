@@ -15,7 +15,7 @@ class DynamicFormPlanningDates extends Component {
       role,
       dates: [], 
     });
-  };
+  };  
 
   handleDateChange = (index, type, event) => {
     const dates = [...this.state.dates];
@@ -44,19 +44,12 @@ class DynamicFormPlanningDates extends Component {
       <div>
         <h2 className="text-center mt-3">Formulaire d'utilisateur</h2>
         <form className="m-5" method="post" onSubmit={this.handleSubmit}>
-          <select
-            className="form-select mb-lg-5"
-            id="role"
-            name="role"
-            value={role}
-            onChange={this.handleRoleChange}
-          >
-            <option value="" disabled selected>
-              Select one--
-            </option>
-            <option value="echeance">Échéance</option>
-            <option value="periode">Période</option>
-          </select>
+        <select
+          className="form-select mb-lg-5" id="role" name="role" value={role} onChange={this.handleRoleChange}>
+          <option value="" disabled>Select one--</option>
+          <option value="echeance">Échéance</option>
+          <option value="periode">Période</option>
+        </select>
 
           {role === 'echeance' && (
             <div className="form-group">
