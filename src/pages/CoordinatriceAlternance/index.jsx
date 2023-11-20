@@ -1,48 +1,82 @@
-import React from 'react';
-import DynamicFormTutoralTeam from "../../components/DynamicFormTutoralTeam";
-import DynamicFormPlanningDates from "../../components/DynamicFormPlanningDates";
+import React, { useState, useEffect } from 'react';
+import { Form, Button } from 'react-bootstrap';
+import DynamicFormTutoralTeam from "./form/DynamicFormTutoralTeam";
+import DynamicFormPlanningDates from "./form/DynamicFormPlanningDates";
+import TeamAssociationForm from "./form/TeamAssociationForm";
+import FormTemplate from '../../components/FormTemplate';
+import {request} from '../../utils/request.js';
+
 export default function ({
     
 }) {
-    return <>
-        <h2 class="text-center mt-3">Associer apprenti à l'équipe tutorale</h2>
-        <form class="m-5"method="post">
-            <div class="form-group">
-                <label for="apprenti">Apprenti :</label>
-                <select class="form-select mb-lg-5" id="apprenti" name="apprenti">
-                    <option value="Apprenti1">Apprenti1</option>
-                    <option value="Apprenti2">Apprenti2</option>
-                    <option value="Apprenti3">Apprenti3</option>
-                </select>
-                <label for="MA">Maitre d'apprentissage :</label>
-                <select class="form-select mb-lg-5" id="MA" name="rMAole">
-                    <option value="nomApprenti1">Apprenti1</option>
-                    <option value="Apprenti2">Apprenti2</option>
-                    <option value="Apprenti3">Apprenti3</option>
-                </select>
-                <label for="tuteur">Apprenti :</label>
-                <select class="form-select mb-lg-5" id="tuteur" name="tuteur">
-                    <option value="nomApprenti1">Apprenti1</option>
-                    <option value="Apprenti2">Apprenti2</option>
-                    <option value="Apprenti3">Apprenti3</option>
-                </select>
-            </div>
-    
-            <input class="btn btn-primary btn-lg btn-block" type="submit" value="Associer"/>
-        </form>
+    const [apprenti, setApprenti] = useState([]);
+    const [maitre, setMaitre] = useState([]);
+    const [tuteur, setTuteur] = useState([]);
 
-        <h2 class="text-center mt-3">Créer un journal de formation</h2>
-        <form class="m-5"method="post">
-            <div class="form-group">
-                <label for="apprenti">Apprenti :</label>
-                <select class="form-select mb-lg-5" id="apprenti" name="apprenti">
-                    <option value="nomApprenti1">Apprenti1</option>
-                    <option value="Apprenti2">Apprenti2</option>
-                    <option value="Apprenti3">Apprenti3</option>
-                </select>
-            </div>        
-            <input class="btn btn-primary btn-lg btn-block" type="submit" value="Créer le journal"/>
-        </form>
+    useEffect(() => {
+        request("/apprentidetail/")
+            .then((res) => {
+                setApprenti(res.data);
+            });
+    }, []);
+
+    useEffect(() => {
+        request("/maitrealternancedetail/")
+            .then((res) => {
+                setMaitre(res.data);
+            });
+    }, []);
+
+    useEffect(() => {
+        request("/tuteurpedagogiquedetail/")
+            .then((res) => {
+                setTuteur(res.data);
+            });
+    }, []);
+    
+    /*useEffect(() => {
+        const fetchUtilisateurs = async () => {
+            const usersData = await Promise.all(
+                apprenti.map((item) => (
+                    request("/utilisateur/" + item.utilisateur)
+                        .then((res) => ({
+                            id: item.id,  // Ajoutez l'id de l'apprenti ici
+                            prenom: res.data.prenom,
+                            nom: res.data.nom,
+                        }))
+                ))
+            );
+            setUtilisateur(usersData);
+        };
+    
+        if (apprenti.length > 0) {
+            fetchUtilisateurs();
+        }
+    }, [apprenti]);*/
+    
+    return <>
+
+        
+        <div>
+            <TeamAssociationForm />
+        </div>
+
+        <FormTemplate title="Créer un journal de formation" buttonText="Créer le journal">
+            <Form.Group className="mb-3">
+                <Form.Label>Apprenti:</Form.Label>
+                <Form.Select id="apprenti" name="apprenti">
+                {apprenti.map((item) => (
+                    <option key={item.id} value={item.id}>
+                        {item.utilisateur.prenom} {item.utilisateur.nom}
+                    </option>
+                ))}
+                </Form.Select>
+                <Button variant="primary" type="button">
+                    Associer
+                </Button>
+            </Form.Group>
+
+        </FormTemplate>
 
         <div>
             <DynamicFormTutoralTeam />
