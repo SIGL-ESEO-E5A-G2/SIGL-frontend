@@ -14,13 +14,13 @@ export default function Home({
             link: "/parametres",
             icon: GearFill,
             nom: "Paramètres",
-            disabled: true
+            disabled: false
         },
         {
             link: "/lien",
             icon: null,
             nom: "Lien",
-            disabled: true
+            disabled: false
         }
     ];
 
