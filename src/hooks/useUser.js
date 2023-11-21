@@ -90,9 +90,10 @@ async function fetchToken(email, password) {
                     if (res.data?.roles && res.data?.roles[0] == 1) {
                         return request('/apprentidetail/' + id, 'get')
                             .then(resDetail => {
-                                console.log("TAG user", resDetail.data)
+                                if (!resDetail?.data) return res;
                                 return { data: { ...resDetail.data, ...resDetail.data?.utilisateur } }
-                            });
+                            })
+                            .catch(() => res);
                     } else return res;
                 })
         })
