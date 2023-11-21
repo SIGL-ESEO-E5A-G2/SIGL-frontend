@@ -86,6 +86,15 @@ async function fetchToken(email, password) {
             }
 
             return request('/utilisateur/' + id, 'get')
+                .then((res) => {
+                    if (res.data?.roles && res.data?.roles[0] == 1) {
+                        return request('/apprentidetail/' + id, 'get')
+                            .then(resDetail => {
+                                console.log("TAG user", resDetail.data)
+                                return { data: { ...resDetail.data, ...resDetail.data?.utilisateur } }
+                            });
+                    } else return res;
+                })
         })
         .then(({ data }) => encryptData(data));
 }

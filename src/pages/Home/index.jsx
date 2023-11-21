@@ -8,13 +8,22 @@ export default function Home({
 
 }) {
     const user = useContext(UserContext);
+    const role = user?.roles ? user.roles[0] : 0;
+    let tuteur = "";
+    let ma = "";
+    if (user.tuteurPedagogique) {
+        tuteur = ((user.tuteurPedagogique.utilisateur.prenom || "") + " " + (user.tuteurPedagogique.utilisateur.nom || '')).trim();
+    }
+    if (user.maitreAlternance) {
+        ma = ((user.maitreAlternance.utilisateur.prenom || "") + " " + (user.maitreAlternance.utilisateur.nom || '')).trim();
+    }
 
     const userMenus = [
         {
             link: "/parametres",
             icon: GearFill,
             nom: "Paramètres",
-            disabled: false
+            disabled: ![4].includes(role)
         },
         {
             link: "/lien",
@@ -28,6 +37,8 @@ export default function Home({
         <UserHome>
             {userMenus}
         </UserHome>
-        Bienvenue {user.nomComplet}
+        Bienvenue {user.nomComplet} {
+            role == 1 ? `[Tuteur: ${tuteur}, MA: ${ma}]` : ""
+        }
     </>
 }

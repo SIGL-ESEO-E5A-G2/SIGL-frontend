@@ -16,8 +16,8 @@ export default function Login({ loadUser }) {
         navigate('/');
         // window.location.reload();
       })
-      .catch(({ response: { data } }) => {
-        let allErrors = Object.values(data);
+      .catch(({ response }) => {
+        let allErrors = Object.values(response?.data || {});
         allErrors = allErrors?.length > 0 ? allErrors[0] : allErrors;
         allErrors = allErrors?.length > 0 ? allErrors[0] : allErrors;
 
