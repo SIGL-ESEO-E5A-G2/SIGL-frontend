@@ -1,3 +1,5 @@
+import { BrowserRouter } from "react-router-dom";
+
 import Menu from "./components/Menu";
 
 import { UserContext } from "./context/UserContext";
@@ -10,14 +12,8 @@ import useUser from "./hooks/useUser";
 function App() {
   const [user, loadUser, clearUser] = useUser();
 
-  return <>
-    {/* Header */}
-    <>
-      <link rel="icon" type="image/png" href="/images/favicon.svg"></link>
-    </>
-
-    {/* Application */}
-    <UserContext.Provider value={user}>
+  return <UserContext.Provider value={user}>
+    <BrowserRouter>
       {
         user?.router ? <>
           <Menu deconnect={clearUser} />
@@ -28,8 +24,8 @@ function App() {
         </>
           : <UnauthentifiedAppRouter loadUser={loadUser} />
       }
-    </UserContext.Provider>
-  </>
+    </BrowserRouter>
+  </UserContext.Provider>
 }
 
 export default App;
