@@ -1,14 +1,8 @@
-export default function Error({code = 0}) {
-  const message = getErrorMessage(code);
-
+export default function Error({
+  error,
+  message = "Une erreur est survenue"
+}) {
   return <>
-        Erreur {code} - {message}
+    L'application a rencontré un problème : {error?.message || message}
   </>;
-}
-
-function getErrorMessage(code) {
-  switch (code) {
-    case 404: return 'Page non trouvée';
-    default: return 'Erreur non trouvée';
-  }
 }

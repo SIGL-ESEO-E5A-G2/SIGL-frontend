@@ -1,19 +1,20 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import { useMemo } from 'react';
+import { Route, Routes } from 'react-router-dom';
 
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import ErrorBoundary from './components/ErrorBoundary';
 import Error from './pages/Error';
-
+import { isFunc } from './utils/divers';
 
 export default function ({ user }) {
-
     const userRoutes = useMemo(() => {
         return user?.router ? user.router : [];
     }, [user]);
 
-    return <BrowserRouter>
+    return <ErrorBoundary handleError={error => <Error error={error} />}>
         <Routes>
+            {/* TODO first element is always home */}
             {
                 userRoutes.map(item => {
                     if (!item || item.disabled) return;
@@ -27,17 +28,17 @@ export default function ({ user }) {
                     />
                 })
             }
+
+            {/* Others display error */}
+            <Route path="/*" element={<Error message="Page non trouvée" />} />
         </Routes>
-    </BrowserRouter>
+    </ErrorBoundary>
 }
 
 function RecursiveRoute({ item }) {
     return <Routes>
-        {/* Others display error */}
-        <Route path="/*" element={<Error code={404} />} />
-
         {/* Element */}
-        <Route path="/" element={item.element} />
+        <Route path="/" element={isFunc(item.element) ? item.element() : item.element} />
 
         {/* Child elements */}
         {
@@ -53,5 +54,8 @@ function RecursiveRoute({ item }) {
                 />
             })
         }
+
+        {/* Others display error */}
+        <Route path="/*" element={<Error message="Page non trouvée" />} />
     </Routes>
 }
