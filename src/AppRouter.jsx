@@ -1,33 +1,20 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import { useMemo } from 'react';
 import { Route, Routes } from 'react-router-dom';
 
 import ErrorBoundary from './components/ErrorBoundary';
 import Error from './pages/Error';
 import { isFunc } from './utils/divers';
+import { isRouteAllowed } from './utils/userRights';
+import router from './data/router';
 
 export default function ({ user }) {
-    const userRoutes = useMemo(() => {
-        return user?.router ? user.router : [];
-    }, [user]);
-
     return <ErrorBoundary handleError={error => <Error error={error} />}>
         <Routes>
-            {/* TODO first element is always home */}
-            {
-                userRoutes.map(item => {
-                    if (!item || item.disabled) return;
-
-                    const nbChilds = item.children?.filter(child => child && !child.disabled)?.length || 0;
-                    let path = item.path?.replace('/', '');
-                    path = `/${path}${path ? "/" : ""}${nbChilds > 0 ? "*" : ""}`;
-                    return <Route
-                        path={path}
-                        element={<RecursiveRoute item={item} />}
-                    />
-                })
-            }
+            <Route
+                path="/*"
+                element={<RecursiveRoute item={router} user={user} />}
+            />
 
             {/* Others display error */}
             <Route path="/*" element={<Error message="Page non trouvée" />} />
@@ -35,24 +22,39 @@ export default function ({ user }) {
     </ErrorBoundary>
 }
 
-function RecursiveRoute({ item }) {
+/**
+ * 
+ * @param {{user: {roles: [number]}, item: {roles: [number]}}} props 
+ * @returns 
+ */
+function RecursiveRoute({ item, user }) {
+    if (!isRouteAllowed(item, user)) {
+        return null;
+    }
+
     return <Routes>
         {/* Element */}
         <Route path="/" element={isFunc(item.element) ? item.element() : item.element} />
 
         {/* Child elements */}
         {
-            item.children?.map(child => {
-                if (!child || child.disabled) return;
+            item.children
+                ?.map(child => {
+                    if (!child || child.disabled) return;
 
-                const nbChilds = child.children?.filter(subChild => subChild && !subChild.disabled)?.length || 0;
-                let path = child.path?.replace('/', '');
-                path = `/${path}${path ? "/" : ""}${nbChilds > 0 ? "*" : ""}`;
-                return <Route
-                    path={path}
-                    element={<RecursiveRoute item={child} />}
-                />
-            })
+                    const nbChilds = child.children
+                        ?.filter(subChild => isRouteAllowed(subChild, user))
+                        ?.length
+                        || 0;
+
+                    let path = child.path?.replace('/', '');
+                    path = `/${path}${path ? "/" : ""}${nbChilds > 0 ? "*" : ""}`;
+
+                    return <Route
+                        path={path}
+                        element={<RecursiveRoute item={child} />}
+                    />
+                })
         }
 
         {/* Others display error */}

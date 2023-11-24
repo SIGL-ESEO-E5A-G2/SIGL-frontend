@@ -15,7 +15,7 @@ function App() {
   return <UserContext.Provider value={user}>
     <BrowserRouter>
       {
-        user?.router ? <>
+        user?.id ? <>
           <Menu deconnect={clearUser} />
 
           <div style={{ padding: "120px 0px 0px 30px" }}>
