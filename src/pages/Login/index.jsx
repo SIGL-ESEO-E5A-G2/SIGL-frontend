@@ -16,12 +16,16 @@ export default function Login({ loadUser }) {
         navigate('/');
         // window.location.reload();
       })
-      .catch(({ response }) => {
-        let allErrors = Object.values(response?.data || {});
-        allErrors = allErrors?.length > 0 ? allErrors[0] : allErrors;
-        allErrors = allErrors?.length > 0 ? allErrors[0] : allErrors;
+      .catch((error) => {
+        let message = 'Une erreur est survenue';
+        if (error?.response?.data) {
+          let allErrors = Object.values(error.response.data);
+          message = allErrors.length > 0 ? allErrors[0] : message;
+        }
+        else if (error?.message) {
+          message = error?.message
+        }
 
-        const message = allErrors || 'Une erreur est survenue';
         setError(message);
       });
   }
