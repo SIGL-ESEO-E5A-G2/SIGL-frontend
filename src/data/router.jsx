@@ -1,5 +1,8 @@
 import { GearFill, TypeStrikethrough } from 'react-bootstrap-icons';
 import Home from '../pages/Home';
+import Entreprise from '../pages/Entreprise';
+import Admin from '../pages/Admin';
+import CoordinatriceAlternance from '../pages/CoordinatriceAlternance';
 
 export default {
     path: "",
@@ -8,25 +11,22 @@ export default {
     disabled: false,
     children: [
         {
-            path: "test",
-            element: "Ceci est un test",
-            name: "Page de test",
-            roles: [3, 4]
+            path: "/inscription",
+            element: <Entreprise />,
+            children: [],
+            roles : [], //admin
         },
         {
-            path: "parametres",
-            element: "Hello world",
-            icon: GearFill,
-            name: "Paramètres",
-            children: [
-                {
-                    path: "test",
-                    element: "Test sub child",
-                    icon: TypeStrikethrough,
-                    name: "Test child",
-                }
-            ]
-            // roles: null
+            path: "/admin",
+            element: <Admin />,
+            children: [],
+            roles : [], //admin
+        },
+        {
+            path: "/coordinatriceAlternance",
+            element: <CoordinatriceAlternance/>,
+            children: [],
+            roles : [], //coordinatrice
         }
     ]
 }
