@@ -6,6 +6,5 @@
  * @return {boolean}
  */
 export function isFunc(obj) {
-  const fn = () => { };
-  return obj instanceof fn;
+  return obj instanceof Function;
 }

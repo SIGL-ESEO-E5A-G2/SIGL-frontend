@@ -3,13 +3,6 @@ import { useState } from "react";
 import { request } from '../utils/request';
 import { encryptData, parseToken } from '../utils/encryption';
 
-import administrateurRouter from '../data/router/administrateurRouter.data';
-import aprentisRouter from '../data/router/aprentisRouter.data';
-import coordinateurAlternanceRouter from '../data/router/coordinateurAlternanceRouter.data';
-import maitreAlternanceRouter from '../data/router/maitreAlternanceRouter.data';
-import tuteurPedagogiqueRouter from '../data/router/tuteurPedagogiqueRouter.data';
-
-
 /**
  * 
  * @returns {[{}, async fn: (email: string, password: string) => string, fn: ()]}
@@ -25,7 +18,9 @@ export default function () {
     function setUserInApp(token) {
         // suppression user (deconnexion)
         if (!token) {
+            sessionStorage.clear();
             localStorage.clear();
+
             return;
         }
 
@@ -33,7 +28,7 @@ export default function () {
         const user = getUserFromToken(token);
 
         // enregistrement user
-        localStorage.setItem("token", token);
+        sessionStorage.setItem("token", token);
         setUser(user);
     }
 
@@ -63,7 +58,7 @@ export default function () {
  * @returns {utilisateur} renvoie l'utilisateur si connecté
  */
 function initUser() {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     return token ? getUserFromToken(token) : null;
 }
 
@@ -85,19 +80,9 @@ async function fetchToken(email, password) {
                 throw new Error(`Utilisateur non trouvé`);
             }
 
-            return request('/utilisateur/' + id, 'get')
-                .then((res) => {
-                    if (res.data?.roles && res.data?.roles[0] == 1) {
-                        return request('/apprentidetail/' + id, 'get')
-                            .then(resDetail => {
-                                if (!resDetail?.data) return res;
-                                return { data: { ...resDetail.data, ...resDetail.data?.utilisateur } }
-                            })
-                            .catch(() => res);
-                    } else return res;
-                })
+            return data.jwt_token;
         })
-        .then(({ data }) => encryptData(data));
+    // .then((data) => encryptData(data));
 }
 
 /**
@@ -107,7 +92,7 @@ async function fetchToken(email, password) {
  * @returns {utilisateur}
  */
 function getUserFromToken(token) {
-    const user = parseToken(token);
+    let user = parseToken(token);
 
     // check user
     if (!user || !user.id) {
@@ -115,31 +100,11 @@ function getUserFromToken(token) {
     }
 
     // map data to user
-    user.router = getUserRouter(user.roles[0]);
-    user.nomComplet = ((user.prenom || '') + ' ' + (user.nom || '')).trim();
+    user = {
+        ...user,
+        roles: JSON.parse(user.roles).map(role => role.pk),
+        nomComplet: ((user.prenom || '') + ' ' + (user.nom || '')).trim()
+    }
 
     return user;
-}
-
-/**
- * Récupère le router associé à l'utilisateur en fonction de son role
- * 
- * @param {number} role 
- * @returns 
- */
-function getUserRouter(role) {
-    switch (role) {
-        case 1: // apprentis
-            return aprentisRouter;
-        case 2: // tuteur
-            return tuteurPedagogiqueRouter;
-        case 3: // admin
-            return administrateurRouter;
-        case 4: // coordinatrice
-            return coordinateurAlternanceRouter;
-        case 5: // MA
-            return maitreAlternanceRouter;
-        default:
-            throw new Error(`Role de l'utilisateur non trouvé`);
-    }
 }

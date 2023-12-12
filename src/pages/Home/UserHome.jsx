@@ -2,6 +2,8 @@ import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Row, Col, Container, Stack } from "react-bootstrap";
 
+const numberOfChildsPerLine = 4;
+
 /**
  * 
  * @param {{children: [{link: string, icon, nom: string, disabled: boolean}]}} props 
@@ -11,12 +13,15 @@ export default function ({
     children = []
 }) {
     const items = useMemo(() => {
-        const filteredChildrens = children.filter(child => child && !child.disabled);
         const rows = [];
 
-        filteredChildrens.forEach((child, idx) => {
-            if (idx % 4 == 0) rows.push([child, null, null, null]);
-            else rows[Math.floor(idx / 4)][idx % 4] = child;
+        children.forEach((child, idx) => {
+            if (idx % numberOfChildsPerLine == 0) {
+                const newLine = Array(numberOfChildsPerLine).fill(null);
+                newLine[0] = child;
+                rows.push(newLine);
+            }
+            else rows[Math.floor(idx / numberOfChildsPerLine)][idx % numberOfChildsPerLine] = child;
         });
 
         return rows;
@@ -28,7 +33,7 @@ export default function ({
                 {
                     row.map(column => <Col>
                         {
-                            column && <Link to={column.link}>
+                            column && <Link to={column.path}>
                                 <Stack gap={3} style={{ width: "100%", textAlign: "center" }}>
                                     {
                                         column.icon ? <column.icon size="200px" color="lightslategray" className="mx-auto" />
@@ -42,7 +47,7 @@ export default function ({
                                                 }}
                                             />
                                     }
-                                    <p>{column.nom}</p>
+                                    <p>{column.name}</p>
                                 </Stack>
                             </Link>
                         }
