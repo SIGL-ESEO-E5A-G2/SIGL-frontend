@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { request } from '../../../utils/request.js';
+import { postApprenti } from '../../../utils/api.js';
 
 const ApprenticeshipForm = () => {
   const [formData, setFormData] = useState({
@@ -58,63 +59,12 @@ const ApprenticeshipForm = () => {
   };
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-
-    const apprenti = {
-      "roles": [1],
-      "password": "autogenerate",
-      "last_login": "2023-11-20T13:01:16.160Z",
-      "is_superuser": true,
-      "nom": formData.apprenticeLastName,
-      "prenom": formData.apprenticeFirstName,
-      "email": formData.apprenticeFirstName+"."+formData.apprenticeLastName+"@reseau.eseo.fr" , // replace "user@example.com" with the actual value for "email"
-      "is_active": true,
-      "is_staff": false,
-      "groups": [],
-      "user_permissions": [],
-  };
-
-  const master = {
-  "roles": [2],
-  "password": "autogenerate",
-  "last_login": "2023-11-20T13:01:16.160Z",
-  "is_superuser": true,
-  "nom": formData.masterLastName,
-  "prenom": formData.masterFirstName,
-  "email": formData.masterEmail, // replace "user@example.com" with the actual value for "email"
-  "is_active": true,
-  "is_staff": true,
-  "groups": [],
-  "user_permissions": [],
-  }
-
-
-
-  console.log(JSON.stringify(apprenti));
-  
-  request("/utilisateur/", "post", apprenti)
-      .then((res) => {
-          const apprentiData = {
-            "optionMineure": "N/A",
-            "optionMajeure": "N/A",
-            "utilisateur": res.data.id,
-            "maitreAlternance": 1,
-            "tuteurPedagogique": 1,
-          };
-          request("/apprenti/", "post", apprentiData)
-          .then((res) => {
-          })
-          .catch((error) => {
-              console.error("Erreur de configuration de la requête :", error.message);
-          });
-      })
-      .catch((error) => {
-          console.error("Erreur de configuration de la requête :", error.message);
-      });
+    e.preventDefault();  
+    postApprenti(formData.apprenticeLastName, formData.apprenticeFirstName);
   };
 
   return (
-    <form className=""onSubmit={handleSubmit}>
+    <form className="" onSubmit={handleSubmit}>
       <section>
         <h1>APPRENTI(E)</h1>
         <div className="mb-3 d-flex flex-column">
