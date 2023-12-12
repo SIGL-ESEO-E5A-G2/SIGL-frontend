@@ -1,13 +1,18 @@
 body {
     margin: 0;
     font-family: Arial, sans-serif;
+    background-color: #f0f2f5; /* Couleur de fond similaire à Facebook */
   }
   
   .container {
-    position: relative;
-    height: 100vh;
-    width: 100%;
-    background-color: #f0f2f5; /* Couleur de fond similaire à Facebook */
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%; /* Ajustez la largeur selon vos besoins */
+    background-color: #ffffff; /* Couleur de fond similaire à Facebook */
+    margin-top: 7%;
   }
   
   .row {
@@ -16,31 +21,26 @@ body {
     display: flex;
   }
   
-  .editor {
-    position: relative;
-    height: 100%;
-    width: 50%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between; /* Ajustement pour espacer les éléments verticalement */
-    background-color: #ffffff; /* Fond blanc pour l'éditeur */
-    padding: 20px;
-  }
-  
   .title-editor,
   .text-editor {
     width: 100%;
-    margin-bottom: 0; /* Aucune marge entre les éditeurs */
+    margin-bottom: 0;
+  }
+  
+  .title-input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 4px;
+    font-size: 16px;
   }
   
   .editor-input {
     width: 100%;
     padding: 10px;
-    border: 1px solid #ccc;
     border-radius: 4px;
-    font-size: 16px; /* Taille de la police ajustée */
+    font-size: 16px;
   }
+  
   
   select,
   button {
@@ -62,14 +62,17 @@ body {
   button:hover {
     background-color: #1568cb; /* Changement de couleur au survol */
   }
+
+  button {
+    margin-bottom: 10px;
+  }
   
   .preview {
     position: relative;
     height: 100%;
-    width: 50%;
+    width: 100%;
     padding: 10px;
     overflow-y: scroll;
-    border-left: 1px solid #ccc; /* Bordure à gauche pour séparer l'éditeur et la prévisualisation */
   }
   
   .post {
@@ -108,4 +111,39 @@ body {
       width: 100%; /* Occuper la largeur complète sur les écrans plus petits */
     }
   }
-  
+
+  .round-button {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .round-button.red:hover{
+    background-color: #dd0303;
+  }
+
+  .round-button.red {
+    background-color: #ff0000; /* Couleur rouge */
+    color: #fff; /* Couleur du texte en blanc ou autre couleur lisible */
+  }
+
+  .popup {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 65%;
+    background-color: #ffffff;
+    bottom: 0;
+    padding: 10px;
+  }

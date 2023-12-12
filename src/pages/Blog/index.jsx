@@ -21,7 +21,7 @@ const textEditorModules = {
     ["link", "video"],
     ["clean"]
   ]
-}
+};
 
 const titleEditorModules = {
   toolbar: [
@@ -29,48 +29,74 @@ const titleEditorModules = {
     ["bold", "italic", "underline"],
     ["clean"]
   ]
-}
+};
 
-const semesters = [1, 2, 3, 4, 5, 6, 7, 8]; // a changer
 
-function App() {
+
+const semesters = [1, 2, 3, 4, 5, 6, 7, 8]; // à changer
+
+export default function () {
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
-  const [selectedSemester, setSelectedSemester] = useState(5); // a changer
+  const [selectedSemester, setSelectedSemester] = useState(5);
   const [posts, setPosts] = useState([]);
 
+  const [showPopup, setShowPopup] = useState(false);
+
   const addPost = () => {
-    // Vérifier si le titre contient une image
-    if (title.includes('<img')) {
-      alert('Le titre ne peut pas contenir d\'image.');
-      return;
+
+    if (title.trim() === '' || body.trim() === '') {
+        alert('Le titre et le message ne peuvent pas être vides.');
+        return;
     }
 
-    // Ajouter le post avec le titre, le corps du texte et le semestre à la liste des posts
-    setPosts(prevPosts => [...prevPosts, { title, body, semester: selectedSemester }]);
-    // Effacer le contenu du titre et du corps du texte
+    setPosts(prevPosts => [...prevPosts, { title, body, semester: selectedSemester, release: selectedRelease}]);
     setTitle('');
     setBody('');
   };
 
-  return "test"
+  const handleButtonClick = () => {
+    setShowPopup(prevShowPopup => !prevShowPopup);
+  };
+
+  const RoundButton = ({ onClick }) => {
+    return (
+        <button className={`round-button ${showPopup ? 'red' : ''}`} onClick={onClick}>
+          <h1><b>{showPopup ? 'x' : '+'}</b></h1>
+        </button>
+    );
+};
 
   return (
     <body>
-      <div class="container">
-        <div class="row">
-          <div class="editor">
-            <div class="title-editor">
+      <div className="container">
+        <div className="row">
+          <div className="preview">
+            {posts.map((post, index) => (
+              <div className="post" key={index}>
+                <div className="post-header">
+                  <p className="semester">Semestre {post.semester}</p>
+                </div>
+                <h2 className="post-title" dangerouslySetInnerHTML={{ __html: post.title }} />
+                <div className="post-body" dangerouslySetInnerHTML={{ __html: post.body }} />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+      {showPopup && (
+        <div className="popup">
+            <div className="title-editor">
               <ReactQuill
                 placeholder="Titre"
                 theme="snow"
                 value={title}
                 onChange={setTitle}
-                className="editor-input"
+                className="title-input"
                 modules={titleEditorModules}
               />
             </div>
-            <div class="text-editor">
+            <div className="text-editor">
               <ReactQuill
                 theme="snow"
                 placeholder="Message"
@@ -91,22 +117,11 @@ function App() {
               ))}
             </select>
             <button onClick={addPost}>Ajouter un post</button>
-          </div>
-          <div class="preview">
-            {posts.map((post, index) => (
-              <div class="post" key={index}>
-                <div class="post-header">
-                  <p class="semester">Semestre {post.semester}</p>
-                </div>
-                <h2 class="post-title" dangerouslySetInnerHTML={{ __html: post.title }} />
-                <div class="post-body" dangerouslySetInnerHTML={{ __html: post.body }} />
-              </div>
-            ))}
-          </div>
         </div>
+      )}
+      <div>
+        <RoundButton onClick={handleButtonClick} />
       </div>
     </body>
   );
 }
-
-export default App;

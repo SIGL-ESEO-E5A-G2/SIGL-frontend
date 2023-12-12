@@ -12,7 +12,7 @@ export default {
             path: "blog",
             element: <Blog />,
             name: "Blog apprenti",
-            roles: [1]
+            roles: []
         }
     ]
 }
