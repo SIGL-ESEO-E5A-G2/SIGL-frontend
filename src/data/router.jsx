@@ -1,5 +1,8 @@
 import { GearFill, TypeStrikethrough } from 'react-bootstrap-icons';
 import Home from '../pages/Home';
+import Entreprise from '../pages/Entreprise';
+import Admin from '../pages/Admin';
+import CoordinatriceAlternance from '../pages/CoordinatriceAlternance';
 
 export default {
     path: "",
