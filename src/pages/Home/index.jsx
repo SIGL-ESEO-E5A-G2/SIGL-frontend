@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { GearFill } from "react-bootstrap-icons";
+import { GearFill, Incognito, PersonVcard, PersonVideo2 } from "react-bootstrap-icons";
 
 import UserHome from "./UserHome"
 import { UserContext } from "../../context/UserContext";
@@ -26,10 +26,23 @@ export default function Home({
             disabled: ![4].includes(role)
         },
         {
-            link: "/lien",
-            icon: null,
-            nom: "Lien",
-            disabled: false
+            link: "/coordinatriceAlternance",
+            icon: PersonVcard,
+            nom: "Coordinatrice d'alternance",
+            disabled: role != 4
+        },
+        {
+            link: "/inscription",
+            icon: PersonVideo2,
+            nom: "Formulaire d'inscription",
+            disabled: role != 4
+        },
+        ,
+        {
+            link: "/admin",
+            icon: Incognito,
+            nom: "Admin",
+            disabled: role != 3
         }
     ];
 
