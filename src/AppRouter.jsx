@@ -4,8 +4,10 @@ import { Route, Routes } from 'react-router-dom';
 
 import ErrorBoundary from './components/ErrorBoundary';
 import Error from './pages/Error';
+
 import { isFunc } from './utils/divers';
 import { isRouteAllowed } from './utils/userRights';
+
 import router from './data/router';
 
 export default function ({ user }) {
@@ -52,7 +54,7 @@ function RecursiveRoute({ item, user }) {
 
                     return <Route
                         path={path}
-                        element={<RecursiveRoute item={child} />}
+                        element={<RecursiveRoute item={child} user={user} />}
                     />
                 })
         }
