@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { request } from '../../utils/request';
-import UserContext from '../../context/UserContext';
+import { UserContext } from '../../context/UserContext';
 
 import './blog.css';
 
@@ -54,23 +54,28 @@ const BlogComponent = () => {
 
   const addPost = () => {
 
-    if (title.trim() === '' || body.trim() === '') {
-        alert('Le titre et le message ne peuvent pas être vides.');
-        return;
-    }
+    // if (title.trim() === '' || body.trim() === '') {
+    //     alert('Le titre et le message ne peuvent pas être vides.');
+    //     return;
+    // }
 
     const date = new Date();
-    const dateString = date.toDateString();
-    const timeString = date.toLocaleTimeString();
+    // const dateString = date.toDateString();
+    // const timeString = date.toLocaleTimeString();
+    const dateString = "2023-11-25";
+    const timeString = "15:39:00";
 
-    cible = [1,2,3];
-    tags = [7];
+    const cible = [1,2,3];
+    const tags = [7];
 
     const newPost = { title, body, semester: selectedSemester, dateString, timeString, user, cible, tags };
-    request("/message/", "post", newPost).then((response) => {
+    request("/message/", "post", newPost, { timeout: 5000 }).then((response) => {
       setPosts(prevPosts => [...prevPosts, response.data]);
       setTitle('');
       setBody('');
+    })
+    .catch((error) => {
+      console.error('Erreur lors de la requête:', error);
     })
 
   };
