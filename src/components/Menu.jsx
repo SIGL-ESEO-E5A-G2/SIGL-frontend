@@ -22,6 +22,9 @@ export default function ({ deconnect }) {
                 </Dropdown.Toggle>
 
                 <Dropdown.Menu>
+                    <Dropdown.Item href="/profil">
+                        Modifier mot de passe
+                    </Dropdown.Item>
                     <Dropdown.Item href="/login" onClick={deconnect}>
                         Déconnexion
                     </Dropdown.Item>
