@@ -3,6 +3,8 @@ import Home from '../pages/Home';
 import Entreprise from '../pages/Entreprise';
 import Admin from '../pages/Admin';
 import CoordinatriceAlternance from '../pages/CoordinatriceAlternance';
+import ApprentiListing from '../pages/ApprentiListing';
+import Profil from '../pages/Profil';
 
 export default {
     path: "",
@@ -25,8 +27,21 @@ export default {
         {
             path: "/coordinatriceAlternance",
             element: <CoordinatriceAlternance/>,
-            children: [],
+            children: [
+                {
+                    path: "/gererPromotions",
+                    element: <ApprentiListing />,
+                    children: [],
+                    roles : [], //admin
+                }
+            ],
             roles : [], //coordinatrice
+        },
+        {
+            path: "/profil",
+            element: <Profil />,
+            children: [],
+            roles : [], //user
         }
     ]
 }

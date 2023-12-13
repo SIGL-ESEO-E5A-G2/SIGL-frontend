@@ -56,7 +56,6 @@ class DynamicFormTutoralTeam extends Component {
         "user_permissions": [],
       }
 
-      console.log(newUser);
 
       request("/utilisateur/", "post", newUser)
         .then((res) => {
