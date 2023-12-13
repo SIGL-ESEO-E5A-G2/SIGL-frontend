@@ -7,7 +7,7 @@
  * @returns {boolean}
  */
 export function isRouteAllowed(route, user) {
-    return !!route && !route.disabled && userHasRole(user, route.roles);
+    return !!route && !route.disabled && (!route?.roles?.length || userHasRole(user, route.roles));
 }
 
 /**

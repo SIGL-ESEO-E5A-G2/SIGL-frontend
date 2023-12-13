@@ -13,35 +13,38 @@ export default {
     disabled: false,
     children: [
         {
-            path: "/inscription",
+            path: "inscription",
+            name: "Inscription entrerpise",
             element: <Entreprise />,
             children: [],
-            roles : [], //admin
+            roles : [3], //admin
         },
         {
-            path: "/admin",
+            path: "admin",
+            name: "Page admin",
             element: <Admin />,
             children: [],
-            roles : [], //admin
+            roles : [3], //admin
         },
         {
-            path: "/coordinatriceAlternance",
+            path: "coordinatriceAlternance",
+            name: "Coordinatrice d'alternance",
             element: <CoordinatriceAlternance/>,
             children: [
                 {
                     path: "/gererPromotions",
                     element: <ApprentiListing />,
                     children: [],
-                    roles : [], //admin
+                    roles : [4], //coordinatrice
                 }
             ],
-            roles : [], //coordinatrice
+            roles : [4], //coordinatrice
         },
         {
             path: "/profil",
             element: <Profil />,
-            children: [],
             roles : [], //user
+            children: [],
         }
     ]
 }
