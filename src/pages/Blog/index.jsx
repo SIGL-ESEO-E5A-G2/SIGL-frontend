@@ -34,23 +34,35 @@ const titleEditorModules = {
 };
 
 
-
+// TODO recuperer depuis le fichier constante quand Arthur aura merge
 const semesters = ['S5', 'S6', 'S7', 'S8', 'S9', 'S10'];
 
 const BlogComponent = () => {
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
+
   const [selectedSemester, setSelectedSemester] = useState('S5');
-  const [posts, setPosts] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
+
+  const [posts, setPosts] = useState([]);
+
   const user = useContext(UserContext);
 
   useEffect(() => {
-    request("/message/")
-        .then((res) => {
-          setPosts(res.data);
-        });
+    request("/message")
+      .then((res) => {
+        setPosts(res.data);
+      });
   }, []);
+
+  /**
+   * Reset le formulaire de nouveau message
+   */
+  function resetFormMessage() {
+    setTitle('');
+    setBody('');
+    setShowPopup(false);
+  }
 
   const addPost = () => {
 
@@ -59,25 +71,36 @@ const BlogComponent = () => {
     //     return;
     // }
 
-    const date = new Date();
+    const date = (new Date()).toISOString().split('T');
     // const dateString = date.toDateString();
     // const timeString = date.toLocaleTimeString();
-    const dateString = "2023-11-25";
-    const timeString = "15:39:00";
+    const dateString = date[0];
+    const timeString = date[1].substring(0, 5);
+    // TODO l'heure n'est pas en UTC Paris (MEMO : surtout ne pas faire time + 1)
 
-    const cible = [1,2,3];
-    const tags = [7];
+    const cible = [1, 2, 3]; // TODO
+    const tags = [7]; // TODO
 
-    const newPost = { title, body, semester: selectedSemester, dateString, timeString, user, cible, tags };
-    request("/message/", "post", newPost, { timeout: 5000 }).then((response) => {
-      setPosts(prevPosts => [...prevPosts, response.data]);
-      setTitle('');
-      setBody('');
-    })
-    .catch((error) => {
-      console.error('Erreur lors de la requête:', error);
-    })
+    const newPost = {
+      titre: title,
+      contenu: body,
+      semestre: selectedSemester, // TODO demander à nath de rajouter cet attribut
+      date: dateString,
+      time: timeString,
+      createur: user.id,
+      destinataire: cible,
+      tags
+    };
 
+    request("/message/", "post", newPost)
+      .then((response) => {
+        resetFormMessage();
+        console.log("TAG message", response.data);
+        setPosts(prevPosts => [...prevPosts, response.data]);
+      })
+      .catch((error) => {
+        console.error('Erreur lors de la requête:', error);
+      });
   };
 
   const handleButtonClick = () => {
@@ -86,31 +109,44 @@ const BlogComponent = () => {
 
   const RoundButton = ({ onClick }) => {
     return (
-        <button className={`round-button ${showPopup ? 'red' : ''}`} onClick={onClick}>
-          <h1><b>{showPopup ? 'x' : '+'}</b></h1>
-        </button>
+      <button className={`round-button ${showPopup ? 'red' : ''}`} onClick={onClick}>
+        <h1><b>{showPopup ? 'x' : '+'}</b></h1>
+      </button>
     );
-};
+  };
 
   return (
     <body>
+      {/* Messages */}
       <div className="container">
         <div className="row">
           <div className="preview">
-            {posts.map((post, index) => (
-              <div className="post" key={index}>
-                <div className="post-header">
-                  <p className="semester">{post.semester}</p>
+            {
+              posts.map((post) => (
+                <div className="post" key={post.id}>
+                  <div className="post-header">
+                    <p className="semester">{post.semestre}</p>
+                  </div>
+                  <h2
+                    className="post-title"
+                    dangerouslySetInnerHTML={{ __html: post.titre }}
+                  />
+                  <div
+                    className="post-body"
+                    dangerouslySetInnerHTML={{ __html: post.contenu }}
+                  />
                 </div>
-                <h2 className="post-title" dangerouslySetInnerHTML={{ __html: post.title }} />
-                <div className="post-body" dangerouslySetInnerHTML={{ __html: post.body }} />
-              </div>
-            ))}
+              ))
+            }
           </div>
         </div>
       </div>
-      {showPopup && (
-        <div className="popup">
+
+      {/* Ajout message */}
+      {
+        showPopup && (
+          <div className="popup">
+            {/* Titre du message */}
             <div className="title-editor">
               <ReactQuill
                 placeholder="Titre"
@@ -121,6 +157,8 @@ const BlogComponent = () => {
                 modules={titleEditorModules}
               />
             </div>
+
+            {/* Corps du message */}
             <div className="text-editor">
               <ReactQuill
                 theme="snow"
@@ -131,6 +169,8 @@ const BlogComponent = () => {
                 modules={textEditorModules}
               />
             </div>
+
+            {/* Semestre */}
             <select
               value={selectedSemester}
               onChange={(e) => setSelectedSemester(e.target.value)}
@@ -142,8 +182,10 @@ const BlogComponent = () => {
               ))}
             </select>
             <button onClick={addPost}>Ajouter un post</button>
-        </div>
-      )}
+          </div>
+        )
+      }
+
       <div>
         <RoundButton onClick={handleButtonClick} />
       </div>
