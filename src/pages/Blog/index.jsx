@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import { request } from '../../utils/request';
+import UserContext from '../../context/UserContext';
 
 import './blog.css';
 
@@ -33,15 +35,22 @@ const titleEditorModules = {
 
 
 
-const semesters = [1, 2, 3, 4, 5, 6, 7, 8]; // à changer
+const semesters = ['S5', 'S6', 'S7', 'S8', 'S9', 'S10'];
 
-export default function () {
+const BlogComponent = () => {
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
-  const [selectedSemester, setSelectedSemester] = useState(5);
+  const [selectedSemester, setSelectedSemester] = useState('S5');
   const [posts, setPosts] = useState([]);
-
   const [showPopup, setShowPopup] = useState(false);
+  const user = useContext(UserContext);
+
+  useEffect(() => {
+    request("/message/")
+        .then((res) => {
+          setPosts(res.data);
+        });
+  }, []);
 
   const addPost = () => {
 
@@ -50,9 +59,20 @@ export default function () {
         return;
     }
 
-    setPosts(prevPosts => [...prevPosts, { title, body, semester: selectedSemester, release: selectedRelease}]);
-    setTitle('');
-    setBody('');
+    const date = new Date();
+    const dateString = date.toDateString();
+    const timeString = date.toLocaleTimeString();
+
+    cible = [1,2,3];
+    tags = [7];
+
+    const newPost = { title, body, semester: selectedSemester, dateString, timeString, user, cible, tags };
+    request("/message/", "post", newPost).then((response) => {
+      setPosts(prevPosts => [...prevPosts, response.data]);
+      setTitle('');
+      setBody('');
+    })
+
   };
 
   const handleButtonClick = () => {
@@ -75,7 +95,7 @@ export default function () {
             {posts.map((post, index) => (
               <div className="post" key={index}>
                 <div className="post-header">
-                  <p className="semester">Semestre {post.semester}</p>
+                  <p className="semester">{post.semester}</p>
                 </div>
                 <h2 className="post-title" dangerouslySetInnerHTML={{ __html: post.title }} />
                 <div className="post-body" dangerouslySetInnerHTML={{ __html: post.body }} />
@@ -108,11 +128,11 @@ export default function () {
             </div>
             <select
               value={selectedSemester}
-              onChange={(e) => setSelectedSemester(Number(e.target.value))}
+              onChange={(e) => setSelectedSemester(e.target.value)}
             >
               {semesters.map((semester) => (
                 <option key={semester} value={semester}>
-                  Semestre {semester}
+                  {semester}
                 </option>
               ))}
             </select>
@@ -125,3 +145,5 @@ export default function () {
     </body>
   );
 }
+
+export default BlogComponent;
