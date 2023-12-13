@@ -4,6 +4,7 @@ import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
 import { request } from '../../../utils/request.js';
 import { addNewPromotion, setPromotion } from '../../../utils/api.js';
+import { semestersList } from '../../../data/constantes.js';
 
 const AddPromotion = () => {
   const [newPromotionName, setNewPromotionName] = useState("");
@@ -11,9 +12,6 @@ const AddPromotion = () => {
   const [promotions, setPromotions] = useState([]);
   const [modifiedSemesters, setModifiedSemesters] = useState({});
   const [newLibelles, setNewLibelles] = useState({});
-
-  // Liste des semestres
-  const semestersList = ['S5', 'S6', 'S7', 'S8', 'S9', 'S10'];
 
   useEffect(() => {
     // Effectuer la requête pour obtenir les promotions
