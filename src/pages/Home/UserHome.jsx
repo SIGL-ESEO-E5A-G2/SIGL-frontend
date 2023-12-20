@@ -29,7 +29,7 @@ export default function ({
 
     return <Container>
         {
-            items.map(row => <Row>
+            items.map(row => <Row style={{ height: "max-content" }}>
                 {
                     row.map(column => <Col>
                         {
