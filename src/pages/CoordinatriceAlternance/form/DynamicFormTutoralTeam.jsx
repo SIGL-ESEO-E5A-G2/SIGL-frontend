@@ -4,6 +4,7 @@ import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { request } from '../../../utils/request.js';
+import { hashPassword } from '../../../utils/encryption.js';
 
 class DynamicFormTutoralTeam extends Component {
   constructor(props) {

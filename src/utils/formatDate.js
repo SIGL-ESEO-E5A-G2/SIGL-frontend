@@ -1,4 +1,4 @@
-import {locale} from '../data/constantes';
+import { locale } from '../data/constantes';
 
 /**
  *
@@ -8,7 +8,6 @@ import {locale} from '../data/constantes';
 export function dateString(date) {
   return date?.toLocaleDateString(locale);
 }
-
 
 export function getCurrentDate() {
   const currentDate = new Date();
@@ -28,4 +27,15 @@ export function getCurrentTime() {
 
   const formattedTime = `${hours}:${minutes}:${seconds}`;
   return formattedTime;
+}
+
+
+/**
+ * Renvoie une date simplifiée (au format EN)
+ * @param {Date} date 
+ * @return date au format "YYYY-MM-DD"
+ */
+export function getSimpleDate(date) {
+  const dateISO = date.toISOString()?.split('T');
+  return dateISO ? dateISO[0] : null;
 }

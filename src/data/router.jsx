@@ -7,6 +7,7 @@ import CoordinatriceAlternance from '../pages/CoordinatriceAlternance';
 import ApprentiListing from '../pages/ApprentiListing';
 import Profil from '../pages/Profil';
 import Journal from '../pages/Journal';
+import JournalDepot from '../pages/Journal/JournalDepot';
 
 export default {
     path: "",
@@ -22,12 +23,19 @@ export default {
             roles: []
         },
         {
+            path: "depots",
+            icon: "",
+            element: <JournalDepot />,
+            name: "Dépôt de documents",
+            roles: [1]
+        },
+        {
             path: "inscription",
             name: "Inscription entrerpise",
             icon: LayoutTextWindowReverse,
             element: <Entreprise />,
             children: [],
-            roles : [3], //admin
+            roles: [3], //admin
         },
         {
             path: "admin",
@@ -35,7 +43,7 @@ export default {
             icon: ShieldLock,
             element: <Admin />,
             children: [],
-            roles : [3], //admin
+            roles: [3], //admin
         },
         {
             path: "coordinatriceAlternance",
@@ -56,7 +64,7 @@ export default {
         {
             path: "profil",
             element: <Profil />,
-            roles : [], //user
+            roles: [], //user
             children: [],
         },
     ]

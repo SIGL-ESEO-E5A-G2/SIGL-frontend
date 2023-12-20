@@ -1,11 +1,13 @@
-import React, { useEffect, useState, useContext } from 'react';
+import { useEffect, useState, useContext, useMemo } from 'react';
 import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
+
+import MessagesContainer from '../../components/Post';
+
 import { request } from '../../utils/request';
 import { UserContext } from '../../context/UserContext';
 
 import './blog.css';
-import MessagesContainer from '../../components/Post';
+import 'react-quill/dist/quill.snow.css';
 
 const textEditorModules = {
   toolbar: [
@@ -40,21 +42,21 @@ const BlogComponent = () => {
 
   const [showPopup, setShowPopup] = useState(false);
 
-  const [posts, setPosts] = useState([]);
+  const [postsTemp, setPosts] = useState([]);
+  const posts = useMemo(() => { // TODO remove
+    return postsTemp
+      .filter(post => !post?.tags?.map(tag => tag?.type)?.includes('Livrable'))
+  }, [postsTemp]);
   const [apprentidetail, setApprentidetail] = useState([]);
 
   const user = useContext(UserContext);
 
   useEffect(() => {
-    request(`/apprentidetail/${user.id}`)
-      .then((res) => {
-        setApprentidetail(res.data);
-      });
+    request(`/apprentiutilisateurdetail?utilisateur=${user.id}`)
+      .then(({ data }) => setApprentidetail(data ? data[0] : null));
 
     request("/messagedetail")
-      .then((res) => {
-        setPosts(res.data);
-      });
+      .then(({ data }) => setPosts(data));
   }, []);
 
   /**
@@ -63,7 +65,6 @@ const BlogComponent = () => {
   function resetFormMessage() {
     setTitle('');
     setBody('');
-    setShowPopup(false);
   }
 
   const addPost = () => {
@@ -78,7 +79,8 @@ const BlogComponent = () => {
     const timeString = date[1].substring(0, 5);
     // TODO l'heure n'est pas en UTC Paris (MEMO : surtout ne pas faire time + 1)
 
-    const cible = [user.id, apprentidetail.tuteurPedagogique.id, apprentidetail.maitreAlternance.id];
+    const cible = [user.id, apprentidetail?.tuteurPedagogique?.id, apprentidetail?.maitreAlternance?.id]
+      .filter(id => id);
     const tags = [7]; // TODO
 
     const newPost = {
@@ -94,6 +96,8 @@ const BlogComponent = () => {
     request("/message/", "post", newPost)
       .then((response) => {
         resetFormMessage();
+        setShowPopup(false);
+
         request(`/messagedetail/${response.data.id}`)
           .then(({ data }) => {
             setPosts(prevPosts => [...prevPosts, data]);
@@ -105,6 +109,7 @@ const BlogComponent = () => {
   };
 
   const handleButtonClick = () => {
+    resetFormMessage();
     setShowPopup(prevShowPopup => !prevShowPopup);
   };
 
