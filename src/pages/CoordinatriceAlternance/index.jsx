@@ -2,14 +2,13 @@ import React, { useState, useEffect } from 'react';
 import DynamicFormTutoralTeam from "./form/DynamicFormTutoralTeam";
 import DynamicFormPlanningDates from "./form/DynamicFormPlanningDates";
 import TeamAssociationForm from "./form/TeamAssociationForm";
-import {request} from '../../utils/request.js';
+import { useContext } from "react";
+import { UserContext } from "../../context/UserContext";
 
-export default function ({
-    
-}) {
-    return <>
-
-        
+export default function () {
+    const user = useContext(UserContext);
+    return (
+        <>
         <div>
             <TeamAssociationForm />
         </div>
@@ -19,7 +18,8 @@ export default function ({
         </div>
 
         <div>
-            <DynamicFormPlanningDates />
+            <DynamicFormPlanningDates user={user}/>
         </div>
-    </>
+        </>
+    );
 }
