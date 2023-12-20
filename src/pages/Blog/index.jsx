@@ -5,6 +5,7 @@ import { request } from '../../utils/request';
 import { UserContext } from '../../context/UserContext';
 
 import './blog.css';
+import MessagesContainer from '../../components/Post';
 
 const textEditorModules = {
   toolbar: [
@@ -116,7 +117,7 @@ const BlogComponent = () => {
   return (
     <body>
       {/* Messages */}
-      <div className="container">
+      {/* <div className="container">
         <div className="row">
           <div className="preview">
             {
@@ -138,6 +139,9 @@ const BlogComponent = () => {
             }
           </div>
         </div>
+      </div> */}
+      <div>
+        <MessagesContainer posts={posts} />
       </div>
 
       {/* Ajout message */}
