@@ -1,11 +1,13 @@
-import React, { useEffect, useState, useContext } from 'react';
+import { useEffect, useState, useContext, useMemo } from 'react';
 import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
+
+import MessagesContainer from '../../components/Post';
+
 import { request } from '../../utils/request';
 import { UserContext } from '../../context/UserContext';
 
 import './blog.css';
-import MessagesContainer from '../../components/Post';
+import 'react-quill/dist/quill.snow.css';
 
 const textEditorModules = {
   toolbar: [
@@ -40,13 +42,17 @@ const BlogComponent = () => {
 
   const [showPopup, setShowPopup] = useState(false);
 
-  const [posts, setPosts] = useState([]);
+  const [postsTemp, setPosts] = useState([]);
+  const posts = useMemo(() => { // TODO remove
+    return postsTemp
+      .filter(post => !post?.tags?.map(tag => tag?.type)?.includes('Livrable'))
+  }, [postsTemp]);
   const [apprentidetail, setApprentidetail] = useState([]);
 
   const user = useContext(UserContext);
 
   useEffect(() => {
-    request(`/apprentidetail/${user.id}`)
+    request(`/apprentiutilisateurdetail?utilisateur=${user.id}`)
       .then((res) => {
         setApprentidetail(res.data);
       });
