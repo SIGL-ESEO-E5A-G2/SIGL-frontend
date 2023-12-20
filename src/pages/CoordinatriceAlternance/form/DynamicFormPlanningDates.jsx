@@ -89,10 +89,9 @@ const DynamicFormPlanningDates = ({ user }) => {
 
   return (
     <div>
-      <h2 className="text-center mt-3">Formulaire d'utilisateur</h2>
+      <h2 className="text-center mt-3">Saisie des échéances par promotion</h2>
       <Form className="m-5">
         <Form.Group className="mb-3">
-          <Form.Label>Promotions :</Form.Label>
           <Form.Select id="promotion" name="promotion" value={selectedPromotion} onChange={handlePromotionChange}>
             <option value="" disabled>Sélectionnez une promotion</option>
             {promotions.map((promotion) => (
