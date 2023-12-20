@@ -45,11 +45,12 @@ const BlogComponent = () => {
 
   const user = useContext(UserContext);
 
-  useEffect(() => { 
+  useEffect(() => {
     request(`/apprentidetail/${user.id}`)
       .then((res) => {
         setApprentidetail(res.data);
       });
+
     request("/messagedetail")
       .then((res) => {
         setPosts(res.data);
@@ -67,14 +68,12 @@ const BlogComponent = () => {
 
   const addPost = () => {
 
-    // if (title.trim() === '' || body.trim() === '') {
-    //     alert('Le titre et le message ne peuvent pas être vides.');
-    //     return;
-    // }
+    if (!title?.trim() || !body?.trim()) {
+      alert('Le titre et le message ne peuvent pas être vides.');
+      return;
+    }
 
     const date = (new Date()).toISOString().split('T');
-    // const dateString = date.toDateString();
-    // const timeString = date.toLocaleTimeString();
     const dateString = date[0];
     const timeString = date[1].substring(0, 5);
     // TODO l'heure n'est pas en UTC Paris (MEMO : surtout ne pas faire time + 1)
@@ -96,10 +95,9 @@ const BlogComponent = () => {
       .then((response) => {
         resetFormMessage();
         request(`/messagedetail/${response.data.id}`)
-          .then(({data}) => {
+          .then(({ data }) => {
             setPosts(prevPosts => [...prevPosts, data]);
           });
-        // setPosts(prevPosts => [...prevPosts, response.data]); // requete message detail de respons.data.id
       })
       .catch((error) => {
         console.error('Erreur lors de la requête:', error);
@@ -121,32 +119,7 @@ const BlogComponent = () => {
   return (
     <body>
       {/* Messages */}
-      {/* <div className="container">
-        <div className="row">
-          <div className="preview">
-            {
-              posts.map((post) => (
-                <div className="post" key={post.id}>
-                  <div className="post-header">
-                    <p className="header">{post.createur.prenom} {post.createur.nom}</p>
-                  </div>
-                  <h2
-                    className="post-title"
-                    dangerouslySetInnerHTML={{ __html: post.titre }}
-                  />
-                  <div
-                    className="post-body"
-                    dangerouslySetInnerHTML={{ __html: post.contenu }}
-                  />
-                </div>
-              ))
-            }
-          </div>
-        </div>
-      </div> */}
-      <div>
-        <MessagesContainer posts={posts} />
-      </div>
+      <MessagesContainer posts={posts} />
 
       {/* Ajout message */}
       {

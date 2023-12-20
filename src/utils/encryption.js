@@ -64,3 +64,24 @@ function base64url(source) {
 
     return encodedSource;
 }
+
+/**
+ * Hash d'un mot de passe
+ * 
+ * @param {*} password 
+ * @returns {Promise<string>} le mot de passe hashé
+ */
+export async function hashPassword(password) {
+    return new Promise((resolve, reject) => {
+        const salt = 'pfCCe8yF6RqV2D5oQF0FQO';
+        const iterations = 600000;
+
+        // Utilisez la fonction PBKDF2 de CryptoJS avec SHA-256
+        const key = CryptoJS.PBKDF2(password, salt, {keySize: 256/32, iterations: iterations, hasher: CryptoJS.algo.SHA256 });
+        const hashedPassword = key.toString(CryptoJS.enc.Base64);
+        const formattedHash = `pbkdf2_sha256$${iterations}$${salt}$${hashedPassword}`;
+        resolve(formattedHash);
+    });
+}
+
+  
