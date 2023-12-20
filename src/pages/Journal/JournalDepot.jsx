@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { Alert, Button, Form } from "react-bootstrap";
+import { saveAs } from 'file-saver';
 
 import MessagesContainer from "../../components/Post";
 
-import { request, uploadFile } from "../../utils/request";
-import { dateString, getSimpleDate } from "../../utils/formatDate";
+import { getFile, request, uploadFile } from "../../utils/request";
+import { dateString } from "../../utils/formatDate";
 
 function JournalDepot() {
     const [depots, setDepots] = useState([]);
@@ -64,8 +65,13 @@ async function addFile(file, post) {
  * @returns 
  */
 async function downloadFile(post) {
-    console.log("TAG AAAAAAAAAAAAAAa", post)
-    return request('/get-pdf', 'post', { file_path: post.cheminFichier })
+    return getFile(post.cheminFichier)
+        .then(({ data }) => {
+            const filePath = post.cheminFichier.split('/');
+            const fileName = filePath ? filePath[filePath.length - 1] : "Fichier.pdf";
+
+            return saveAs(new Blob([data], { type: "application/pdf" }), fileName);
+        })
         .catch((error) => {
             alert(error?.response?.data || 'Une erreur est survenue');
             console.error(error);
@@ -100,8 +106,8 @@ function AddFile({ post }) {
 
                     <Button
                         onClick={async () => {
-                            await addFile(file, post);
-                            setDeposer(true);
+                            addFile(file, post)
+                                .then(() => setDeposer(true));
                             setFile(null);
                         }}
                     >

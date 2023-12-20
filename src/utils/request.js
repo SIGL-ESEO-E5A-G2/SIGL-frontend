@@ -50,7 +50,10 @@ export async function uploadFile(depot, file) {
     }
 
     // ajoute le nom du fichier
-    nouveauChemin += "/" + depot.id + "_" + getSimpleDate(new Date()) + ".pdf";
+    nouveauChemin += "/";
+    const nomFichier = depot.id + "_" + getSimpleDate(new Date()) + ".pdf";
+    // nouveauChemin += nomFichier;
+    // TODO remettre le nom secur
 
     return axios({
         method: 'post',
@@ -67,7 +70,20 @@ export async function uploadFile(depot, file) {
     })
         .then(() => {
             return request('/depot/' + depot.id, 'patch', {
-                cheminFichier: nouveauChemin
+                cheminFichier: nouveauChemin + file.name
             })
         });
+}
+
+export async function getFile(path) {
+    return axios({
+        method: "post",
+        url: "/get-pdf/",
+        baseURL: urlBack,
+        data: { file_path: path },
+        timeout: 1000,
+        headers: {
+            'Content-Type': 'application/pdf',
+        }
+    });
 }
