@@ -33,23 +33,23 @@ const titleEditorModules = {
   ]
 };
 
-
-// TODO recuperer depuis le fichier constante quand Arthur aura merge
-const semesters = ['S5', 'S6', 'S7', 'S8', 'S9', 'S10'];
-
 const BlogComponent = () => {
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
 
-  const [selectedSemester, setSelectedSemester] = useState('S5');
   const [showPopup, setShowPopup] = useState(false);
 
   const [posts, setPosts] = useState([]);
+  const [apprentidetail, setApprentidetail] = useState([]);
 
   const user = useContext(UserContext);
 
-  useEffect(() => {
-    request("/message")
+  useEffect(() => { 
+    request("/apprentidetail/${user.id}")
+      .then((res) => {
+        setApprentidetail(res.data);
+      });
+    request("/messagedetail")
       .then((res) => {
         setPosts(res.data);
       });
@@ -78,13 +78,12 @@ const BlogComponent = () => {
     const timeString = date[1].substring(0, 5);
     // TODO l'heure n'est pas en UTC Paris (MEMO : surtout ne pas faire time + 1)
 
-    const cible = [1, 2, 3]; // TODO
+    const cible = [user.id, apprentidetail.tuteurPedagogique.id, apprentidetail.maitreAlternance.id];
     const tags = [7]; // TODO
 
     const newPost = {
       titre: title,
       contenu: body,
-      semestre: selectedSemester, // TODO demander à nath de rajouter cet attribut
       date: dateString,
       time: timeString,
       createur: user.id,
@@ -95,8 +94,7 @@ const BlogComponent = () => {
     request("/message/", "post", newPost)
       .then((response) => {
         resetFormMessage();
-        console.log("TAG message", response.data);
-        setPosts(prevPosts => [...prevPosts, response.data]);
+        setPosts(prevPosts => [...prevPosts, response.data]); // requete message detail de respons.data.id
       })
       .catch((error) => {
         console.error('Erreur lors de la requête:', error);
@@ -125,7 +123,7 @@ const BlogComponent = () => {
               posts.map((post) => (
                 <div className="post" key={post.id}>
                   <div className="post-header">
-                    <p className="semester">{post.semestre}</p>
+                    <p className="header">{post.createur.prenom} {post.createur.nom}</p>
                   </div>
                   <h2
                     className="post-title"
@@ -169,18 +167,6 @@ const BlogComponent = () => {
                 modules={textEditorModules}
               />
             </div>
-
-            {/* Semestre */}
-            <select
-              value={selectedSemester}
-              onChange={(e) => setSelectedSemester(e.target.value)}
-            >
-              {semesters.map((semester) => (
-                <option key={semester} value={semester}>
-                  {semester}
-                </option>
-              ))}
-            </select>
             <button onClick={addPost}>Ajouter un post</button>
           </div>
         )
