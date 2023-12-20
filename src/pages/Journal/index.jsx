@@ -46,7 +46,7 @@ const BlogComponent = () => {
   const user = useContext(UserContext);
 
   useEffect(() => { 
-    request("/apprentidetail/${user.id}")
+    request(`/apprentidetail/${user.id}`)
       .then((res) => {
         setApprentidetail(res.data);
       });
@@ -95,7 +95,11 @@ const BlogComponent = () => {
     request("/message/", "post", newPost)
       .then((response) => {
         resetFormMessage();
-        setPosts(prevPosts => [...prevPosts, response.data]); // requete message detail de respons.data.id
+        request(`/messagedetail/${response.data.id}`)
+          .then(({data}) => {
+            setPosts(prevPosts => [...prevPosts, data]);
+          });
+        // setPosts(prevPosts => [...prevPosts, response.data]); // requete message detail de respons.data.id
       })
       .catch((error) => {
         console.error('Erreur lors de la requête:', error);

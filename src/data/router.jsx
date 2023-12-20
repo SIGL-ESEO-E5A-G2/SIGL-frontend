@@ -1,6 +1,6 @@
 import { GearFill, TypeStrikethrough } from 'react-bootstrap-icons';
 import Home from '../pages/Home';
-import Blog from '../pages/Blog';
+import Journal from '../pages/Journal';
 
 export default {
     path: "",
@@ -9,9 +9,9 @@ export default {
     disabled: false,
     children: [
         {
-            path: "blog",
-            element: <Blog />,
-            name: "Blog apprenti",
+            path: "journal",
+            element: <Journal />,
+            name: "Journal de l'apprenti",
             roles: []
         }
     ]
