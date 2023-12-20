@@ -1,4 +1,5 @@
 import { request } from './request';
+import {getCurrentTime, getCurrentDate} from './formatDate';
 
 /**
  * Ajtoue une nouvelle promotion
@@ -136,9 +137,52 @@ export const putUtilisateur = async (idUtilisateur, jsonUtilisateur, newUsersAtt
         user_permissions: newUsersAttributes.user_permissions || jsonUtilisateur.user_permissions,
         roles: newUsersAttributes.roles || jsonUtilisateur.roles,
       };
-      console.log(updateUser);
       request("/utilisateur/"+idUtilisateur+"/", "put", updateUser);
-      //window.location.reload();
+  } catch (error) {
+    console.error("Erreur lors de l'ajout de la promotion :", error.message);
+    throw error;
+  }
+};
+
+/**
+ * Ajoute un message
+ * 
+ * @param {string} title 
+ * @param {string} jsonUtilisateur 
+ * @param {[int]} recipient 
+ * @param {[int]} idTags 
+ * @param {int} idSender 
+ */
+export const postMessage = async (title, message, recipient, idTags, idSender) => {
+  try {
+      const messageObj = {
+        titre: title,
+        contenu: message,
+        date:  getCurrentDate(),
+        time: getCurrentTime(),
+        createur: idSender,
+        destinataire: recipient,
+        tags: idTags
+      };
+      request("/message/", "post", messageObj);
+      window.location.reload();
+  } catch (error) {
+    console.error("Erreur lors de l'ajout de la promotion :", error.message);
+    throw error;
+  }
+};
+
+
+/**
+ * Modifie un apprenti existant
+ * 
+ * @param {int} idPromo 
+ * @returns {Promise} Une promesse qui se résout avec les données des apprentis
+ */
+export const getApprentiFromPromo = async (idPromo) => {
+  try {
+    const response = await request("/apprentipromotion/?promotion=" + idPromo);
+    return response.data || [];
   } catch (error) {
     console.error("Erreur lors de l'ajout de la promotion :", error.message);
     throw error;
