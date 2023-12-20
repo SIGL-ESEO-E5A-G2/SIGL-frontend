@@ -4,6 +4,7 @@ import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { request } from '../../../utils/request.js';
+import { hashPassword } from '../../../utils/encryption.js';
 
 class DynamicFormTutoralTeam extends Component {
   constructor(props) {
@@ -41,39 +42,48 @@ class DynamicFormTutoralTeam extends Component {
     e.preventDefault();
     // Access the user data and role
     const roleValue = this.state.role === "tuteurpedagogique" ? 3 : 2;
-    this.state.users.forEach((user, item) => {
-      const newUser = {
-        "roles": [roleValue],
-        "password": "autogenerate",
-        "last_login": "2023-11-20T13:01:16.160Z",
-        "is_superuser": true,
-        "nom": user.lastName,
-        "prenom": user.firstName,
-        "email": user.email,
-        "is_active": true,
-        "is_staff": true,
-        "groups": [],
-        "user_permissions": [],
-      }
+    var password = '';
 
-
-      request("/utilisateur/", "post", newUser)
-        .then((res) => {
-          const newProfil = {
-            "utilisateur": res.data.id,
-          };
-          request("/" + this.state.role + "/", "post", newProfil)
+    hashPassword("autogenerate")
+      .then((hashedPassword) => {
+        this.state.users.forEach((user, item) => {
+          const newUser = {
+            "roles": [roleValue],
+            "password": hashedPassword,
+            "last_login": "2023-11-20T13:01:16.160Z",
+            "is_superuser": true,
+            "nom": user.lastName,
+            "prenom": user.firstName,
+            "email": user.email,
+            "is_active": true,
+            "is_staff": true,
+            "groups": [],
+            "user_permissions": []
+          }
+    
+          console.log(newUser);
+          request("/utilisateur/", "post", newUser)
             .then((res) => {
-              // Gérer la suite de votre logique si nécessaire
+              const newProfil = {
+                "utilisateur": res.data.id,
+              };
+              request("/" + this.state.role + "/", "post", newProfil)
+                .then((res) => {
+                  // Gérer la suite de votre logique si nécessaire
+                })
+                .catch((error) => {
+                  console.error("Erreur de configuration de la requête :", error.message);
+                });
             })
             .catch((error) => {
               console.error("Erreur de configuration de la requête :", error.message);
             });
-        })
-        .catch((error) => {
-          console.error("Erreur de configuration de la requête :", error.message);
         });
-    });
+      })
+      .catch((error) => {
+        console.error('Erreur lors du hachage du mot de passe :', error);
+      });
+    
   };
 
   handleRoleChange = (e) => {
