@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import Form from 'react-bootstrap/Form';
 import { request } from '../../../utils/request.js';
+import { getApprentiFromPromo, postMessage } from '../../../utils/api.js';
 
-const DynamicFormPlanningDates = () => {
-  const [role, setRole] = useState('');
+const DynamicFormPlanningDates = ({ user }) => {
+  const [selectedFormat, setSelectedFormat] = useState('');
   const [dates, setDates] = useState([]);
   const [selectedPromotion, setSelectedPromotion] = useState('');
   const [promotions, setPromotions] = useState([]);
+  const [tags, setTags] = useState([]);
+  const [selectedTag, setSelectedTag] = useState('');
 
   useEffect(() => {
     request("/promotion/")
@@ -16,11 +19,19 @@ const DynamicFormPlanningDates = () => {
       .catch((error) => {
         console.error("Erreur lors de la récupération des promotions :", error.message);
       });
+
+    request("/tag/")
+      .then((res) => {
+        setTags(res.data);
+      })
+      .catch((error) => {
+        console.error("Erreur lors de la récupération des tags :", error.message);
+      });
   }, []);
 
-  const handleRoleChange = (event) => {
-    const role = event.target.value;
-    setRole(role);
+  const handleFormatChange = (event) => {
+    const selectedFormat = event.target.value;
+    setSelectedFormat(selectedFormat);
     setDates([]);
   };
 
@@ -33,35 +44,73 @@ const DynamicFormPlanningDates = () => {
   };
 
   const handleAddDate = () => {
-    if (role === 'echeance') {
-      setDates([...dates, { date: '' }]);
+    if (selectedFormat === 'echeance') {
+      setDates([...dates, { date: '', titre: '', tags: [selectedTag] }]);
     } else {
-      setDates([...dates, { debut: '', fin: '' }]);
+      setDates([...dates, { debut: '', fin: '', titre: '', tags: [selectedTag] }]);
     }
   };
+  
 
   const handlePromotionChange = (event) => {
     setSelectedPromotion(event.target.value);
   };
 
+  const handleTagChange = (event) => {
+    setSelectedTag(event.target.value);
+  };
+
   const handleSubmit = () => {
-    // Logique de soumission ici
-    // Vous pouvez accéder à role, dates et selectedPromotion directement
+    console.log('selectedFormat:', selectedFormat);
+    console.log('Dates:', dates);
+    console.log('Selected Promotion:', selectedPromotion);
+    
+    getApprentiFromPromo(selectedPromotion)
+      .then((apprentis) => {
+        const apprentisID = apprentis.map((apprenti) => apprenti.id);
+
+        dates.forEach(dateElement => {
+          const tag = [];
+          tag.push(dateElement.tags);
+          if(selectedFormat == 'echeance'){
+            var content = "Jusqu'au "+dateElement.date;
+            postMessage(dateElement.titre, content, apprentisID, tag, user.id);
+          }else{
+            var content = "Du "+dateElement.debut +" au "+dateElement.fin;
+            postMessage(dateElement.titre, content, apprentisID, tag, user.id);
+          }
+          
+        });
+      })
+      .catch((error) => {
+        console.error("Erreur lors de la récupération des apprentis :", error.message);
+      });
   };
 
   return (
     <div>
       <h2 className="text-center mt-3">Formulaire d'utilisateur</h2>
-      <form className="m-5" method="post" onSubmit={handleSubmit}>
-        <select
-          className="form-select mb-lg-5" id="role" name="role" value={role} onChange={handleRoleChange}
+      <Form className="m-5">
+        <Form.Group className="mb-3">
+          <Form.Label>Promotions :</Form.Label>
+          <Form.Select id="promotion" name="promotion" value={selectedPromotion} onChange={handlePromotionChange}>
+            <option value="" disabled>Sélectionnez une promotion</option>
+            {promotions.map((promotion) => (
+              <option key={promotion.id} value={promotion.id}>
+                {promotion.libelle} {promotion.semestre}
+              </option>
+            ))}
+          </Form.Select>
+        </Form.Group>
+        <Form.Select
+          className="form-select mb-lg-5" id="selectedFormat" name="selectedFormat" value={selectedFormat} onChange={handleFormatChange}
         >
-          <option value="" disabled>Sélectionnez un rôle</option>
+          <option value="" disabled>Sélectionnez un format</option>
           <option value="echeance">Échéance</option>
           <option value="periode">Période</option>
-        </select>
+        </Form.Select>
 
-        {role === 'echeance' && (
+        {selectedFormat === 'echeance' && (
           <div className="form-group">
             <label htmlFor="dates">Échéance(s) :</label>
             {dates.map((date, index) => (
@@ -74,12 +123,34 @@ const DynamicFormPlanningDates = () => {
                   value={date.date}
                   onChange={(event) => handleDateChange(index, 'date', event)}
                 />
+                <label htmlFor={`titre_${index}`}>Titre :</label>
+                <input
+                  type="text"
+                  name={`titre_${index}`}
+                  id={`titre_${index}`}
+                  value={date.titre}
+                  onChange={(event) => handleDateChange(index, 'titre', event)}
+                />
+                <label htmlFor={`tag_${index}`}>Tag :</label>
+                <Form.Select
+                  id={`tag_${index}`}
+                  name={`tag_${index}`}
+                  value={date.tags[0]} // Assuming only one tag is selected for simplicity
+                  onChange={(event) => handleDateChange(index, 'tags', event)}
+                >
+                  <option value="" disabled>Sélectionnez un tag</option>
+                  {tags.map((tag) => (
+                    <option key={tag.id} value={tag.id}>
+                      {tag.libelle}
+                    </option>
+                  ))}
+                </Form.Select>
               </div>
             ))}
           </div>
         )}
 
-        {role === 'periode' && (
+        {selectedFormat === 'periode' && (
           <div className="form-group">
             <label htmlFor="dates">Période(s) :</label>
             {dates.map((date, index) => (
@@ -100,6 +171,28 @@ const DynamicFormPlanningDates = () => {
                   value={date.fin}
                   onChange={(event) => handleDateChange(index, 'fin', event)}
                 />
+                <label htmlFor={`titre_${index}`}>Titre :</label>
+                <input
+                  type="text"
+                  name={`titre_${index}`}
+                  id={`titre_${index}`}
+                  value={date.titre}
+                  onChange={(event) => handleDateChange(index, 'titre', event)}
+                />
+                <label htmlFor={`tag_${index}`}>Tag :</label>
+                <Form.Select
+                  id={`tag_${index}`}
+                  name={`tag_${index}`}
+                  value={date.tags[0]} // Assuming only one tag is selected for simplicity
+                  onChange={(event) => handleDateChange(index, 'tags', event)}
+                >
+                  <option value="" disabled>Sélectionnez un tag</option>
+                  {tags.map((tag) => (
+                    <option key={tag.id} value={tag.id}>
+                      {tag.libelle}
+                    </option>
+                  ))}
+                </Form.Select>
               </div>
             ))}
           </div>
@@ -113,19 +206,6 @@ const DynamicFormPlanningDates = () => {
           Ajouter une date/période
         </button>
 
-        {/* Intégration du sélecteur de promotions */}
-        <Form.Group className="mb-3">
-          <Form.Label>Promotions :</Form.Label>
-          <Form.Select id="promotion" name="promotion" value={selectedPromotion} onChange={handlePromotionChange}>
-            <option value="" disabled>Sélectionnez une promotion</option>
-            {promotions.map((promotion) => (
-              <option key={promotion.id} value={promotion.id}>
-                {promotion.libelle} {promotion.semestre}
-              </option>
-            ))}
-          </Form.Select>
-        </Form.Group>
-
         <button
           type="button"
           className="btn btn-primary btn-lg btn-block"
@@ -133,7 +213,7 @@ const DynamicFormPlanningDates = () => {
         >
           Valider la sélection
         </button>
-      </form>
+      </Form>
     </div>
   );
 };
