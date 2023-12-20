@@ -40,7 +40,7 @@ class DynamicFormTutoralTeam extends Component {
   handleSubmit = (e) => {
     e.preventDefault();
     // Access the user data and role
-    const roleValue = this.state.role === "tuteurpedagogique" ? 3 : 2;
+    const roleValue = this.state.role === "tuteurpedagogique" ? 2 : 5
     this.state.users.forEach((user, item) => {
       const newUser = {
         "roles": [roleValue],
@@ -64,7 +64,7 @@ class DynamicFormTutoralTeam extends Component {
           };
           request("/" + this.state.role + "/", "post", newProfil)
             .then((res) => {
-              // Gérer la suite de votre logique si nécessaire
+              window.location.reload();
             })
             .catch((error) => {
               console.error("Erreur de configuration de la requête :", error.message);

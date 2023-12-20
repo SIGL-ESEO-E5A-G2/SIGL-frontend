@@ -13,7 +13,7 @@ export const addNewPromotion = async (newPromotionName, selectedSemester) => {
       libelle: newPromotionName,
       semestre: selectedSemester,
     };
-
+    console.log(newPromotion);
     request("/promotion/", "post", newPromotion);
     window.location.reload();
   } catch (error) {

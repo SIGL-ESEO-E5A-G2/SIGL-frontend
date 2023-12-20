@@ -1,4 +1,4 @@
-import { JournalBookmarkFill } from 'react-bootstrap-icons';
+import { JournalBookmarkFill, JournalText, LayoutTextSidebar, LayoutTextWindow, LayoutTextWindowReverse, PersonVideo2, ShieldLock } from 'react-bootstrap-icons';
 
 import Home from '../pages/Home';
 import Entreprise from '../pages/Entreprise';
@@ -24,6 +24,7 @@ export default {
         {
             path: "inscription",
             name: "Inscription entrerpise",
+            icon: LayoutTextWindowReverse,
             element: <Entreprise />,
             children: [],
             roles : [3], //admin
@@ -31,23 +32,26 @@ export default {
         {
             path: "admin",
             name: "Page admin",
+            icon: ShieldLock,
             element: <Admin />,
             children: [],
             roles : [3], //admin
         },
         {
             path: "coordinatriceAlternance",
+            icon: PersonVideo2,
             name: "Coordinatrice d'alternance",
             element: <CoordinatriceAlternance/>,
-            children: [
-                {
-                    path: "/gererPromotions",
-                    element: <ApprentiListing />,
-                    children: [],
-                    roles : [4], //coordinatrice
-                }
-            ],
-            roles : [4], //coordinatrice
+            children: [],
+            roles : [3,4], //coordinatrice
+        },
+        {
+            path: "gererPromotions",
+            name: "Gerer les promotions",
+            icon: JournalText,
+            element: <ApprentiListing />,
+            children: [],
+            roles : [3,4], //coordinatrice
         },
         {
             path: "profil",
