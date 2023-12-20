@@ -53,14 +53,10 @@ const BlogComponent = () => {
 
   useEffect(() => {
     request(`/apprentiutilisateurdetail?utilisateur=${user.id}`)
-      .then((res) => {
-        setApprentidetail(res.data);
-      });
+      .then(({ data }) => setApprentidetail(data ? data[0] : null));
 
     request("/messagedetail")
-      .then((res) => {
-        setPosts(res.data);
-      });
+      .then(({ data }) => setPosts(data));
   }, []);
 
   /**
@@ -69,7 +65,6 @@ const BlogComponent = () => {
   function resetFormMessage() {
     setTitle('');
     setBody('');
-    setShowPopup(false);
   }
 
   const addPost = () => {
@@ -84,7 +79,8 @@ const BlogComponent = () => {
     const timeString = date[1].substring(0, 5);
     // TODO l'heure n'est pas en UTC Paris (MEMO : surtout ne pas faire time + 1)
 
-    const cible = [user.id, apprentidetail.tuteurPedagogique.id, apprentidetail.maitreAlternance.id];
+    const cible = [user.id, apprentidetail?.tuteurPedagogique?.id, apprentidetail?.maitreAlternance?.id]
+      .filter(id => id);
     const tags = [7]; // TODO
 
     const newPost = {
@@ -100,6 +96,8 @@ const BlogComponent = () => {
     request("/message/", "post", newPost)
       .then((response) => {
         resetFormMessage();
+        setShowPopup(false);
+
         request(`/messagedetail/${response.data.id}`)
           .then(({ data }) => {
             setPosts(prevPosts => [...prevPosts, data]);
@@ -111,6 +109,7 @@ const BlogComponent = () => {
   };
 
   const handleButtonClick = () => {
+    resetFormMessage();
     setShowPopup(prevShowPopup => !prevShowPopup);
   };
 
