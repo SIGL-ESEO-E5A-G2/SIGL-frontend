@@ -1,10 +1,12 @@
-import { GearFill, TypeStrikethrough } from 'react-bootstrap-icons';
+import { JournalBookmarkFill } from 'react-bootstrap-icons';
+
 import Home from '../pages/Home';
 import Entreprise from '../pages/Entreprise';
 import Admin from '../pages/Admin';
 import CoordinatriceAlternance from '../pages/CoordinatriceAlternance';
 import ApprentiListing from '../pages/ApprentiListing';
 import Profil from '../pages/Profil';
+import Journal from '../pages/Journal';
 
 export default {
     path: "",
@@ -12,6 +14,13 @@ export default {
     roles: [],
     disabled: false,
     children: [
+        {
+            path: "journal",
+            icon: JournalBookmarkFill,
+            element: <Journal />,
+            name: "Journal de l'apprenti",
+            roles: []
+        },
         {
             path: "inscription",
             name: "Inscription entrerpise",
@@ -41,10 +50,10 @@ export default {
             roles : [4], //coordinatrice
         },
         {
-            path: "/profil",
+            path: "profil",
             element: <Profil />,
             roles : [], //user
             children: [],
-        }
+        },
     ]
 }
