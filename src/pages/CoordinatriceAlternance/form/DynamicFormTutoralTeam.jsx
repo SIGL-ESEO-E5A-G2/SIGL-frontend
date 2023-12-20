@@ -41,49 +41,40 @@ class DynamicFormTutoralTeam extends Component {
   handleSubmit = (e) => {
     e.preventDefault();
     // Access the user data and role
-    const roleValue = this.state.role === "tuteurpedagogique" ? 3 : 2;
-    var password = '';
+    const roleValue = this.state.role === "tuteurpedagogique" ? 2 : 5
+    this.state.users.forEach((user, item) => {
+      const newUser = {
+        "roles": [roleValue],
+        "password": "autogenerate",
+        "last_login": "2023-11-20T13:01:16.160Z",
+        "is_superuser": true,
+        "nom": user.lastName,
+        "prenom": user.firstName,
+        "email": user.email,
+        "is_active": true,
+        "is_staff": true,
+        "groups": [],
+        "user_permissions": [],
+      }
 
-    hashPassword("autogenerate")
-      .then((hashedPassword) => {
-        this.state.users.forEach((user, item) => {
-          const newUser = {
-            "roles": [roleValue],
-            "password": hashedPassword,
-            "last_login": "2023-11-20T13:01:16.160Z",
-            "is_superuser": true,
-            "nom": user.lastName,
-            "prenom": user.firstName,
-            "email": user.email,
-            "is_active": true,
-            "is_staff": true,
-            "groups": [],
-            "user_permissions": []
-          }
-    
-          console.log(newUser);
-          request("/utilisateur/", "post", newUser)
+
+      request("/utilisateur/", "post", newUser)
+        .then((res) => {
+          const newProfil = {
+            "utilisateur": res.data.id,
+          };
+          request("/" + this.state.role + "/", "post", newProfil)
             .then((res) => {
-              const newProfil = {
-                "utilisateur": res.data.id,
-              };
-              request("/" + this.state.role + "/", "post", newProfil)
-                .then((res) => {
-                  // Gérer la suite de votre logique si nécessaire
-                })
-                .catch((error) => {
-                  console.error("Erreur de configuration de la requête :", error.message);
-                });
+              window.location.reload();
             })
             .catch((error) => {
               console.error("Erreur de configuration de la requête :", error.message);
             });
+        })
+        .catch((error) => {
+          console.error("Erreur de configuration de la requête :", error.message);
         });
-      })
-      .catch((error) => {
-        console.error('Erreur lors du hachage du mot de passe :', error);
-      });
-    
+    });
   };
 
   handleRoleChange = (e) => {
