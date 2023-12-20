@@ -1,0 +1,127 @@
+import { useEffect, useState } from "react";
+import { Alert, Button, Form } from "react-bootstrap";
+
+import MessagesContainer from "../../components/Post";
+
+import { request, uploadFile } from "../../utils/request";
+import { dateString, getSimpleDate } from "../../utils/formatDate";
+
+function JournalDepot() {
+    const [depots, setDepots] = useState([]);
+
+    useEffect(() => {
+        request("/depotdetail")
+            .then(({ data }) => setDepots(data.map(depot => ({
+                ...depot.message,
+                idDepot: depot.id,
+                echeance: depot.echeance,
+                cheminFichier: depot.cheminFichier,
+                deposer: depot.message.tags?.map(tag => tag?.libelle)?.includes('Déposé')
+            }))));
+    }, []);
+
+    return (
+        <body>
+            {/* Messages */}
+            <MessagesContainer
+                posts={depots}
+                Decoration={AddFile}
+                setPosts={setDepots}
+            />
+        </body>
+    );
+}
+
+/**
+ * 
+ * @param {File, {cheminFichier}} file 
+ */
+async function addFile(file, post) {
+    if (!file || !post.id) {
+        alert('Vous devez sélectionner un fichier')
+        return
+    }
+
+    return uploadFile({ id: post.idDepot, cheminFichier: post.cheminFichier }, file)
+        .then(async () => {
+            return request('/message/' + post.id, 'patch', {
+                tags: [...post.tags.map(tag => tag.id), 9]
+            })
+                .then((res) => {
+                    alert('Votre document est déposé')
+                    return res.data;
+                });
+        })
+        .catch((error) => {
+            alert('Une erreur est survenue');
+            console.error(error);
+        })
+}
+
+/**
+ * 
+ * @param {{cheminFichier}} post 
+ * @returns 
+ */
+async function downloadFile(post) {
+    console.log("TAG AAAAAAAAAAAAAAa", post)
+    return request('/get-pdf', 'post', { file_path: post.cheminFichier })
+        .catch((error) => {
+            alert(error?.response?.data || 'Une erreur est survenue');
+            console.error(error);
+        })
+}
+
+function AddFile({ post }) {
+    const [file, setFile] = useState();
+    const [estDeposer, setDeposer] = useState(post.deposer);
+
+    const dateEcheance = new Date(post.echeance);
+    const echeance = dateString(dateEcheance);
+    const dateComparaison = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - 1);
+
+    const isLate = dateComparaison > dateEcheance;
+
+    return <div className="post-file">
+        <Alert variant={estDeposer ? "success" : isLate ? "danger" : "primary"}>
+            Date d'échéance: {echeance}
+        </Alert>
+
+        {
+            !estDeposer && <>
+                <br />
+
+                <div className="post-file-form">
+                    <Form.Control
+                        type="file"
+                        accept=".pdf"
+                        onChange={(e) => setFile(e.target.files ? e.target.files[0] : null)}
+                    />
+
+                    <Button
+                        onClick={async () => {
+                            await addFile(file, post);
+                            setDeposer(true);
+                            setFile(null);
+                        }}
+                    >
+                        Déposer
+                    </Button>
+                </div>
+            </>
+        }
+
+        {
+            estDeposer && <>
+                <br />
+                <div className="">
+                    <Button onClick={() => downloadFile(post)}>
+                        Télécharger
+                    </Button>
+                </div>
+            </>
+        }
+    </div>
+}
+
+export default JournalDepot;
