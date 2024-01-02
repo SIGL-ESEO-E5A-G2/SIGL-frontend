@@ -1,0 +1,28 @@
+/* Login.css */
+
+.login {
+    position: relative;
+    background-image: url('./images/darya-tryfanava-d55fhArDES0-unsplash.jpg'); /* Remplacez par le chemin réel de votre image */
+    background-size: cover;
+  }
+  
+.form-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 400px;
+    padding: 40px;
+    transform: translate(-50%, -50%);
+    background: rgba(0,0,0,.5);
+    box-shadow: 0 15px 25px rgba(0,0,0,.6);
+}
+
+.custom-input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    transition: border-color 0.2s ease-in-out;
+    opacity: 0.8; /* Réduire l'opacité du placeholder */
+}

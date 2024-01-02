@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Button, Form } from 'react-bootstrap';
 import { useNavigate } from "react-router-dom";
 
+import './login.css';
+
 export default function Login({ loadUser }) {
   const navigate = useNavigate();
 
@@ -32,7 +34,7 @@ export default function Login({ loadUser }) {
 
   return <>
     <div className="login template d-flex justify-content-center align-items-center vh-100 bg-primary">
-      <div className="form_container p-5 rounded bg-white">
+      <div className="form_container p-5 rounded bg-white form-container">
         <Form
           onSubmit={(e) => {
             e.preventDefault();
