@@ -1,6 +1,9 @@
 import { useState } from "react";
-import { Button, Form } from 'react-bootstrap';
+import { Button, Paper, Stack, Text, TextInput, Title } from "@mantine/core";
+
 import { useNavigate } from "react-router-dom";
+
+import '../../css/login.css';
 
 export default function Login({ loadUser }) {
   const navigate = useNavigate();
@@ -31,35 +34,44 @@ export default function Login({ loadUser }) {
   }
 
   return <>
-    <div className="login template d-flex justify-content-center align-items-center vh-100 bg-primary">
-      <div className="form_container p-5 rounded bg-white">
-        <Form
+    <div className="login-background">
+      <Paper p="xl" shadow="xs" w="20vw">
+        <form
           onSubmit={(e) => {
             e.preventDefault();
             e.stopPropagation();
             handleSubmit(e);
           }}
         >
-          <h3 className="text-center">Connexion</h3>
+          <Stack gap={30} justify="center" ta="center">
+            <Title order={3}>Connexion</Title>
 
-          <Form.Group className="mb-3" controlId="form.email" onChange={() => setError()}>
-            <Form.Label>Email</Form.Label>
-            <Form.Control type="email" placeholder="Entrer votre email" required />
-          </Form.Group>
-          <Form.Group className="mb-3" controlId="form.password" onChange={() => setError()}>
-            <Form.Label>Mot de passe</Form.Label>
-            <Form.Control type="password" placeholder="Entrer votre mot de passe" required />
-          </Form.Group>
+            <Stack ta="left">
+              <TextInput
+                id="form.email"
+                label="Email"
+                type="email"
+                required
+                placeholder="Entrer votre email"
+                onChange={() => setError()}
+              />
 
-          <div className="text-center text-danger">
-            <p>{error}</p>
-          </div>
+              <TextInput
+                id="form.password"
+                label="Mot de passe"
+                type="password"
+                required
+                placeholder="Entrer votre mot de passe"
+                onChange={() => setError()}
+              />
 
-          <div className="d-grid">
+              {error && <Text c="red" ta="center"><p>{error}</p></Text>}
+            </Stack>
+
             <Button type="submit">Se connecter</Button>
-          </div>
-        </Form>
-      </div>
+          </Stack>
+        </form>
+      </Paper>
     </div>
   </>
 }

@@ -1,19 +1,21 @@
+import { Button, Select } from "@mantine/core";
 
 export default function ({
 
 }) {
     return <>
-        <h2 class="text-center mt-3">Créer journal de formation</h2>
-        <form class="m-5"method="post">
-            <div class="form-group">
-                <label for="promo">Promo :</label>
-                <select class="form-select mb-lg-5" id="role" name="promo">
-                    <option value="e3a">e3a</option>
-                    <option value="e4a">e4a</option>
-                    <option value="e5a">e5a</option>
-                </select>
-            </div>        
-            <input class="btn btn-primary btn-lg btn-block" type="submit" value="Associer"/>
+        <h2 className="text-center mt-3">Créer journal de formation</h2>
+        <form className="m-5" method="post">
+            <Select
+                id="role"
+                w="max-content"
+                label="Promo"
+                data={["e3a", "e4a", "e5a"]}
+            />
+
+            <Button type="submit">
+                Associer
+            </Button>
         </form>
     </>
 }

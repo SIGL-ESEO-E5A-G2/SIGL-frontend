@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
-import { Row, Col, Container, Stack } from "react-bootstrap";
+import { Group, Stack } from "@mantine/core";
 
 const numberOfChildsPerLine = 4;
 
@@ -27,14 +27,14 @@ export default function ({
         return rows;
     }, []);
 
-    return <Container>
+    return <Stack style={{ zIndex: "-1" }}>
         {
-            items.map(row => <Row style={{ height: "max-content" }}>
+            items.map(row => <Group justify="center" grow>
                 {
-                    row.map(column => <Col>
+                    row.map(column => <div style={{ width: "max-content" }}>
                         {
                             column && <Link to={column.path}>
-                                <Stack gap={3} style={{ width: "100%", textAlign: "center" }}>
+                                <div style={{ textAlign: "center" }}>
                                     {
                                         column.icon ? <column.icon size="200px" color="lightslategray" className="mx-auto" />
                                             : <div
@@ -48,13 +48,13 @@ export default function ({
                                             />
                                     }
                                     <p>{column.name}</p>
-                                </Stack>
+                                </div>
                             </Link>
                         }
-                    </Col>)
+                    </div>)
                 }
-            </Row>
+            </Group>
             )
         }
-    </Container>
+    </Stack>
 }

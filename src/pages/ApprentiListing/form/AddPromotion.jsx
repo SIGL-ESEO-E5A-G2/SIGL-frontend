@@ -1,19 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import Form from 'react-bootstrap/Form';
-import Table from 'react-bootstrap/Table';
-import Button from 'react-bootstrap/Button';
+import { Button, Group, Select, Table, TextInput } from '@mantine/core';
+
 import { request } from '../../../utils/request.js';
 import { addNewPromotion, setPromotion } from '../../../utils/api.js';
+import { semesters } from '../../../data/constantes.js';
 
 const AddPromotion = () => {
   const [newPromotionName, setNewPromotionName] = useState("");
-  const [selectedSemester, setSelectedSemester] = useState(""); 
+  const [selectedSemester, setSelectedSemester] = useState("");
   const [promotions, setPromotions] = useState([]);
   const [modifiedSemesters, setModifiedSemesters] = useState({});
   const [newLibelles, setNewLibelles] = useState({});
-
-  // Liste des semestres
-  const semestersList = ['S5', 'S6', 'S7', 'S8', 'S9', 'S10'];
 
   useEffect(() => {
     // Effectuer la requête pour obtenir les promotions
@@ -33,7 +30,7 @@ const AddPromotion = () => {
 
   const handleDeletePromotion = (id) => {
     // Effectuer la requête pour supprimer la promotion avec l'id spécifié
-    request("/promotion/"+id, "delete")
+    request("/promotion/" + id, "delete")
       .then(() => {
         window.location.reload();
       })
@@ -45,13 +42,13 @@ const AddPromotion = () => {
   const handleModifyPromotion = (promotionId) => {
     const modifiedSemester = modifiedSemesters[promotionId];
     const newLibelle = newLibelles[promotionId] || promotions.find(promo => promo.id === promotionId)?.libelle || "";
-    
+
     setPromotion(promotionId, newLibelle, modifiedSemester);
   };
 
   const handleSemesterChange = (promotionId, selectedSemester) => {
     setModifiedSemesters((prev) => ({ ...prev, [promotionId]: selectedSemester }));
-  };  
+  };
 
   const handleLibelleChange = (promotionId, input) => {
     setNewLibelles((prev) => ({ ...prev, [promotionId]: input }));
@@ -60,80 +57,71 @@ const AddPromotion = () => {
   return (
     <div>
       <Table striped bordered hover>
-        <thead>
-          <tr>
-            <th>Nom de la promotion</th>
-            <th>Semestre</th>
-            <th>Modifier Semestre</th>
-            <th>Nouveau Libellé</th>
-            <th>Valider</th>
-            <th>Supprimer</th>
-          </tr>
-        </thead>
-        <tbody>
-          {promotions.map((promotion) => (
-            <tr key={promotion.id}>
-              <td>{promotion.libelle}</td>
-              <td>{promotion.semestre}</td>
-              <td>
-              <Form.Select onChange={(e) => handleSemesterChange(promotion.id, e.target.value)}>
-                {semestersList.map((semester) => (
-                  <option key={semester} value={semester}>
-                    {semester}
-                  </option>
-                ))}
-              </Form.Select>
-              </td>
-              <td>
-                <Form.Control
-                  type="text"
-                  value={newLibelles[promotion.id] || ""}
-                  onChange={(e) => handleLibelleChange(promotion.id, e.target.value)}
-                />
-              </td>
-              <td>
-                <Button variant="primary" onClick={() => handleModifyPromotion(promotion.id)}>
-                  Valider
-                </Button>
-              </td>
-              <td>
-                <Button variant="danger" onClick={() => handleDeletePromotion(promotion.id)}>
-                  Supprimer la promotion
-                </Button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
+        <Table.Thead>
+          <Table.Tr>
+            <Table.Th>Nom de la promotion</Table.Th>
+            <Table.Th>Semestre</Table.Th>
+            <Table.Th>Modifier Semestre</Table.Th>
+            <Table.Th>Nouveau Libellé</Table.Th>
+            <Table.Th>Valider</Table.Th>
+            <Table.Th>Supprimer</Table.Th>
+          </Table.Tr>
+        </Table.Thead>
+
+        <Table.Tbody>
+          {
+            promotions.map((promotion) => (
+              <Table.Tr key={promotion.id}>
+                <Table.Td>{promotion.libelle}</Table.Td>
+                <Table.Td>{promotion.semestre}</Table.Td>
+                <Table.Td>
+                  <Select
+                    data={semesters}
+                    w="max-content"
+                    onChange={(e) => handleSemesterChange(promotion.id, e.target.value)}
+                  />
+                </Table.Td>
+                <Table.Td>
+                  <TextInput
+                    value={newLibelles[promotion.id] || ""}
+                    onChange={(e) => handleLibelleChange(promotion.id, e.target.value)}
+                  />
+                </Table.Td>
+                <Table.Td>
+                  <Button variant="primary" onClick={() => handleModifyPromotion(promotion.id)}>
+                    Valider
+                  </Button>
+                </Table.Td>
+                <Table.Td>
+                  <Button variant="danger" onClick={() => handleDeletePromotion(promotion.id)}>
+                    Supprimer la promotion
+                  </Button>
+                </Table.Td>
+              </Table.Tr>
+            ))
+          }
+        </Table.Tbody>
       </Table>
 
       {/* Ajout du champ d'entrée et du bouton */}
-      <Form.Group className="mb-3">
-        <Form.Label>Nouvelle Promotion:</Form.Label>
-        <Form.Control
-          type="text"
+      <Group>
+        <TextInput
+          label="Nouvelle promotion"
           placeholder="Saisissez le nom de la nouvelle promotion"
           value={newPromotionName}
           onChange={(e) => setNewPromotionName(e.target.value)}
         />
-      </Form.Group>
 
-      {/* Ajout du champ de sélection des semestres */}
-      <Form.Group className="mb-3">
-        <Form.Label>Semestre:</Form.Label>
-        <Form.Select
+        <Select
           id="promotionSemester"
-          name="promotionSemester"
+          label="Semestre"
           value={selectedSemester}
+          data={semesters}
           onChange={(e) => setSelectedSemester(e.target.value)}
-        >
-          {semestersList.map((semester) => (
-            <option key={semester} value={semester}>
-              {semester}
-            </option>
-          ))}
-        </Form.Select>
-      </Form.Group>
-      <Button variant="primary" onClick={handleAddPromotion}>
+        />
+      </Group>
+
+      <Button onClick={handleAddPromotion}>
         Valider la nouvelle promotion
       </Button>
     </div>

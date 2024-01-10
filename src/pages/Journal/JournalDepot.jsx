@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Alert, Button, Form } from "react-bootstrap";
+import { useContext, useEffect, useState } from "react";
+import { Button, Alert, FileInput } from "@mantine/core";
 import { saveAs } from 'file-saver';
 
 import MessagesContainer from "../../components/Post";
@@ -7,18 +7,25 @@ import MessagesContainer from "../../components/Post";
 import { getFile, request, uploadFile } from "../../utils/request";
 import { dateString } from "../../utils/formatDate";
 
+import { UserContext } from "../../context/UserContext";
+
 function JournalDepot() {
     const [depots, setDepots] = useState([]);
 
+    const user = useContext(UserContext);
+
     useEffect(() => {
-        request("/depotdetail")
-            .then(({ data }) => setDepots(data.map(depot => ({
-                ...depot.message,
-                idDepot: depot.id,
-                echeance: depot.echeance,
-                cheminFichier: depot.cheminFichier,
-                deposer: depot.message.tags?.map(tag => tag?.libelle)?.includes('Déposé')
-            }))));
+        request("/depotdetail") // TODO depotutilisateurdetail
+            .then(({ data }) => {
+                console.log("TAG a", data)
+                setDepots(data?.map(depot => ({
+                    ...depot.message,
+                    idDepot: depot.id,
+                    echeance: depot.echeance,
+                    cheminFichier: depot.cheminFichier,
+                    deposer: depot.message.tags?.map(tag => tag?.libelle)?.includes('Déposé')
+                })))
+            });
     }, []);
 
     return (
@@ -89,17 +96,19 @@ function AddFile({ post }) {
     const isLate = dateComparaison > dateEcheance;
 
     return <div className="post-file">
-        <Alert variant={estDeposer ? "success" : isLate ? "danger" : "primary"}>
-            Date d'échéance: {echeance}
-        </Alert>
+        <Alert
+            variant="light"
+            title={`Date d'échéance: ${echeance}`}
+            color={estDeposer ? "green" : isLate ? "red" : "blue"}
+        />
 
         {
             !estDeposer && <>
                 <br />
 
                 <div className="post-file-form">
-                    <Form.Control
-                        type="file"
+                    <FileInput
+                        clearable
                         accept=".pdf"
                         onChange={(e) => setFile(e.target.files ? e.target.files[0] : null)}
                     />

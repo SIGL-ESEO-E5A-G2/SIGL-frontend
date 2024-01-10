@@ -53,10 +53,15 @@ const BlogComponent = () => {
 
   useEffect(() => {
     request(`/apprentiutilisateurdetail?utilisateur=${user.id}`)
-      .then(({ data }) => setApprentidetail(data ? data[0] : null));
+      .then(({ data }) => {
+        const apprenti = data ? data[0] : null;
+        setApprentidetail(apprenti);
 
-    request("/messagedetail")
-      .then(({ data }) => setPosts(data));
+        if (apprenti?.id) {
+          request("/messageutilisateurdetail/" + apprenti.id)
+            .then(({ data }) => setPosts(data));
+        }
+      });
   }, []);
 
   /**
