@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import Form from 'react-bootstrap/Form';
-import Table from 'react-bootstrap/Table';
-import Button from 'react-bootstrap/Button';
+import { Button, Container, Select, Table } from '@mantine/core';
+
 import { request } from '../../../utils/request.js';
 import FormTemplate from '../../../components/FormTemplate.jsx';
-import { putApprenti} from '../../../utils/api.js';
+import { putApprenti } from '../../../utils/api.js';
 
 // ... (your imports and other code)
 
@@ -12,48 +11,46 @@ const ListApprenti = () => {
     const [promotions, setPromotions] = useState([]);
     const [apprentis, setApprentis] = useState([]);
     const [selectedPromotion, setSelectedPromotion] = useState('');
-    const [defaultSelectionApplied, setDefaultSelectionApplied] = useState(false);
+    const [defaultSelectionApplied, setDefaultSelectionApplied] = useState(false); // TODO remove
     const [selectedPromotionForApprenti, setSelectedPromotionForApprenti] = useState({});
-    const [firstPromotionId, setFirstPromotionId] = useState('');
 
     const handlePromotionChange = (e) => {
-        setSelectedPromotion(e.target.value);
+        setSelectedPromotion(e);
         setDefaultSelectionApplied(true);
     };
 
     useEffect(() => {
         request("/promotion/")
             .then((res) => {
-                setPromotions(res.data);
-                if (res.data.length > 0 && !defaultSelectionApplied) {
-                    setFirstPromotionId(res.data[0].id);
-                }
+                const data = (res.data || [])?.map(row => ({
+                    value: row.id + "",
+                    label: `${row.libelle} (${row.semestre})`
+                }));
+
+                setPromotions(data);
             });
+    }, []);
 
+    useEffect(() => {
         // Vérifiez si une promotion est sélectionnée
-        if (selectedPromotion || selectedPromotion === '') {
-            const apiUrl = selectedPromotion ? `/apprentipromotion/?promotion=${selectedPromotion}` : '/apprentidetail/';
+        const apiUrl = selectedPromotion ? `/apprentipromotion/?promotion=${selectedPromotion || ''}` : '/apprentidetail/';
 
-            // Effectuez la requête pour obtenir les apprentis
-            request(apiUrl)
-                .then((res) => {
-                    setApprentis(res.data);
-                })
-                .catch((error) => {
-                    console.error("Erreur lors de la récupération des apprentis :", error.message);
-                });
-        }
-    }, [selectedPromotion, defaultSelectionApplied]);
+        // Effectuez la requête pour obtenir les apprentis
+        request(apiUrl)
+            .then(({ data }) => setApprentis(data))
+            .catch((error) => {
+                console.error("Erreur lors de la récupération des apprentis :", error.message);
+            });
+    }, [selectedPromotion]);
 
     const handleUpdateApprenti = (idApprenti) => {
-        const selectedPromotionId = selectedPromotionForApprenti[idApprenti] || firstPromotionId;
-
+        const selectedPromotionId = defaultSelectionApplied ? selectedPromotionForApprenti[idApprenti] : promotions[0]?.id;
 
         request(`/apprenti/${idApprenti}`)
             .then((jsonApprenti) => {
-                
+
                 const updateApprenti = {
-                    "promotion":selectedPromotionId,
+                    "promotion": selectedPromotionId,
                 };
                 putApprenti(idApprenti, jsonApprenti.data, updateApprenti);
             })
@@ -61,7 +58,6 @@ const ListApprenti = () => {
                 console.error("Erreur lors de la mise à jour de l'apprenti :", error.message);
             });
         // Effectuer la requête pour mettre à jour l'apprenti avec l'id spécifié et la promotion sélectionnée
-        
     };
 
     const handlePromotionSelectForApprenti = (idApprenti, selectedPromotionId) => {
@@ -69,58 +65,58 @@ const ListApprenti = () => {
     };
 
     return (
-        <FormTemplate title="Afficher les apprentis d'une promotion">
-            <Form.Group className="mb-3">
-                <Form.Label>Promotions:</Form.Label>
-                <Form.Select id="promotionApprenti" name="promotionApprenti" value={selectedPromotion} onChange={handlePromotionChange}>
-                    {/* Ajout de l'option par défaut */}
-                    <option value="" key="defaultOption">Tous les apprentis</option>
+        <FormTemplate title="Apprentis">
+            <Select
+                id="promotionApprenti"
+                clearable
+                w="max-content"
+                label="Promotions"
+                value={selectedPromotion}
+                onChange={handlePromotionChange}
+                data={promotions}
+            />
 
-                    {/* Boucle pour mapper les promotions */}
-                    {promotions.map((item) => (
-                        <option key={item.id} value={item.id}>
-                            {item.libelle} {item.semestre}
-                        </option>
-                    ))}
-                </Form.Select>
-            </Form.Group>
+            <Table striped bordered hover>
+                <Table.Thead>
+                    <Table.Tr>
+                        <Table.Th>Nom</Table.Th>
+                        <Table.Th>Prénom</Table.Th>
+                        <Table.Th>Promotion</Table.Th>
+                        <Table.Th>Sélectionner Promotion</Table.Th>
+                        <Table.Th>Action</Table.Th>
+                    </Table.Tr>
+                </Table.Thead>
 
-            {apprentis.length > 0 && (
-                <Table striped bordered hover>
-                    <thead>
-                        <tr>
-                            <th>Nom</th>
-                            <th>Prénom</th>
-                            <th>Promotion</th>
-                            <th>Sélectionner Promotion</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {apprentis.map((apprenti) => (
-                            <tr key={apprenti.id}>
-                                <td>{apprenti.utilisateur.nom}</td>
-                                <td>{apprenti.utilisateur.prenom}</td>
-                                <td>{apprenti.promotion.libelle}</td>
-                                <td>
-                                    <Form.Select onChange={(e) => handlePromotionSelectForApprenti(apprenti.id, e.target.value)}>
-                                        {promotions.map((promotion) => (
-                                            <option key={promotion.id} value={promotion.id}>
-                                                {promotion.libelle} {promotion.semestre}
-                                            </option>
-                                        ))}
-                                    </Form.Select>
-                                </td>
-                                <td>
-                                    <Button variant="primary" onClick={() => handleUpdateApprenti(apprenti.id)}>
-                                        Mettre à jour
-                                    </Button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </Table>
-            )}
+                <Table.Tbody>
+                    {
+                        apprentis.length ?
+                            apprentis.map((apprenti) => (
+                                <Table.Tr key={apprenti.id}>
+                                    <Table.Td>{apprenti.utilisateur.nom}</Table.Td>
+                                    <Table.Td>{apprenti.utilisateur.prenom}</Table.Td>
+                                    <Table.Td>{apprenti.promotion.libelle}</Table.Td>
+                                    <Table.Td>
+                                        <Select
+                                            data={promotions}
+                                            onChange={(e) => handlePromotionSelectForApprenti(apprenti.id, e.value)}
+                                        />
+                                    </Table.Td>
+                                    <Table.Td>
+                                        <Button onClick={() => handleUpdateApprenti(apprenti.id)}>
+                                            Mettre à jour
+                                        </Button>
+                                    </Table.Td>
+                                </Table.Tr>
+                            ))
+                            :
+                            <Table.Tr>
+                                <Table.Td style={{ textAlign: "center" }} colSpan={5}>
+                                    Aucun apprenti
+                                </Table.Td>
+                            </Table.Tr>
+                    }
+                </Table.Tbody>
+            </Table>
         </FormTemplate>
     );
 };

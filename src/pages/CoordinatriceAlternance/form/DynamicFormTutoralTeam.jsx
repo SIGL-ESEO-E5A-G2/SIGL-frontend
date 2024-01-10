@@ -1,10 +1,7 @@
 import React, { Component } from 'react';
-import Form from 'react-bootstrap/Form';
-import Button from 'react-bootstrap/Button';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
+import { Button, Group, Select, Stack, TextInput } from '@mantine/core';
+
 import { request } from '../../../utils/request.js';
-import { hashPassword } from '../../../utils/encryption.js';
 
 class DynamicFormTutoralTeam extends Component {
   constructor(props) {
@@ -59,17 +56,13 @@ class DynamicFormTutoralTeam extends Component {
 
 
       request("/utilisateur/", "post", newUser)
-        .then((res) => {
+        .then(async (res) => {
           const newProfil = {
             "utilisateur": res.data.id,
           };
-          request("/" + this.state.role + "/", "post", newProfil)
-            .then((res) => {
-              window.location.reload();
-            })
-            .catch((error) => {
-              console.error("Erreur de configuration de la requête :", error.message);
-            });
+
+          return request("/" + this.state.role + "/", "post", newProfil)
+            .then(() => window.location.reload());
         })
         .catch((error) => {
           console.error("Erreur de configuration de la requête :", error.message);
@@ -78,53 +71,66 @@ class DynamicFormTutoralTeam extends Component {
   };
 
   handleRoleChange = (e) => {
-    this.setState({ role: e.target.value });
+    this.setState({ role: e });
   };
 
   render() {
     return (
       <div>
         <h2 className="text-center mt-3">Ajouter des membres d'équipe tutorale</h2>
-        <Form className="m-5" onSubmit={this.handleSubmit}>
-          <Form.Group className="mb-3">
-            <Form.Label>Rôle:</Form.Label>
-            <Form.Select id="role" name="role" value={this.state.role} onChange={this.handleRoleChange}>
-              <option value="" disabled>Sélectionnez un--</option>
-              <option value="tuteurpedagogique">Tuteur pédagogique</option>
-              <option value="maitrealternance">Maître d'apprentissage</option>
-            </Form.Select>
-          </Form.Group>
+        <form className="m-5" onSubmit={this.handleSubmit}>
+          <Select
+            id="role"
+            w="max-content"
+            label="Rôle"
+            data={["Tuteur pédagogique", "Maître d'apprentissage"]}
+            value={this.state.role}
+            onChange={this.handleRoleChange}
+          />
 
-          {this.state.users.map((user, index) => (
-            <Row key={index}>
-              <Col>
-                <Form.Group className="mb-3">
-                  <Form.Label>Nom:</Form.Label>
-                  <Form.Control type="text" name="lastName" id="nom" value={user.lastName} onChange={(e) => this.handleChange(e, index)} required />
-                </Form.Group>
-              </Col>
-              <Col>
-                <Form.Group className="mb-3">
-                  <Form.Label>Prénom:</Form.Label>
-                  <Form.Control type="text" name="firstName" id="prenom" value={user.firstName} onChange={(e) => this.handleChange(e, index)} required />
-                </Form.Group>
-              </Col>
-              <Col>
-                <Form.Group className="mb-3">
-                  <Form.Label>Email:</Form.Label>
-                  <Form.Control type="email" name="email" id="email" value={user.email} onChange={(e) => this.handleChange(e, index)} required />
-                </Form.Group>
-              </Col>
-            </Row>
-          ))}
+          {
+            this.state.users.map((user, index) => (
+              <Stack key={index}>
+                <Group>
+                  <TextInput
+                    id="nom"
+                    label="Nom"
+                    required
+                    defaultValue={user.lastName}
+                    onChange={(e) => this.handleChange(e, index)}
+                  />
 
-          <Button variant="primary" type="button" onClick={this.handleAddUser}>
-            Ajouter un utilisateur
-          </Button>
-          <Button variant="primary" type="submit">
-            Valider la sélection
-          </Button>
-        </Form>
+                  <TextInput
+                    id="prenom"
+                    label="Prénom"
+                    required
+                    defaultValue={user.firstName}
+                    onChange={(e) => this.handleChange(e, index)}
+                  />
+
+                  <TextInput
+                    id="email"
+                    label="Email"
+                    type="email"
+                    required
+                    defaultValue={user.email}
+                    onChange={(e) => this.handleChange(e, index)}
+                  />
+                </Group>
+              </Stack>
+            ))
+          }
+
+          <Group>
+            <Button type="button" onClick={this.handleAddUser}>
+              Ajouter un utilisateur
+            </Button>
+
+            <Button type="submit">
+              Valider la sélection
+            </Button>
+          </Group>
+        </form>
       </div>
     );
   }

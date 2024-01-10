@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import Form from 'react-bootstrap/Form';
-import Button from 'react-bootstrap/Button';
+import { useState } from 'react';
+import { Button, TextInput } from '@mantine/core';
+
 import { request } from '../../../utils/request.js';
 import { putUtilisateur } from '../../../utils/api';
 import { hashPassword } from '../../../utils/encryption.js';
@@ -32,15 +32,15 @@ const ChangePasswordForm = ({ user }) => {
       .then((hashedPassword) => {
         console.log('Mot de passe hashé :', hashedPassword);
         request(`/utilisateur/${user.id}`)
-        .then((jsonUser) => {
+          .then((jsonUser) => {
             const updateUser = {
-                "password":hashedPassword,
+              "password": hashedPassword,
             };
             putUtilisateur(user.id, jsonUser.data, updateUser);
-        })
-        .catch((error) => {
+          })
+          .catch((error) => {
             console.error("Erreur lors de la mise à jour de l'apprenti :", error.message);
-        });
+          });
         setError("");
         setSuccessMessage("Mot de passe changé avec succès!");
       })
@@ -57,36 +57,34 @@ const ChangePasswordForm = ({ user }) => {
   };
 
   return (
-    <Form onSubmit={handleSubmit}>
-      <Form.Group className="mb-3" controlId="password">
-        <Form.Label>Nouveau mot de passe</Form.Label>
-        <Form.Control
-          type="password"
-          placeholder="Entrez votre nouveau mot de passe"
-          value={password}
-          onChange={handlePasswordChange}
-          required
-        />
-      </Form.Group>
+    <form onSubmit={handleSubmit}>
+      <TextInput
+        w="400px"
+        label="Nouveau mot de passe"
+        type="password"
+        required
+        placeholder="Entrer votre nouveau mot de passe"
+        value={password}
+        onChange={handlePasswordChange}
+      />
 
-      <Form.Group className="mb-3" controlId="confirmPassword">
-        <Form.Label>Confirmez le nouveau mot de passe</Form.Label>
-        <Form.Control
-          type="password"
-          placeholder="Confirmez votre nouveau mot de passe"
-          value={confirmPassword}
-          onChange={handleConfirmPasswordChange}
-          required
-        />
-      </Form.Group>
+      <TextInput
+        w="400px"
+        label="Confirmez le nouveau mot de passe"
+        type="password"
+        required
+        placeholder="Confirmez votre nouveau mot de passe"
+        value={confirmPassword}
+        onChange={handleConfirmPasswordChange}
+      />
 
       {error && <p style={{ color: 'red' }}>{error}</p>}
       {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
 
-      <Button variant="primary" type="submit">
+      <Button type="submit">
         Changer le mot de passe
       </Button>
-    </Form>
+    </form>
   );
 };
 

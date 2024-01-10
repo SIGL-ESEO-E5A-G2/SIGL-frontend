@@ -1,4 +1,12 @@
-import { JournalBookmarkFill, JournalText, LayoutTextSidebar, LayoutTextWindow, LayoutTextWindowReverse, PersonVideo2, ShieldLock } from 'react-bootstrap-icons';
+import {
+    JournalBookmarkFill,
+    JournalText,
+    LayoutTextSidebar,
+    LayoutTextWindow,
+    LayoutTextWindowReverse,
+    PersonVideo2,
+    ShieldLock
+} from 'react-bootstrap-icons';
 
 import Home from '../pages/Home';
 import Entreprise from '../pages/Entreprise';
@@ -49,9 +57,9 @@ export default {
             path: "coordinatriceAlternance",
             icon: PersonVideo2,
             name: "Coordinatrice d'alternance",
-            element: <CoordinatriceAlternance/>,
+            element: <CoordinatriceAlternance />,
             children: [],
-            roles : [3,4], //coordinatrice
+            roles: [3, 4], //coordinatrice
         },
         {
             path: "gererPromotions",
@@ -59,7 +67,7 @@ export default {
             icon: JournalText,
             element: <ApprentiListing />,
             children: [],
-            roles : [3,4], //coordinatrice
+            roles: [3, 4], //coordinatrice
         },
         {
             path: "profil",

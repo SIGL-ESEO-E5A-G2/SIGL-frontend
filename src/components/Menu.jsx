@@ -1,7 +1,7 @@
 import "../css/menu.css";
 
 import { Link } from "react-router-dom";
-import Dropdown from "react-bootstrap/Dropdown";
+import { Button, Menu } from "@mantine/core";
 import { HouseDoorFill, Person } from "react-bootstrap-icons";
 
 import { applicationTitle } from "../data/constantes";
@@ -16,20 +16,22 @@ export default function ({ deconnect }) {
         </Link>
 
         <div className="menu-user">
-            <Dropdown>
-                <Dropdown.Toggle variant="transparent">
-                    <Person size="48px" />
-                </Dropdown.Toggle>
+            <Menu>
+                <Menu.Target>
+                    <Button color="dark" h="max-content" variant="transparent">
+                        <Person size="48px" />
+                    </Button>
+                </Menu.Target>
 
-                <Dropdown.Menu>
-                    <Dropdown.Item href="/profil">
+                <Menu.Dropdown>
+                    <Menu.Item component={Link} to="profil">
                         Modifier mot de passe
-                    </Dropdown.Item>
-                    <Dropdown.Item href="/login" onClick={deconnect}>
+                    </Menu.Item>
+                    <Menu.Item component={Link} to="login" onClick={deconnect}>
                         Déconnexion
-                    </Dropdown.Item>
-                </Dropdown.Menu>
-            </Dropdown>
+                    </Menu.Item>
+                </Menu.Dropdown>
+            </Menu>
         </div>
     </div>
 }
