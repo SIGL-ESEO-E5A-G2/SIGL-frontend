@@ -1,3 +1,11 @@
 body {
     background-color: #F4F8FF;
-} 
+}
+
+a {
+    color: var(--mantine-color-blue-5);
+}
+
+a:visited {
+    color: var(--mantine-color-blue-9);
+}
