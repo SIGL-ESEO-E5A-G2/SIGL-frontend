@@ -94,7 +94,7 @@ const ListApprenti = () => {
                                 <Table.Tr key={apprenti.id}>
                                     <Table.Td>{apprenti.utilisateur.nom}</Table.Td>
                                     <Table.Td>{apprenti.utilisateur.prenom}</Table.Td>
-                                    <Table.Td>{apprenti.promotion.libelle}</Table.Td>
+                                    <Table.Td>{apprenti.promotion?.libelle}</Table.Td>
                                     <Table.Td>
                                         <Select
                                             data={promotions}
