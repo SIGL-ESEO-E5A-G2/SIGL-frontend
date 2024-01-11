@@ -1,5 +1,6 @@
 // import 'bootstrap/dist/css/bootstrap.min.css';
 import '@mantine/core/styles.css';
+import 'react-quill/dist/quill.snow.css';
 import './css/main.css';
 
 import { BrowserRouter } from "react-router-dom";

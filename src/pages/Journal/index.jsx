@@ -1,13 +1,13 @@
+import './blog.css';
+
 import { useEffect, useState, useContext, useMemo } from 'react';
 import ReactQuill from 'react-quill';
+import { Button, TextInput, Paper, Stack, MultiSelect } from "@mantine/core";
 
 import MessagesContainer from '../../components/Post';
 
 import { request } from '../../utils/request';
 import { UserContext } from '../../context/UserContext';
-
-import './blog.css';
-import 'react-quill/dist/quill.snow.css';
 
 const textEditorModules = {
   toolbar: [
@@ -26,20 +26,17 @@ const textEditorModules = {
     ["link", "video"],
     ["clean"]
   ]
-};
+}
 
-const titleEditorModules = {
-  toolbar: [
-    [{ color: [] },],
-    ["bold", "italic", "underline"],
-    ["clean"]
-  ]
-};
+// const titleEditorModules = {
+//   toolbar: [
+//     [{ color: [] },],
+//     ["bold", "italic", "underline"],
+//     ["clean"]
+//   ]
+// }
 
 const BlogComponent = () => {
-  const [title, setTitle] = useState('');
-  const [body, setBody] = useState('');
-
   const [showPopup, setShowPopup] = useState(false);
 
   const [postsTemp, setPosts] = useState([]);
@@ -47,33 +44,54 @@ const BlogComponent = () => {
     return postsTemp
       .filter(post => !post?.tags?.map(tag => tag?.type)?.includes('Livrable'))
   }, [postsTemp]);
+
   const [apprentidetail, setApprentidetail] = useState([]);
+  const [tags, setTags] = useState([]);
 
   const user = useContext(UserContext);
 
   useEffect(() => {
     request(`/apprentiutilisateurdetail?utilisateur=${user.id}`)
-      .then(({ data }) => {
-        const apprenti = data ? data[0] : null;
-        setApprentidetail(apprenti);
+      .then(({ data }) => setApprentidetail(data?.length ? data[0] : null));
 
-        if (apprenti?.id) {
-          request("/messageutilisateurdetail/" + apprenti.id)
-            .then(({ data }) => setPosts(data));
-        }
-      });
+    request(`/messageutilisateurdetail/?utilisateur=${user.id}`)
+      .then(({ data }) => setPosts(data));
+
+    request('/tag', 'get') // TODO rendre certains tags inacessibles
+      .then(({ data }) => setTags((data || []).map(tag => ({
+        ...tag,
+        value: tag.id + "",
+        label: tag.libelle
+      }))));
   }, []);
 
-  /**
-   * Reset le formulaire de nouveau message
-   */
-  function resetFormMessage() {
-    setTitle('');
-    setBody('');
-  }
+  const RoundButton = ({ onClick }) => {
+    return (
+      <Button className="round-button" color={showPopup ? 'red' : 'blue'} onClick={onClick}>
+        <h1><b>{showPopup ? 'x' : '+'}</b></h1>
+      </Button>
+    );
+  };
 
-  const addPost = () => {
+  return <div>
+    {/* Messages */}
+    <MessagesContainer posts={posts} />
 
+    {/* Ajout message */}
+    {showPopup && <AddMessagePopUp apprenti={apprentidetail} tags={tags} />}
+
+    <div>
+      <RoundButton onClick={() => setShowPopup(old => !old)} />
+    </div>
+  </div>
+}
+
+function AddMessagePopUp({ apprenti, tags }) {
+  const [title, setTitle] = useState('');
+  const [body, setBody] = useState('');
+  const [tagsSelected, setTagsSelected] = useState();
+
+  function addPost() {
     if (!title?.trim() || !body?.trim()) {
       alert('Le titre et le message ne peuvent pas être vides.');
       return;
@@ -84,9 +102,8 @@ const BlogComponent = () => {
     const timeString = date[1].substring(0, 5);
     // TODO l'heure n'est pas en UTC Paris (MEMO : surtout ne pas faire time + 1)
 
-    const cible = [user.id, apprentidetail?.tuteurPedagogique?.id, apprentidetail?.maitreAlternance?.id]
+    const cible = [user.id, apprenti?.tuteurPedagogique?.id, apprenti?.maitreAlternance?.id]
       .filter(id => id);
-    const tags = [7]; // TODO
 
     const newPost = {
       titre: title,
@@ -95,15 +112,14 @@ const BlogComponent = () => {
       time: timeString,
       createur: user.id,
       destinataire: cible,
-      tags
+      tags: tagsSelected
     };
 
-    request("/message/", "post", newPost)
+    return request("/message/", "post", newPost)
       .then((response) => {
-        resetFormMessage();
         setShowPopup(false);
 
-        request(`/messagedetail/${response.data.id}`)
+        return request(`/messagedetail/${response.data.id}`)
           .then(({ data }) => {
             setPosts(prevPosts => [...prevPosts, data]);
           });
@@ -111,63 +127,35 @@ const BlogComponent = () => {
       .catch((error) => {
         console.error('Erreur lors de la requête:', error);
       });
-  };
+  }
 
-  const handleButtonClick = () => {
-    resetFormMessage();
-    setShowPopup(prevShowPopup => !prevShowPopup);
-  };
+  return <Paper className="popup" shadow="md" p="md">
+    <Stack>
+      {/* Titre du message */}
+      <TextInput
+        placeholder="Titre"
+        onChange={setTitle}
+        className="title-input"
+      />
 
-  const RoundButton = ({ onClick }) => {
-    return (
-      <button className={`round-button ${showPopup ? 'red' : ''}`} onClick={onClick}>
-        <h1><b>{showPopup ? 'x' : '+'}</b></h1>
-      </button>
-    );
-  };
+      <MultiSelect
+        searchable
+        data={tags}
+        onChange={setTagsSelected}
+      />
 
-  return (
-    <body>
-      {/* Messages */}
-      <MessagesContainer posts={posts} />
+      {/* Corps du message */}
+      <ReactQuill
+        theme="snow"
+        placeholder="Message"
+        onChange={setBody}
+        className="editor-input"
+        modules={textEditorModules}
+      />
 
-      {/* Ajout message */}
-      {
-        showPopup && (
-          <div className="popup">
-            {/* Titre du message */}
-            <div className="title-editor">
-              <ReactQuill
-                placeholder="Titre"
-                theme="snow"
-                value={title}
-                onChange={setTitle}
-                className="title-input"
-                modules={titleEditorModules}
-              />
-            </div>
-
-            {/* Corps du message */}
-            <div className="text-editor">
-              <ReactQuill
-                theme="snow"
-                placeholder="Message"
-                value={body}
-                onChange={setBody}
-                className="editor-input"
-                modules={textEditorModules}
-              />
-            </div>
-            <button onClick={addPost}>Ajouter un post</button>
-          </div>
-        )
-      }
-
-      <div>
-        <RoundButton onClick={handleButtonClick} />
-      </div>
-    </body>
-  );
+      <Button onClick={addPost}>Ajouter un post</Button>
+    </Stack>
+  </Paper>
 }
 
 export default BlogComponent;
