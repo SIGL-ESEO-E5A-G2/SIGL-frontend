@@ -1,149 +1,151 @@
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background-color: #f0f2f5; /* Couleur de fond similaire à Facebook */
-  }
-  
-  .container {
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 80%; /* Ajustez la largeur selon vos besoins */
-    background-color: #ffffff; /* Couleur de fond similaire à Facebook */
-    margin-top: 7%;
-  }
-  
+.container {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  /* Ajustez la largeur selon vos besoins */
+  background-color: #ffffff;
+  /* Couleur de fond similaire à Facebook */
+  margin-top: 7%;
+}
+
+.row {
+  height: 100%;
+  width: 100%;
+  display: flex;
+}
+
+.title-editor,
+.text-editor {
+  width: 100%;
+  margin-bottom: 0;
+}
+
+.title-input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.editor-input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+
+select,
+button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  /* Espacement entre le select et le bouton */
+  background-color: #1877f2;
+  /* Couleur de fond similaire au bleu de Facebook */
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #1568cb;
+  /* Changement de couleur au survol */
+}
+
+button {
+  margin-bottom: 10px;
+}
+
+.preview {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  padding: 10px;
+  overflow-y: scroll;
+}
+
+.post {
+  margin-bottom: 20px;
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 15px;
+}
+
+.header {
+  font-size: 14px;
+  color: #606770;
+  /* Couleur de texte similaire à Facebook */
+}
+
+.post-title {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.post-body {
+  color: #1c1e21;
+  /* Couleur de texte similaire à Facebook */
+}
+
+/* Styles facultatifs pour une apparence plus moderne et aérée */
+.row {
+  gap: 20px;
+  /* Espacement entre l'éditeur et la prévisualisation */
+}
+
+@media (max-width: 768px) {
   .row {
-    height: 100%;
-    width: 100%;
-    display: flex;
-  }
-  
-  .title-editor,
-  .text-editor {
-    width: 100%;
-    margin-bottom: 0;
-  }
-  
-  .title-input {
-    width: 100%;
-    padding: 10px;
-    border-radius: 4px;
-    font-size: 16px;
-  }
-  
-  .editor-input {
-    width: 100%;
-    padding: 10px;
-    border-radius: 4px;
-    font-size: 16px;
-  }
-  
-  
-  select,
-  button {
-    width: 100%;
-    padding: 10px;
-    margin-top: 10px; /* Espacement entre le select et le bouton */
-    background-color: #1877f2; /* Couleur de fond similaire au bleu de Facebook */
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  select {
-    background-color: #f0f2f5; /* Couleur de fond similaire au bleu de Facebook */
-    color: #000000;
-  }
-  
-  button:hover {
-    background-color: #1568cb; /* Changement de couleur au survol */
+    flex-direction: column;
+    /* Passer à une disposition de colonne sur les écrans plus petits */
   }
 
-  button {
-    margin-bottom: 10px;
-  }
-  
+  .editor,
   .preview {
-    position: relative;
-    height: 100%;
     width: 100%;
-    padding: 10px;
-    overflow-y: scroll;
+    /* Occuper la largeur complète sur les écrans plus petits */
   }
-  
-  .post {
-    margin-bottom: 20px;
-    background-color: #ffffff;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    padding: 15px;
-  }
-  
-  .header {
-    font-size: 14px;
-    color: #606770; /* Couleur de texte similaire à Facebook */
-  }
-  
-  .post-title {
-    margin-top: 10px;
-    margin-bottom: 10px;
-  }
-  
-  .post-body {
-    color: #1c1e21; /* Couleur de texte similaire à Facebook */
-  }
-  
-  /* Styles facultatifs pour une apparence plus moderne et aérée */
-  .row {
-    gap: 20px; /* Espacement entre l'éditeur et la prévisualisation */
-  }
-  
-  @media (max-width: 768px) {
-    .row {
-      flex-direction: column; /* Passer à une disposition de colonne sur les écrans plus petits */
-    }
-    .editor,
-    .preview {
-      width: 100%; /* Occuper la largeur complète sur les écrans plus petits */
-    }
-  }
+}
 
-  .round-button {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background-color: #3498db;
-    color: #fff;
-    border: none;
-    outline: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+.round-button {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #3498db;
+  color: #fff;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-  .round-button.red:hover{
-    background-color: #dd0303;
-  }
+.round-button.red:hover {
+  background-color: #dd0303;
+}
 
-  .round-button.red {
-    background-color: #ff0000; /* Couleur rouge */
-    color: #fff; /* Couleur du texte en blanc ou autre couleur lisible */
-  }
+.round-button.red {
+  background-color: #ff0000;
+  /* Couleur rouge */
+  color: #fff;
+  /* Couleur du texte en blanc ou autre couleur lisible */
+}
 
-  .popup {
-    position: fixed;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 65%;
-    background-color: #ffffff;
-    bottom: 0;
-    padding: 10px;
-  }
+.popup {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 65%;
+  background-color: #ffffff;
+  bottom: 0;
+  padding: 10px;
+}
