@@ -130,28 +130,22 @@ const DynamicFormPlanningDates = ({ user }) => {
           {
             dates.map((date, index) => (
               <Group key={index} className="mb-3">
-                {/* TODO handle date input */}
-                <label htmlFor={`date_${index}`}>{nomFormat} {index + 1} {selectedFormat === "periode" && '(debut)'}</label>
-                <input
-                  type="date"
-                  name={`date_${index}`}
+                <TextInput
                   id={`date_${index}`}
+                  type="date"
+                  label={`${nomFormat} ${index + 1} ${selectedFormat === "periode" && '(debut)'}`}
                   value={selectedFormat === "periode" ? date.debut : date.date}
                   onChange={(event) => handleDateChange(index, selectedFormat === "periode" ? "debut" : 'date', event)}
                 />
 
                 {
-                  selectedFormat === "periode" && <div>
-                    {/* TODO handle date input */}
-                    <label htmlFor={`date_${index}_fin`}>Période {index + 1} (fin) :</label>
-                    <input
-                      type="date"
-                      name={`date_${index}_fin`}
-                      id={`date_${index}_fin`}
-                      value={date.fin}
-                      onChange={(event) => handleDateChange(index, 'fin', event)}
-                    />
-                  </div>
+                  selectedFormat === "periode" && <TextInput
+                    id={`date_${index}`}
+                    label={`Période ${index + 1} (fin)`}
+                    type="date"
+                    value={date.fin}
+                    onChange={(event) => handleDateChange(index, 'fin', event)}
+                  />
                 }
 
                 <TextInput

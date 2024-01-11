@@ -6,8 +6,9 @@
     height: 90px;
     display: flex;
     align-items: center;
-    background-color: lightgrey;
-    color: black;
+    background-color: var(--mantine-color-blue-9);
+    color: var(--mantine-color-white);
+    z-index: 100;
 }
 
 .menu-title {
@@ -21,4 +22,10 @@
 .menu-user {
     margin-left: auto;
     margin-right: 20px;
+}
+
+.menu-image {
+    background-color: var(--mantine-color-white);
+    border-radius: 5px;
+    padding: 5px;
 }

@@ -1,5 +1,9 @@
+// import 'bootstrap/dist/css/bootstrap.min.css';
+import '@mantine/core/styles.css';
+import './css/main.css';
+
 import { BrowserRouter } from "react-router-dom";
-import { MantineProvider } from "@mantine/core";
+import { createTheme, MantineProvider } from "@mantine/core";
 
 import Menu from "./components/Menu";
 
@@ -9,6 +13,9 @@ import AppRouter from "./AppRouter";
 import UnauthentifiedAppRouter from "./UnauthentifiedAppRouter";
 
 import useUser from "./hooks/useUser";
+import theme from './data/theme';
+
+const themeMantine = createTheme(theme);
 
 function App() {
   const [user, loadUser, clearUser] = useUser();
@@ -18,14 +25,14 @@ function App() {
     window.location.reload();
   }
 
-  return <MantineProvider>
+  return <MantineProvider theme={themeMantine}>
     <UserContext.Provider value={user}>
       <BrowserRouter>
         {
           user?.id ? <>
             <Menu deconnect={deconnect} />
 
-            <div style={{ padding: "120px 0px 0px 30px" }}>
+            <div className="app" style={{ padding: "120px 30px 0px 30px" }}>
               <AppRouter user={user} />
             </div>
           </>
