@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { saveAs } from 'file-saver';
 import { Button, Paper, Stack, Group, Text, Badge } from "@mantine/core";
-import { Download, Upload } from "react-bootstrap-icons";
+import { Download, Pen, Upload } from "react-bootstrap-icons";
 
 import { getFile, uploadFile } from "../../utils/request";
 import { dateString } from "../../utils/formatDate";
@@ -79,7 +79,6 @@ function Depot({ post: { depot, id } }, updatePost) {
 
                 {/* Echeance */}
                 <Text>
-                    Format accepté: PDF,&nbsp;
                     Echéance le: <i>{echeance}</i>
                     {estDeposer ? <>, Livrer le: <i>{dateLivraison}</i></> : ""}
                 </Text>
@@ -96,11 +95,26 @@ function Depot({ post: { depot, id } }, updatePost) {
             {/* Btn upload / download */}
             {
                 estDeposer ?
-                    <Button onClick={() => downloadFile(depot)} rightSection={<Download />}>
-                        Télécharger
-                    </Button>
+                    <Stack>
+                        <Button
+                            onClick={() => setShowModalUpload(true)}
+                            rightSection={<Pen />}
+                        >
+                            Modifier
+                        </Button>
+
+                        <Button
+                            onClick={() => downloadFile(depot)}
+                            rightSection={<Download />}
+                        >
+                            Télécharger
+                        </Button>
+                    </Stack>
                     :
-                    <Button onClick={() => setShowModalUpload(true)} rightSection={<Upload />}>
+                    <Button
+                        onClick={() => setShowModalUpload(true)}
+                        rightSection={<Upload />}
+                    >
                         Déposer
                     </Button>
             }
