@@ -1,13 +1,15 @@
 import './blog.css';
 
-import { useEffect, useState, useContext, useMemo } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import ReactQuill from 'react-quill';
-import { Button, TextInput, Paper, Stack, MultiSelect } from "@mantine/core";
+import { Button, TextInput, Paper, Stack, MultiSelect, Container } from "@mantine/core";
 
-import MessagesContainer from './Post';
+import Post from './Post';
 
 import { request } from '../../utils/request';
 import { UserContext } from '../../context/UserContext';
+import { Send } from 'react-bootstrap-icons';
+import ModalAddMessage from './ModalAddMessage';
 
 const textEditorModules = {
   toolbar: [
@@ -50,7 +52,7 @@ const BlogComponent = () => {
     request(`/apprentiutilisateurdetail?utilisateur=${user.id}`)
       .then(({ data }) => setApprentidetail(data?.length ? data[0] : null));
 
-    request(`/messagefeed`)///?utilisateur=${user.id}`)
+    request(`/messagefeed?utilisateur=${user.id}`)
       .then(({ data }) => setPosts(data));
 
     request('/tag', 'get') // TODO rendre certains tags inacessibles
@@ -61,97 +63,53 @@ const BlogComponent = () => {
       }))));
   }, []);
 
-  const RoundButton = ({ onClick }) => {
-    return (
-      <Button className="round-button" color={showPopup ? 'red' : 'blue'} onClick={onClick}>
-        <h1><b>{showPopup ? 'x' : '+'}</b></h1>
-      </Button>
-    );
-  };
+  function updatePost(post) {
+    if (!post.id) return;
+
+    setPosts(old => {
+      const index = old.findIndex(item => item.id === post.id);
+      if (index >= 0) {
+        old[index] = {
+          ...old[index],
+          ...post
+        };
+
+        return [...old];
+      }
+
+      return old;
+    })
+  }
 
   return <div>
     {/* Messages */}
-    <MessagesContainer posts={posts} />
+    <Container>
+      <Stack gap={50}>
+        {posts.map(post => <Post user={user} post={post} updatePost={updatePost} />)}
+      </Stack>
+    </Container>
 
-    {/* Ajout message */}
-    {showPopup && <AddMessagePopUp apprenti={apprentidetail} tags={tags} />}
+    {/* Modal ajout message */}
+    <ModalAddMessage
+      show={showPopup}
+      close={() => setShowPopup(false)}
+      tags={tags}
+      apprenti={apprentidetail}
+      addPost={newMessage => setPosts(old => [newMessage, ...old])}
+    />
 
-    <div>
-      <RoundButton onClick={() => setShowPopup(old => !old)} />
-    </div>
+    {/* Btn ajouter message */}
+    <Button
+      onClick={() => setShowPopup(true)}
+      radius="xl"
+      size="lg"
+      color="red"
+      className="round-button"
+      rightSection={<Send />}
+    >
+      Nouveau message
+    </Button>
   </div>
-}
-
-function AddMessagePopUp({ apprenti, tags }) {
-  const [title, setTitle] = useState('');
-  const [body, setBody] = useState('');
-  const [tagsSelected, setTagsSelected] = useState();
-
-  function addPost() {
-    if (!title?.trim() || !body?.trim()) {
-      alert('Le titre et le message ne peuvent pas être vides.');
-      return;
-    }
-
-    const date = (new Date()).toISOString().split('T');
-    const dateString = date[0];
-    const timeString = date[1].substring(0, 5);
-    // TODO l'heure n'est pas en UTC Paris (MEMO : surtout ne pas faire time + 1)
-
-    const cible = [user.id, apprenti?.tuteurPedagogique?.id, apprenti?.maitreAlternance?.id]
-      .filter(id => id);
-
-    const newPost = {
-      titre: title,
-      contenu: body,
-      date: dateString,
-      time: timeString,
-      createur: user.id,
-      destinataire: cible,
-      tags: tagsSelected
-    };
-
-    return request("/message/", "post", newPost)
-      .then((response) => {
-        setShowPopup(false);
-
-        return request(`/messagedetail/${response.data.id}`)
-          .then(({ data }) => {
-            setPosts(prevPosts => [...prevPosts, data]);
-          });
-      })
-      .catch((error) => {
-        console.error('Erreur lors de la requête:', error);
-      });
-  }
-
-  return <Paper className="popup" shadow="md" p="md">
-    <Stack>
-      {/* Titre du message */}
-      <TextInput
-        placeholder="Titre"
-        onChange={setTitle}
-        className="title-input"
-      />
-
-      <MultiSelect
-        searchable
-        data={tags}
-        onChange={setTagsSelected}
-      />
-
-      {/* Corps du message */}
-      <ReactQuill
-        theme="snow"
-        placeholder="Message"
-        onChange={setBody}
-        className="editor-input"
-        modules={textEditorModules}
-      />
-
-      <Button onClick={addPost}>Ajouter un post</Button>
-    </Stack>
-  </Paper>
 }
 
 export default BlogComponent;

@@ -2,10 +2,39 @@ body {
     background-color: #F4F8FF;
 }
 
+
+
+/* Anchor styling  */
+
 a {
     color: var(--mantine-color-blue-5);
 }
 
 a:visited {
     color: var(--mantine-color-blue-9);
+}
+
+
+
+/* Modal styling */
+
+.mantine-Modal-content {
+    border-radius: 15px;
+}
+
+.mantine-Modal-body {
+    padding: 0px;
+}
+
+.mantine-Modal-header {
+    background-color: var(--mantine-color-blue-7);
+}
+
+.mantine-Modal-title,
+.mantine-Modal-close {
+    color: var(--mantine-color-white);
+}
+
+.mantine-Modal-title {
+    font-weight: bold;
 }
