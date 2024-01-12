@@ -11,6 +11,7 @@ import {
 import Home from '../pages/Home';
 import Entreprise from '../pages/Entreprise';
 import Admin from '../pages/Admin';
+import ModifInfo from '../pages/Admin/ModifInfo';
 import CoordinatriceAlternance from '../pages/CoordinatriceAlternance';
 import ApprentiListing from '../pages/ApprentiListing';
 import Profil from '../pages/Profil';
@@ -66,6 +67,13 @@ export default {
             element: <Profil />,
             roles: [], //user
             children: [],
+        },
+        {
+            path: "modification",
+            element: <ModifInfo/>,
+            roles: [3, 4], //admin
+            icon: null,
+            name: "ALED",
         },
     ]
 }
