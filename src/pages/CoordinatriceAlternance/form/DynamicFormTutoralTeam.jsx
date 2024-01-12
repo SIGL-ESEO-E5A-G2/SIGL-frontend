@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Button, Group, Select, Stack, TextInput } from '@mantine/core';
-
+import { hashPassword } from '../../../utils/encryption.js';
 import { request } from '../../../utils/request.js';
 
 class DynamicFormTutoralTeam extends Component {
@@ -19,55 +19,68 @@ class DynamicFormTutoralTeam extends Component {
   }
 
   handleAddUser = () => {
+    const newUser = {
+      name: "",
+      prenom: "",
+      email: "",
+    };
+
     this.setState({
-      users: [...this.state.users, {
-        lastName: "",
-        firstName: "",
-        email: "",
-      }],
+      users: [...this.state.users, newUser],
     });
   };
 
-  handleChange = (e, index) => {
-    const { name, value } = e.target;
+  handleChange = (e, index, fieldName) => {
+    const { value } = e.target;
+    this.setState((prevState) => {
+      const newUsers = [...prevState.users];
+      newUsers[index][fieldName] = value;
+      return { users: newUsers };
+    });
+  };
+
+  handleRemoveUser = (index) => {
     const newUsers = [...this.state.users];
-    newUsers[index] = { ...newUsers[index], [name]: value };
+    newUsers.splice(index, 1);
     this.setState({ users: newUsers });
   };
 
-  handleSubmit = (e) => {
+  handleSubmit = async (e) => {
     e.preventDefault();
-    // Access the user data and role
-    const roleValue = this.state.role === "tuteurpedagogique" ? 2 : 5
-    this.state.users.forEach((user, item) => {
-      const newUser = {
-        "roles": [roleValue],
-        "password": "autogenerate",
-        "last_login": "2023-11-20T13:01:16.160Z",
-        "is_superuser": true,
-        "nom": user.lastName,
-        "prenom": user.firstName,
-        "email": user.email,
-        "is_active": true,
-        "is_staff": true,
-        "groups": [],
-        "user_permissions": [],
-      }
+    const roleValue = this.state.role === "Tuteur pédagogique" ? 2 : 5;
+    const password = "autogenerate";
+    const hashedPassword = await hashPassword(password);
 
+    try {
+      await Promise.all(
+        this.state.users.map(async (user) => {
+          const newUser = {
+            "roles": [roleValue],
+            "password": hashedPassword,
+            "last_login": "2023-11-20T13:01:16.160Z",
+            "is_superuser": true,
+            "nom": user.name,
+            "prenom": user.prenom,
+            "email": user.email,
+            "is_active": true,
+            "is_staff": true,
+            "groups": [],
+            "user_permissions": [],
+          };
+          const res = await request("/utilisateur/", "post", newUser);
 
-      request("/utilisateur/", "post", newUser)
-        .then(async (res) => {
           const newProfil = {
             "utilisateur": res.data.id,
           };
 
-          return request("/" + this.state.role + "/", "post", newProfil)
-            .then(() => window.location.reload());
+          await request("/" + this.state.role + "/", "post", newProfil);
         })
-        .catch((error) => {
-          console.error("Erreur de configuration de la requête :", error.message);
-        });
-    });
+      );
+
+      window.location.reload();
+    } catch (error) {
+      console.error("Erreur de configuration de la requête :", error.message);
+    }
   };
 
   handleRoleChange = (e) => {
@@ -83,43 +96,53 @@ class DynamicFormTutoralTeam extends Component {
             id="role"
             w="max-content"
             label="Rôle"
-            data={["Tuteur pédagogique", "Maître d'apprentissage"]}
+            data={[
+              { value: "tuteurpedagogique", label: "Tuteur pédagogique" },
+              { value: "maitrealternance", label: "Maître d'apprentissage" },
+            ]}
             value={this.state.role}
             onChange={this.handleRoleChange}
           />
 
-          {
-            this.state.users.map((user, index) => (
-              <Stack key={index}>
-                <Group>
-                  <TextInput
-                    id="nom"
-                    label="Nom"
-                    required
-                    defaultValue={user.lastName}
-                    onChange={(e) => this.handleChange(e, index)}
-                  />
+          {this.state.users.map((user, index) => (
+            <Stack key={index}>
+              <Group>
+                <TextInput
+                  id={`nom_${index}`}
+                  label="Nom"
+                  required
+                  value={user.name}
+                  onChange={(e) => this.handleChange(e, index, 'name')}
+                />
 
-                  <TextInput
-                    id="prenom"
-                    label="Prénom"
-                    required
-                    defaultValue={user.firstName}
-                    onChange={(e) => this.handleChange(e, index)}
-                  />
+                <TextInput
+                  id={`prenom_${index}`}
+                  label="Prénom"
+                  required
+                  value={user.prenom}
+                  onChange={(e) => this.handleChange(e, index, 'prenom')}
+                />
 
-                  <TextInput
-                    id="email"
-                    label="Email"
-                    type="email"
-                    required
-                    defaultValue={user.email}
-                    onChange={(e) => this.handleChange(e, index)}
-                  />
-                </Group>
-              </Stack>
-            ))
-          }
+                <TextInput
+                  id={`email_${index}`}
+                  label="Email"
+                  type="email"
+                  required
+                  value={user.email}
+                  onChange={(e) => this.handleChange(e, index, 'email')}
+                />
+
+                <Button
+                  type="button"
+                  onClick={() => this.handleRemoveUser(index)}
+                  variant="outline"
+                  color="red"
+                >
+                  Supprimer l'élément
+                </Button>
+              </Group>
+            </Stack>
+          ))}
 
           <Group>
             <Button type="button" onClick={this.handleAddUser}>
