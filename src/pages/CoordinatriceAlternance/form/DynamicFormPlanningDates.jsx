@@ -60,6 +60,11 @@ const DynamicFormPlanningDates = ({ user }) => {
     }
   };
 
+  const handleRemoveDate = (index) => {
+    const updatedDates = [...dates];
+    updatedDates.splice(index, 1);
+    setDates(updatedDates);
+  };
 
   const handlePromotionChange = (event) => {
     setSelectedPromotion(event);
@@ -167,6 +172,15 @@ const DynamicFormPlanningDates = ({ user }) => {
                   value={date.tags[0]} // Assuming only one tag is selected for simplicity
                   onChange={(event) => handleDateChange(index, 'tags', { target: { value: event } })}
                 />
+
+                <Button
+                  type="button"
+                  onClick={() => handleRemoveDate(index)}
+                  variant="outline"
+                  color="red"
+                >
+                  Supprimer l'élément
+                </Button>
               </Group>
             ))
           }
