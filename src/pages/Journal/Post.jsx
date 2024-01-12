@@ -1,7 +1,10 @@
 
-import { dateString } from '../utils/formatDate';
+import { Group, Pill, Title } from '@mantine/core';
 
-function MessagesContainer({ posts, setPosts, Decoration }) {
+import { dateString } from '../../utils/formatDate';
+import Depot from './Depot';
+
+function MessagesContainer({ posts, setPosts }) {
   function updatePost(post) {
     if (!post.id) return;
 
@@ -29,19 +32,38 @@ function MessagesContainer({ posts, setPosts, Decoration }) {
               if (!post) return
 
               const dateFormatted = dateString(new Date(post.date));
+              const timeFormatted = post.time?.substring(0, 5)?.replace(':', 'h');
+              const dateInfo = dateFormatted + (timeFormatted ? ` (${timeFormatted})` : "");
+              const createur = post.createur?.id ? `${post.createur.prenom} ${post.createur.nom}` : post.createur;
+
+              let Decoration = null;
+              // type : depot
+              if (post.depot?.id) {
+                Decoration = Depot;
+              }
 
               return <div className="post" key={post.id}>
                 {/* Meta donnnees */}
                 <div className="post-header">
                   <p className="header">
-                    <span>{dateFormatted}</span>
+                    <span>{dateInfo}</span>
                     &nbsp;-&nbsp;
-                    <span>{post.createur.prenom} {post.createur.nom}</span>
+                    <span>{createur}</span>
                   </p>
                 </div>
 
+                <Group className="post-tags">
+                  {
+                    post.tags?.map((tag, index) => <Pill
+                      key={index}
+                      color={tag?.couleur}
+                    >{tag?.libelle}</Pill>)
+                  }
+                </Group>
+
                 {/* Titre */}
-                <h2
+                <Title
+                  order={2}
                   className="post-title"
                   dangerouslySetInnerHTML={{ __html: post.titre }}
                 />

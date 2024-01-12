@@ -15,7 +15,6 @@ import CoordinatriceAlternance from '../pages/CoordinatriceAlternance';
 import ApprentiListing from '../pages/ApprentiListing';
 import Profil from '../pages/Profil';
 import Journal from '../pages/Journal';
-import JournalDepot from '../pages/Journal/JournalDepot';
 
 export default {
     path: "",
@@ -29,13 +28,6 @@ export default {
             element: <Journal />,
             name: "Journal de l'apprenti",
             roles: []
-        },
-        {
-            path: "depots",
-            icon: "",
-            element: <JournalDepot />,
-            name: "Dépôt de documents",
-            roles: [1]
         },
         {
             path: "inscription",

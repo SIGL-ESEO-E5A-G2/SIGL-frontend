@@ -4,7 +4,7 @@ import { useEffect, useState, useContext, useMemo } from 'react';
 import ReactQuill from 'react-quill';
 import { Button, TextInput, Paper, Stack, MultiSelect } from "@mantine/core";
 
-import MessagesContainer from '../../components/Post';
+import MessagesContainer from './Post';
 
 import { request } from '../../utils/request';
 import { UserContext } from '../../context/UserContext';
@@ -39,11 +39,7 @@ const textEditorModules = {
 const BlogComponent = () => {
   const [showPopup, setShowPopup] = useState(false);
 
-  const [postsTemp, setPosts] = useState([]);
-  const posts = useMemo(() => { // TODO remove
-    return postsTemp
-      .filter(post => !post?.tags?.map(tag => tag?.type)?.includes('Livrable'))
-  }, [postsTemp]);
+  const [posts, setPosts] = useState([]);
 
   const [apprentidetail, setApprentidetail] = useState([]);
   const [tags, setTags] = useState([]);
@@ -54,7 +50,7 @@ const BlogComponent = () => {
     request(`/apprentiutilisateurdetail?utilisateur=${user.id}`)
       .then(({ data }) => setApprentidetail(data?.length ? data[0] : null));
 
-    request(`/messageutilisateurdetail/?utilisateur=${user.id}`)
+    request(`/messagefeed`)///?utilisateur=${user.id}`)
       .then(({ data }) => setPosts(data));
 
     request('/tag', 'get') // TODO rendre certains tags inacessibles

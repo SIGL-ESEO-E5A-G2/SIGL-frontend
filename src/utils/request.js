@@ -70,7 +70,8 @@ export async function uploadFile(depot, file) {
     })
         .then(() => {
             return request('/depot/' + depot.id, 'patch', {
-                cheminFichier: nouveauChemin + file.name
+                cheminFichier: nouveauChemin + file.name,
+                livraison: new Date() // TODO ou dateLivraison (verifier)
             })
         });
 }
