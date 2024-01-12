@@ -1,6 +1,3 @@
-// import 'bootstrap/dist/css/bootstrap.min.css';
-import '@mantine/core/styles.css';
-
 import { Route, Routes } from 'react-router-dom';
 
 import ErrorBoundary from './components/ErrorBoundary';

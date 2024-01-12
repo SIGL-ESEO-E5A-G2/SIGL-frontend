@@ -6,11 +6,14 @@ import { HouseDoorFill, Person } from "react-bootstrap-icons";
 
 import { applicationTitle } from "../data/constantes";
 
+import eseoLetter from '../assets/images/4-ESEO-E-RVB.png';
+
 export default function ({ deconnect }) {
     return <div className="menu-container">
         <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
             <div className="menu-title">
-                <HouseDoorFill size="40px" />
+                {/* <HouseDoorFill size="40px" /> */}
+                <img className="menu-image" src={eseoLetter} alt="Home" style={{ width: "40px" }} />
                 <h1>{applicationTitle}</h1>
             </div>
         </Link>
@@ -18,7 +21,7 @@ export default function ({ deconnect }) {
         <div className="menu-user">
             <Menu>
                 <Menu.Target>
-                    <Button color="dark" h="max-content" variant="transparent">
+                    <Button color="white" h="max-content" variant="outline">
                         <Person size="48px" />
                     </Button>
                 </Menu.Target>

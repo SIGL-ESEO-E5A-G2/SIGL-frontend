@@ -36,14 +36,14 @@ export default function ({
                             column && <Link to={column.path}>
                                 <div style={{ textAlign: "center" }}>
                                     {
-                                        column.icon ? <column.icon size="200px" color="lightslategray" className="mx-auto" />
+                                        column.icon ? <column.icon size="200px" color="var(--mantine-color-blue-3)" className="mx-auto" />
                                             : <div
                                                 style={{
                                                     width: "200px",
                                                     height: "200px",
                                                     borderRadius: "7px",
                                                     margin: "auto",
-                                                    backgroundColor: "lightgray"
+                                                    backgroundColor: "var(--mantine-color-blue-0)"
                                                 }}
                                             />
                                     }

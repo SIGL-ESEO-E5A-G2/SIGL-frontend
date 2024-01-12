@@ -1,44 +1,9 @@
-import { useContext, useEffect, useState } from "react";
-import { Button, Alert, FileInput } from "@mantine/core";
+import { useState } from "react";
 import { saveAs } from 'file-saver';
-
-import MessagesContainer from "../../components/Post";
+import { Button, Alert, FileInput } from "@mantine/core";
 
 import { getFile, request, uploadFile } from "../../utils/request";
 import { dateString } from "../../utils/formatDate";
-
-import { UserContext } from "../../context/UserContext";
-
-function JournalDepot() {
-    const [depots, setDepots] = useState([]);
-
-    const user = useContext(UserContext);
-
-    useEffect(() => {
-        request("/depotdetail") // TODO depotutilisateurdetail
-            .then(({ data }) => {
-                console.log("TAG a", data)
-                setDepots(data?.map(depot => ({
-                    ...depot.message,
-                    idDepot: depot.id,
-                    echeance: depot.echeance,
-                    cheminFichier: depot.cheminFichier,
-                    deposer: depot.message.tags?.map(tag => tag?.libelle)?.includes('Déposé')
-                })))
-            });
-    }, []);
-
-    return (
-        <body>
-            {/* Messages */}
-            <MessagesContainer
-                posts={depots}
-                Decoration={AddFile}
-                setPosts={setDepots}
-            />
-        </body>
-    );
-}
 
 /**
  * 
@@ -50,8 +15,12 @@ async function addFile(file, post) {
         return
     }
 
-    return uploadFile({ id: post.idDepot, cheminFichier: post.cheminFichier }, file)
+    return uploadFile({
+        id: post.depot.id,
+        cheminFichier: post.depot.cheminFichier
+    }, file)
         .then(async () => {
+            // TODO remove
             return request('/message/' + post.id, 'patch', {
                 tags: [...post.tags.map(tag => tag.id), 9]
             })
@@ -72,9 +41,9 @@ async function addFile(file, post) {
  * @returns 
  */
 async function downloadFile(post) {
-    return getFile(post.cheminFichier)
+    return getFile(post.depot.cheminFichier)
         .then(({ data }) => {
-            const filePath = post.cheminFichier.split('/');
+            const filePath = post.depot.cheminFichier.split('/');
             const fileName = filePath ? filePath[filePath.length - 1] : "Fichier.pdf";
 
             return saveAs(new Blob([data], { type: "application/pdf" }), fileName);
@@ -85,11 +54,11 @@ async function downloadFile(post) {
         })
 }
 
-function AddFile({ post }) {
+function Depot({ post }) {
     const [file, setFile] = useState();
-    const [estDeposer, setDeposer] = useState(post.deposer);
+    const [estDeposer, setDeposer] = useState(post.depot.livraison);
 
-    const dateEcheance = new Date(post.echeance);
+    const dateEcheance = new Date(post.depot.echeance);
     const echeance = dateString(dateEcheance);
     const dateComparaison = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - 1);
 
@@ -139,4 +108,4 @@ function AddFile({ post }) {
     </div>
 }
 
-export default JournalDepot;
+export default Depot;
