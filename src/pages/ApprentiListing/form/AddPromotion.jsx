@@ -9,8 +9,6 @@ const AddPromotion = () => {
   const [newPromotionName, setNewPromotionName] = useState("");
   const [selectedSemester, setSelectedSemester] = useState("");
   const [selectedModifySemester, setSelectedModifySemester] = useState("");
-  const [selectedPromotion, setSelectedPromotion] = useState("");
-  const [selectedModifyPromotion, setSelectedModifyPromotion] = useState("");
   const [promotions, setPromotions] = useState([]);
   const [modifiedSemesters, setModifiedSemesters] = useState({});
   const [newLibelles, setNewLibelles] = useState({});
