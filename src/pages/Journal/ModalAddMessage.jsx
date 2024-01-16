@@ -1,11 +1,13 @@
 import { useState } from "react";
 import ReactQuill from 'react-quill';
+import { X } from "react-bootstrap-icons";
+import { notifications } from "@mantine/notifications";
 import { Flex, Stack, Text, TextInput } from "@mantine/core";
 
-import SelectTags from '../../components/SelectTags';
-import useArray from '../../hooks/useArray';
 import Modal from "../../components/Modal";
+import useArray from '../../hooks/useArray';
 import { request } from "../../utils/request";
+import SelectTags from '../../components/SelectTags';
 import { getCurrentDate, getCurrentTime } from "../../utils/formatDate";
 
 const textEditorModules = {
@@ -35,7 +37,7 @@ function createPost({ title, body, tags }, apprenti) {
 
     const userId = apprenti.utilisateur.id;
 
-    const cible = [userId] // TODO, apprenti.tuteurPedagogique?.id, apprenti.maitreAlternance?.id]
+    const cible = [userId, apprenti.tuteurPedagogique?.id, apprenti.maitreAlternance?.id]
         .filter(id => id);
 
     const newPost = {
@@ -50,12 +52,22 @@ function createPost({ title, body, tags }, apprenti) {
 
     return request("/message/", "post", newPost)
         .then((response) => request(`/messagedetail/${response.data.id}`))
-        .then(({ data }) => data);
+        .then(({ data }) => data)
+        .catch(err => {
+            notifications.show({
+                title: "Erreur",
+                message: "Une erreur est survenue lors de l'envoie du message",
+                color: 'red',
+                icon: <X />,
+            });
+
+            throw err; // continue
+        });
 }
 
 function ModalAddMessage({ show, close, addPost, apprenti, tags }) {
     const [errors, setErrors] = useState({});
-    const [values, setValue_] = useArray();
+    const [values, setValue_, setValues] = useArray();
     function setValue(key, value) {
         setValue_(key, value);
         setErrors(old => ({ ...old, [key]: null }));
@@ -82,7 +94,10 @@ function ModalAddMessage({ show, close, addPost, apprenti, tags }) {
 
     return <Modal
         opened={show}
-        onClose={close}
+        onClose={() => {
+            setValues({});
+            close();
+        }}
         title="Nouveau message"
         validateLabel="Envoyer"
         size="lg"
@@ -101,7 +116,7 @@ function ModalAddMessage({ show, close, addPost, apprenti, tags }) {
             {/* Tags */}
             <SelectTags
                 tags={tags}
-                setSelected={selected => setValue('tags', selected)}
+                onChange={selected => setValue('tags', selected)}
             />
 
             {/* Body */}

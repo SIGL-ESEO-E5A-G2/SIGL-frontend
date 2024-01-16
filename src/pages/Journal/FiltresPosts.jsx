@@ -22,7 +22,7 @@ export function FiltresPosts({ filtres, tags, setFiltre, resetFiltres }) {
                 tags={tagsSelection}
                 placeholder="Sélectionnez des tags"
                 value={filtres?.tags || []}
-                setSelected={selected => setFiltre('tags', selected)}
+                onChange={selected => setFiltre('tags', selected)}
             />
 
             {/* Title filter */}

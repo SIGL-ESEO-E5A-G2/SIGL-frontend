@@ -25,12 +25,15 @@ function ModalUploadFile({ show, close, uploadFile }) {
             return true;
         }
 
-        return true;
+        return false;
     }
 
     return <Modal
         opened={show}
-        onClose={close}
+        onClose={() => {
+            close();
+            setFile();
+        }}
         title="Dépôt de document"
         validateLabel="Déposer"
 

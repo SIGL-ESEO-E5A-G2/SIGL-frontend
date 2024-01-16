@@ -53,7 +53,7 @@ function Modal({
                     message: messageError || "Une erreur est survenue",
                     icon: <X />,
                     loading: false,
-                    autoClose: 1000,
+                    autoClose: 3000,
                     withCloseButton: true,
                 }));
         } else {
