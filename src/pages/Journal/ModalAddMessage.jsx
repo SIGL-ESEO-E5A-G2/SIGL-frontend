@@ -1,7 +1,8 @@
 import { useState } from "react";
 import ReactQuill from 'react-quill';
-import { Flex, MultiSelect, Stack, Text, TextInput } from "@mantine/core";
+import { Flex, Stack, Text, TextInput } from "@mantine/core";
 
+import SelectTags from '../../components/SelectTags';
 import useArray from '../../hooks/useArray';
 import Modal from "../../components/Modal";
 import { request } from "../../utils/request";
@@ -98,11 +99,9 @@ function ModalAddMessage({ show, close, addPost, apprenti, tags }) {
             />
 
             {/* Tags */}
-            <MultiSelect
-                label="Tags"
-                searchable
-                data={tags}
-                onChange={selected => setValue('tags', selected)}
+            <SelectTags
+                tags={tags}
+                setSelected={selected => setValue('tags', selected)}
             />
 
             {/* Body */}
