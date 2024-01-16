@@ -1,91 +1,124 @@
 
-import { Group, Pill, Title } from '@mantine/core';
+import {
+  Badge,
+  Button,
+  Card,
+  Divider,
+  Group,
+  Paper,
+  Stack,
+  Text,
+  TextInput,
+  Title
+} from '@mantine/core';
+
+import Depot from './Depot';
+import { Commentaire, NouveauCommentaireForm } from './Commentaire';
 
 import { dateString } from '../../utils/formatDate';
-import Depot from './Depot';
+import { useState } from 'react';
+import { Send } from 'react-bootstrap-icons';
 
-function MessagesContainer({ posts, setPosts }) {
-  function updatePost(post) {
-    if (!post.id) return;
+function Post({ user, post, updatePost }) {
+  const [showMoreCommentaires, setShowMoreCommentaires] = useState();
+  const [commentaires, setCommentaires] = useState(post.commentaire || []);
 
-    setPosts(old => {
-      const index = old.findIndex(item => item.id === post.id);
-      if (index >= 0) {
-        old[index] = {
-          ...old[index],
-          ...post
-        };
+  const dateFormatted = dateString(new Date(post.date));
+  const timeFormatted = post.time?.substring(0, 5)?.replace(':', 'h');
+  const createur = post.createur?.id ? `${post.createur.prenom} ${post.createur.nom}` : post.createur;
 
-        return [...old];
-      }
-
-      return old;
-    })
+  let Decoration = null;
+  let decorationTitle = "";
+  // type : depot
+  if (post.depot?.id) {
+    Decoration = Depot;
+    decorationTitle = "Dépôt";
   }
 
-  return (
-    <div className="container">
-      <div className="row">
-        <div className="preview">
-          {
-            posts.map((post) => {
-              if (!post) return
+  return <Card shadow="md" key={post.id} radius="lg">
+    {/* Titre */}
+    <Card.Section p="md" className="post-section-header post-header">
+      <Group justify="space-between">
+        {/* Titre */}
+        <Title order={2} dangerouslySetInnerHTML={{ __html: post.titre }} />
+        {/* Metadonnees */}
+        <Text fs="italic" size="sm" ta="right">Posté le {dateFormatted} par {createur}</Text>
+      </Group>
+    </Card.Section>
 
-              const dateFormatted = dateString(new Date(post.date));
-              const timeFormatted = post.time?.substring(0, 5)?.replace(':', 'h');
-              const dateInfo = dateFormatted + (timeFormatted ? ` (${timeFormatted})` : "");
-              const createur = post.createur?.id ? `${post.createur.prenom} ${post.createur.nom}` : post.createur;
+    {/* Corps du message */}
+    <Stack p="md">
+      {/* Tags */}
+      <Group className="post-tags">
+        {
+          post.tags?.map((tag, index) => <Badge
+            key={index}
+            color={tag?.couleur || "gray"}
+          >{tag?.libelle}</Badge>)
+        }
+      </Group>
 
-              let Decoration = null;
-              // type : depot
-              if (post.depot?.id) {
-                Decoration = Depot;
-              }
+      {/* Contenu */}
+      <Paper shadow="md" p="md" className="post-box">
+        <p dangerouslySetInnerHTML={{ __html: post.contenu }} />
+      </Paper>
+    </Stack>
 
-              return <div className="post" key={post.id}>
-                {/* Meta donnnees */}
-                <div className="post-header">
-                  <p className="header">
-                    <span>{dateInfo}</span>
-                    &nbsp;-&nbsp;
-                    <span>{createur}</span>
-                  </p>
-                </div>
+    {
+      Decoration && <>
+        <Card.Section p="md" className="post-section-header">
+          <Title order={3}>{decorationTitle}</Title>
+        </Card.Section>
 
-                <Group className="post-tags">
-                  {
-                    post.tags?.map((tag, index) => <Pill
-                      key={index}
-                      color={tag?.couleur}
-                    >{tag?.libelle}</Pill>)
-                  }
-                </Group>
+        <Card.Section p="md">
+          <Decoration post={post} updatePost={updatePost} />
+        </Card.Section>
+      </>
+    }
 
-                {/* Titre */}
-                <Title
-                  order={2}
-                  className="post-title"
-                  dangerouslySetInnerHTML={{ __html: post.titre }}
-                />
+    {/* Titre Commentaires */}
+    <Card.Section p="md" className="post-section-header">
+      <Title order={3}>Commentaires</Title>
+    </Card.Section>
 
-                <div
-                  className="post-body"
-                  dangerouslySetInnerHTML={{ __html: post.contenu }}
-                />
+    {/* Nouveau Commentaire */}
+    <Card.Section p="md">
+      <NouveauCommentaireForm
+        user={user}
+        messageId={post.id}
+        addCommentaire={newCommentaire => setCommentaires(old => [newCommentaire, ...old])}
+      />
+    </Card.Section>
 
-                {
-                  Decoration && <>
-                    <br />
-                    <Decoration post={post} updatePost={updatePost} />
-                  </>
-                }
-              </div>
-            })
-          }
-        </div>
-      </div>
-    </div>
-  );
+    {/* Commentaires */}
+    {
+      commentaires?.length > 0 && <>
+        <Card.Section>
+          <Divider />
+        </Card.Section>
+
+        <Card.Section>
+          <Stack p="md">
+            {
+              showMoreCommentaires ?
+                commentaires?.map(commentaire => <Commentaire commentaire={commentaire} />)
+                :
+                <Commentaire commentaire={commentaires[0]} />
+            }
+          </Stack>
+        </Card.Section>
+      </>
+    }
+
+    {/* Btn voir plus */}
+    {
+      commentaires?.length > 1 && <Card.Section ta="right" p="sm">
+        <Button variant="light" onClick={() => setShowMoreCommentaires(old => !old)}>
+          {showMoreCommentaires ? "Voir moins" : "Voir plus"}
+        </Button>
+      </Card.Section>
+    }
+  </Card>
 }
 
-export default MessagesContainer;
+export default Post;
