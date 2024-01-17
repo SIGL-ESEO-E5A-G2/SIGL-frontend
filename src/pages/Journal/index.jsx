@@ -1,47 +1,25 @@
 import './blog.css';
 
-import { useEffect, useState, useContext } from 'react';
-import ReactQuill from 'react-quill';
-import { Button, TextInput, Paper, Stack, MultiSelect, Container } from "@mantine/core";
+import { useEffect, useState, useContext, useMemo } from 'react';
+import { Button, Stack, Container, Group, keys } from "@mantine/core";
+import { Send } from 'react-bootstrap-icons';
 
 import Post from './Post';
 
 import { request } from '../../utils/request';
 import { UserContext } from '../../context/UserContext';
-import { Send } from 'react-bootstrap-icons';
 import ModalAddMessage from './ModalAddMessage';
-
-const textEditorModules = {
-  toolbar: [
-    [{ font: [] }],
-    [{ 'align': [] }],
-    [
-      { color: [] },
-      { background: [] },
-    ],
-    ["bold", "italic", "underline", "strike"],
-    ["code-block", "blockquote"],
-    [
-      { list: "ordered" },
-      { list: "bullet" },
-    ],
-    ["link", "video"],
-    ["clean"]
-  ]
-}
-
-// const titleEditorModules = {
-//   toolbar: [
-//     [{ color: [] },],
-//     ["bold", "italic", "underline"],
-//     ["clean"]
-//   ]
-// }
+import FiltresPosts, { handleFilters } from './FiltresPosts';
+import useArray from '../../hooks/useArray';
 
 const BlogComponent = () => {
   const [showPopup, setShowPopup] = useState(false);
 
+  const [filtres, setFiltre, setFiltres] = useArray();
   const [posts, setPosts] = useState([]);
+  const postsFiltered = useMemo(() => {
+    return handleFilters(posts, filtres);
+  }, [posts, filtres]);
 
   const [apprentidetail, setApprentidetail] = useState([]);
   const [tags, setTags] = useState([]);
@@ -82,12 +60,26 @@ const BlogComponent = () => {
   }
 
   return <div>
-    {/* Messages */}
-    <Container>
-      <Stack gap={50}>
-        {posts.map(post => <Post user={user} post={post} updatePost={updatePost} />)}
-      </Stack>
-    </Container>
+    <Stack gap="xl">
+      {/* Filtres */}
+      <Container size="90vw">
+        <FiltresPosts
+          tags={tags}
+          filtres={filtres}
+          setFiltre={setFiltre}
+          resetFiltres={() => setFiltres({})}
+        />
+      </Container>
+
+      {/* Messages */}
+      <Container>
+        <Stack gap={50}>
+          {postsFiltered.map(post => <Post user={user} post={post} updatePost={updatePost} />)}
+
+          {postsFiltered?.length < 1 ? <>Aucun message n'a été trouvé</> : ""}
+        </Stack>
+      </Container>
+    </Stack>
 
     {/* Modal ajout message */}
     <ModalAddMessage

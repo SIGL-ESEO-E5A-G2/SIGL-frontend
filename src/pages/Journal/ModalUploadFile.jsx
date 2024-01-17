@@ -2,6 +2,7 @@ import { useState } from "react";
 import { FileInput } from "@mantine/core";
 
 import Modal from "../../components/Modal";
+import { tailleMaxFileEnMo } from "../../data/constantes";
 
 function ModalUploadFile({ show, close, uploadFile }) {
     const [error, setError] = useState();
@@ -13,12 +14,26 @@ function ModalUploadFile({ show, close, uploadFile }) {
             return true;
         }
 
+        if (!file.name?.toLowerCase()?.endsWith('.pdf')) {
+            setError("Le fichier doit être au format .pdf");
+            return true;
+        }
+
+        const sizeToMo = (file.size / (1024 * 1024));
+        if (sizeToMo > tailleMaxFileEnMo) {
+            setError(`Le fichier doit faire moins de ${tailleMaxFileEnMo}Mo`);
+            return true;
+        }
+
         return false;
     }
 
     return <Modal
         opened={show}
-        onClose={close}
+        onClose={() => {
+            close();
+            setFile();
+        }}
         title="Dépôt de document"
         validateLabel="Déposer"
 
@@ -34,6 +49,7 @@ function ModalUploadFile({ show, close, uploadFile }) {
     >
         <FileInput
             label="Document"
+            description={`Format accepté: PDF. Taille maximum: ${tailleMaxFileEnMo}Mo`}
             required
             error={error}
             clearable

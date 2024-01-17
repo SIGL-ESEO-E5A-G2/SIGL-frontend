@@ -1,11 +1,15 @@
 import { useState } from "react";
 import ReactQuill from 'react-quill';
-import { Flex, MultiSelect, Stack, Text, TextInput } from "@mantine/core";
+import { X } from "react-bootstrap-icons";
+import { notifications } from "@mantine/notifications";
+import { Flex, Stack, Text, TextInput } from "@mantine/core";
 
-import useArray from '../../hooks/useArray';
 import Modal from "../../components/Modal";
+import useArray from '../../hooks/useArray';
 import { request } from "../../utils/request";
+import SelectTags from '../../components/SelectTags';
 import { getCurrentDate, getCurrentTime } from "../../utils/formatDate";
+import { notifTimeoutShort, tailleMaxFileEnMo } from "../../data/constantes";
 
 const textEditorModules = {
     toolbar: [
@@ -34,7 +38,7 @@ function createPost({ title, body, tags }, apprenti) {
 
     const userId = apprenti.utilisateur.id;
 
-    const cible = [userId] // TODO, apprenti.tuteurPedagogique?.id, apprenti.maitreAlternance?.id]
+    const cible = [userId, apprenti.tuteurPedagogique?.id, apprenti.maitreAlternance?.id]
         .filter(id => id);
 
     const newPost = {
@@ -49,12 +53,23 @@ function createPost({ title, body, tags }, apprenti) {
 
     return request("/message/", "post", newPost)
         .then((response) => request(`/messagedetail/${response.data.id}`))
-        .then(({ data }) => data);
+        .then(({ data }) => data)
+        .catch(err => {
+            notifications.show({
+                title: "Erreur",
+                message: "Une erreur est survenue lors de l'envoie du message",
+                color: 'red',
+                icon: <X />,
+                autoClose: notifTimeoutShort,
+            });
+
+            throw err; // continue
+        });
 }
 
 function ModalAddMessage({ show, close, addPost, apprenti, tags }) {
     const [errors, setErrors] = useState({});
-    const [values, setValue_] = useArray();
+    const [values, setValue_, setValues] = useArray();
     function setValue(key, value) {
         setValue_(key, value);
         setErrors(old => ({ ...old, [key]: null }));
@@ -71,6 +86,11 @@ function ModalAddMessage({ show, close, addPost, apprenti, tags }) {
             errors.body = "Champs requis";
         }
 
+        const sizeToMo = (values.body.length / (1024 * 1024));
+        if (sizeToMo > tailleMaxFileEnMo) {
+            errors.body = `Le corps du message doit faire moins de ${tailleMaxFileEnMo}Mo`;
+        }
+
         if (Object.values(errors).length > 0) {
             setErrors(errors);
             return true;
@@ -81,7 +101,10 @@ function ModalAddMessage({ show, close, addPost, apprenti, tags }) {
 
     return <Modal
         opened={show}
-        onClose={close}
+        onClose={() => {
+            setValues({});
+            close();
+        }}
         title="Nouveau message"
         validateLabel="Envoyer"
         size="lg"
@@ -98,10 +121,8 @@ function ModalAddMessage({ show, close, addPost, apprenti, tags }) {
             />
 
             {/* Tags */}
-            <MultiSelect
-                label="Tags"
-                searchable
-                data={tags}
+            <SelectTags
+                tags={tags}
                 onChange={selected => setValue('tags', selected)}
             />
 
