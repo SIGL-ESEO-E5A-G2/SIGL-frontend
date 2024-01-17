@@ -70,10 +70,12 @@ export default {
         },
         {
             path: "modification",
-            element: <ModifInfo/>,
-            roles: [3, 4], //admin
+            name: "Modifications données",
             icon: null,
-            name: "ALED",
+            element: <ModifInfo/>,
+            roles: [], //user
+            
+            
         },
     ]
 }
