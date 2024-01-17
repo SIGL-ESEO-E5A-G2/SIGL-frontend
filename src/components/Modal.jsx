@@ -3,6 +3,7 @@ import { notifications } from "@mantine/notifications";
 import { Check2, X } from "react-bootstrap-icons";
 
 import { isFunc } from "../utils/divers";
+import { notifTimeoutLong, notifTimeoutShort } from "../data/constantes";
 
 
 function Modal({
@@ -44,7 +45,7 @@ function Modal({
                     message: messageSuccess,
                     icon: <Check2 />,
                     loading: false,
-                    autoClose: 1000,
+                    autoClose: notifTimeoutShort,
                     withCloseButton: true,
                 }))
                 .catch(() => notifications.update({
@@ -53,7 +54,7 @@ function Modal({
                     message: messageError || "Une erreur est survenue",
                     icon: <X />,
                     loading: false,
-                    autoClose: 3000,
+                    autoClose: notifTimeoutLong,
                     withCloseButton: true,
                 }));
         } else {

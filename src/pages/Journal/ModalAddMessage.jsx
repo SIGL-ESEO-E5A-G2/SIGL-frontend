@@ -9,6 +9,7 @@ import useArray from '../../hooks/useArray';
 import { request } from "../../utils/request";
 import SelectTags from '../../components/SelectTags';
 import { getCurrentDate, getCurrentTime } from "../../utils/formatDate";
+import { notifTimeoutShort, tailleMaxFileEnMo } from "../../data/constantes";
 
 const textEditorModules = {
     toolbar: [
@@ -59,6 +60,7 @@ function createPost({ title, body, tags }, apprenti) {
                 message: "Une erreur est survenue lors de l'envoie du message",
                 color: 'red',
                 icon: <X />,
+                autoClose: notifTimeoutShort,
             });
 
             throw err; // continue
@@ -82,6 +84,11 @@ function ModalAddMessage({ show, close, addPost, apprenti, tags }) {
 
         if (!values.body) {
             errors.body = "Champs requis";
+        }
+
+        const sizeToMo = (values.body.length / (1024 * 1024));
+        if (sizeToMo > tailleMaxFileEnMo) {
+            errors.body = `Le corps du message doit faire moins de ${tailleMaxFileEnMo}Mo`;
         }
 
         if (Object.values(errors).length > 0) {
