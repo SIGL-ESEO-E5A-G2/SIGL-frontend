@@ -1,45 +1,25 @@
 import './blog.css';
 
 import { useEffect, useState, useContext, useMemo } from 'react';
-import ReactQuill from 'react-quill';
-import { Button, TextInput, Paper, Stack, MultiSelect } from "@mantine/core";
+import { Button, Stack, Container } from "@mantine/core";
+import { Send } from 'react-bootstrap-icons';
 
-import MessagesContainer from './Post';
+import Post from './Post';
 
 import { request } from '../../utils/request';
 import { UserContext } from '../../context/UserContext';
-
-const textEditorModules = {
-  toolbar: [
-    [{ font: [] }],
-    [{ 'align': [] }],
-    [
-      { color: [] },
-      { background: [] },
-    ],
-    ["bold", "italic", "underline", "strike"],
-    ["code-block", "blockquote"],
-    [
-      { list: "ordered" },
-      { list: "bullet" },
-    ],
-    ["link", "video"],
-    ["clean"]
-  ]
-}
-
-// const titleEditorModules = {
-//   toolbar: [
-//     [{ color: [] },],
-//     ["bold", "italic", "underline"],
-//     ["clean"]
-//   ]
-// }
+import ModalAddMessage from './ModalAddMessage';
+import FiltresPosts, { handleFilters } from './FiltresPosts';
+import useArray from '../../hooks/useArray';
 
 const BlogComponent = () => {
   const [showPopup, setShowPopup] = useState(false);
 
+  const [filtres, setFiltre, setFiltres] = useArray();
   const [posts, setPosts] = useState([]);
+  const postsFiltered = useMemo(() => {
+    return handleFilters(posts, filtres);
+  }, [posts, filtres]);
 
   const [apprentidetail, setApprentidetail] = useState([]);
   const [tags, setTags] = useState([]);
@@ -47,10 +27,11 @@ const BlogComponent = () => {
   const user = useContext(UserContext);
 
   useEffect(() => {
+    // TODO en fn du type d'user
     request(`/apprentiutilisateurdetail?utilisateur=${user.id}`)
       .then(({ data }) => setApprentidetail(data?.length ? data[0] : null));
 
-    request(`/messagefeed`)///?utilisateur=${user.id}`)
+    request(`/messageutilisateurfeed?utilisateur=${user.id}`)
       .then(({ data }) => setPosts(data));
 
     request('/tag', 'get') // TODO rendre certains tags inacessibles
@@ -61,97 +42,67 @@ const BlogComponent = () => {
       }))));
   }, []);
 
-  const RoundButton = ({ onClick }) => {
-    return (
-      <Button className="round-button" color={showPopup ? 'red' : 'blue'} onClick={onClick}>
-        <h1><b>{showPopup ? 'x' : '+'}</b></h1>
-      </Button>
-    );
-  };
+  function updatePost(post) {
+    if (!post.id) return;
 
-  return <div>
-    {/* Messages */}
-    <MessagesContainer posts={posts} />
+    setPosts(old => {
+      const index = old.findIndex(item => item.id === post.id);
+      if (index >= 0) {
+        old[index] = {
+          ...old[index],
+          ...post
+        };
 
-    {/* Ajout message */}
-    {showPopup && <AddMessagePopUp apprenti={apprentidetail} tags={tags} />}
+        return [...old];
+      }
 
-    <div>
-      <RoundButton onClick={() => setShowPopup(old => !old)} />
-    </div>
-  </div>
-}
-
-function AddMessagePopUp({ apprenti, tags }) {
-  const [title, setTitle] = useState('');
-  const [body, setBody] = useState('');
-  const [tagsSelected, setTagsSelected] = useState();
-
-  function addPost() {
-    if (!title?.trim() || !body?.trim()) {
-      alert('Le titre et le message ne peuvent pas être vides.');
-      return;
-    }
-
-    const date = (new Date()).toISOString().split('T');
-    const dateString = date[0];
-    const timeString = date[1].substring(0, 5);
-    // TODO l'heure n'est pas en UTC Paris (MEMO : surtout ne pas faire time + 1)
-
-    const cible = [user.id, apprenti?.tuteurPedagogique?.id, apprenti?.maitreAlternance?.id]
-      .filter(id => id);
-
-    const newPost = {
-      titre: title,
-      contenu: body,
-      date: dateString,
-      time: timeString,
-      createur: user.id,
-      destinataire: cible,
-      tags: tagsSelected
-    };
-
-    return request("/message/", "post", newPost)
-      .then((response) => {
-        setShowPopup(false);
-
-        return request(`/messagedetail/${response.data.id}`)
-          .then(({ data }) => {
-            setPosts(prevPosts => [...prevPosts, data]);
-          });
-      })
-      .catch((error) => {
-        console.error('Erreur lors de la requête:', error);
-      });
+      return old;
+    })
   }
 
-  return <Paper className="popup" shadow="md" p="md">
-    <Stack>
-      {/* Titre du message */}
-      <TextInput
-        placeholder="Titre"
-        onChange={setTitle}
-        className="title-input"
-      />
+  return <div>
+    <Stack gap="xl">
+      {/* Filtres */}
+      <Container size="90vw">
+        <FiltresPosts
+          tags={tags}
+          filtres={filtres}
+          setFiltre={setFiltre}
+          resetFiltres={() => setFiltres({})}
+        />
+      </Container>
 
-      <MultiSelect
-        searchable
-        data={tags}
-        onChange={setTagsSelected}
-      />
+      {/* Messages */}
+      <Container>
+        <Stack gap={50}>
+          {postsFiltered.map(post => <Post user={user} post={post} updatePost={updatePost} />)}
 
-      {/* Corps du message */}
-      <ReactQuill
-        theme="snow"
-        placeholder="Message"
-        onChange={setBody}
-        className="editor-input"
-        modules={textEditorModules}
-      />
-
-      <Button onClick={addPost}>Ajouter un post</Button>
+          {postsFiltered?.length < 1 ? <>Aucun message n'a été trouvé</> : ""}
+        </Stack>
+      </Container>
     </Stack>
-  </Paper>
+
+    {/* Modal ajout message */}
+    <ModalAddMessage
+      show={showPopup}
+      close={() => setShowPopup(false)}
+      tags={tags}
+      apprenti={apprentidetail}
+      addPost={newMessage => setPosts(old => [newMessage, ...old])}
+    />
+
+    {/* Btn ajouter message */}
+    <Button
+      onClick={() => setShowPopup(true)}
+      radius="xl"
+      size="lg"
+      color="red"
+      className="round-button"
+      rightSection={<Send />}
+    >
+      Nouveau message
+    </Button>
+  </div>
 }
 
 export default BlogComponent;

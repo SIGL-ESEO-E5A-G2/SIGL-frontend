@@ -173,7 +173,7 @@ export const postMessage = async (title, message, recipient, idTags, idSender) =
 
 
 /**
- * Modifie un apprenti existant
+ * Récupère les apprentis d'une promo
  * 
  * @param {int} idPromo 
  * @returns {Promise} Une promesse qui se résout avec les données des apprentis
@@ -184,6 +184,28 @@ export const getApprentiFromPromo = async (idPromo) => {
     return response.data || [];
   } catch (error) {
     console.error("Erreur lors de l'ajout de la promotion :", error.message);
+    throw error;
+  }
+};
+
+/**
+ * Ajoute un tag
+ * 
+ * @param {String} libelle
+ * @param {String} color
+ * @param {String} type
+ */
+export const addTag = async (libelle, color, type) => {
+  try {
+    const newTag = {
+      libelle: libelle,
+      couleur: color,
+      type:  type
+    };
+    request("/tag/", "post", newTag);
+    window.location.reload();
+  } catch (error) {
+    console.error("Erreur lors de l'ajout du tag :", error.message);
     throw error;
   }
 };
