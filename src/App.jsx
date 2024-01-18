@@ -33,7 +33,7 @@ function App() {
           user?.id ? <>
             <Menu deconnect={deconnect} />
 
-            <div className="app" style={{ padding: "120px 30px 0px 30px" }}>
+            <div className="app">
               <AppRouter user={user} />
             </div>
           </>

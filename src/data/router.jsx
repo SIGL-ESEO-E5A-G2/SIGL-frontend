@@ -18,7 +18,6 @@ import Journal from '../pages/Journal';
 
 export default {
     path: "",
-    element: <Home />,
     roles: [],
     disabled: false,
     children: [

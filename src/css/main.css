@@ -1,5 +1,6 @@
 body {
-    background-color: #F4F8FF;
+    font-family: League Spartan;
+    background: var(--SIGL_Main, #F4F8FF);
 }
 
 a {
@@ -8,4 +9,10 @@ a {
 
 a:visited {
     color: var(--mantine-color-blue-9);
+}
+
+.app{
+    margin-top: 7rem;
+    margin-left: 14rem;
+    margin-right: 1rem;
 }
