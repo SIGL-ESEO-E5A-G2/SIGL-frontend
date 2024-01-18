@@ -4,6 +4,7 @@ import {
     LayoutTextSidebar,
     LayoutTextWindow,
     LayoutTextWindowReverse,
+    Mortarboard,
     PersonVideo2,
     ShieldLock
 } from 'react-bootstrap-icons';
@@ -70,9 +71,10 @@ export default {
         },
         {
             path: "grilleevaluation",
+            icon: Mortarboard,
             name: "Grille d'évaluation",
             element: <GrilleEvaluation />,
-            roles: [],
+            roles: [1, 2, 5],
         }
     ]
 }
