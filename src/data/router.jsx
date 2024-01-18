@@ -15,6 +15,7 @@ import CoordinatriceAlternance from '../pages/CoordinatriceAlternance';
 import ApprentiListing from '../pages/ApprentiListing';
 import Profil from '../pages/Profil';
 import Journal from '../pages/Journal';
+import GrilleEvaluation from '../pages/GrilleEvaluation';
 
 export default {
     path: "",
@@ -67,5 +68,11 @@ export default {
             roles: [], //user
             children: [],
         },
+        {
+            path: "grilleevaluation",
+            name: "Grille d'évaluation",
+            element: <GrilleEvaluation />,
+            roles: [],
+        }
     ]
 }

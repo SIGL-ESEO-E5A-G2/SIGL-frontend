@@ -1,7 +1,7 @@
 import './blog.css';
 
 import { useEffect, useState, useContext, useMemo } from 'react';
-import { Button, Stack, Container, Group, keys } from "@mantine/core";
+import { Button, Stack, Container } from "@mantine/core";
 import { Send } from 'react-bootstrap-icons';
 
 import Post from './Post';
@@ -27,10 +27,11 @@ const BlogComponent = () => {
   const user = useContext(UserContext);
 
   useEffect(() => {
+    // TODO en fn du type d'user
     request(`/apprentiutilisateurdetail?utilisateur=${user.id}`)
       .then(({ data }) => setApprentidetail(data?.length ? data[0] : null));
 
-    request(`/messagefeed?utilisateur=${user.id}`)
+    request(`/messageutilisateurfeed?utilisateur=${user.id}`)
       .then(({ data }) => setPosts(data));
 
     request('/tag', 'get') // TODO rendre certains tags inacessibles

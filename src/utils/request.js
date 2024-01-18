@@ -6,7 +6,7 @@ const urlBack = import.meta.env.VITE_URL_BACK;
  * Requete vers le back
  * 
  * @param {string} url 
- * @param {"post" | "get" | "put" | "delete"} method 
+ * @param {"post" | "get" | "put" | "patch" | "delete"} method 
  * @param {{*}} data 
  */
 export async function request(url, method = "get", data) {
