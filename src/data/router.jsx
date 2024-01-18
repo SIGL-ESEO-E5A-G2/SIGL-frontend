@@ -4,6 +4,7 @@ import {
     LayoutTextSidebar,
     LayoutTextWindow,
     LayoutTextWindowReverse,
+    Mortarboard,
     PersonVideo2,
     ShieldLock
 } from 'react-bootstrap-icons';
@@ -15,6 +16,7 @@ import CoordinatriceAlternance from '../pages/CoordinatriceAlternance';
 import ApprentiListing from '../pages/ApprentiListing';
 import Profil from '../pages/Profil';
 import Journal from '../pages/Journal';
+import GrilleEvaluation from '../pages/GrilleEvaluation';
 
 export default {
     path: "",
@@ -67,5 +69,12 @@ export default {
             roles: [], //user
             children: [],
         },
+        {
+            path: "grilleevaluation",
+            icon: Mortarboard,
+            name: "Grille d'évaluation",
+            element: <GrilleEvaluation />,
+            roles: [1, 2, 5],
+        }
     ]
 }

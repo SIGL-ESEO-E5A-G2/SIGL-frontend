@@ -1,9 +1,6 @@
 import { Button, Group, Modal as ModalMantine, Stack } from "@mantine/core";
-import { notifications } from "@mantine/notifications";
-import { Check2, X } from "react-bootstrap-icons";
 
-import { isFunc } from "../utils/divers";
-import { notifTimeoutLong, notifTimeoutShort } from "../data/constantes";
+import { isFunc, withNotification } from "../utils/divers";
 
 
 function Modal({
@@ -23,40 +20,7 @@ function Modal({
         rest.onClose();
 
         if (notification) {
-            const {
-                title,
-                message,
-                messageSuccess,
-                messageError,
-            } = notification;
-
-            const notifId = notifications.show({
-                loading: true,
-                title: title,
-                message: message,
-                autoClose: false,
-                withCloseButton: false,
-            });
-
-            return handleSubmit()
-                .then(() => notifications.update({
-                    id: notifId,
-                    color: 'green',
-                    message: messageSuccess,
-                    icon: <Check2 />,
-                    loading: false,
-                    autoClose: notifTimeoutShort,
-                    withCloseButton: true,
-                }))
-                .catch(() => notifications.update({
-                    id: notifId,
-                    color: 'red',
-                    message: messageError || "Une erreur est survenue",
-                    icon: <X />,
-                    loading: false,
-                    autoClose: notifTimeoutLong,
-                    withCloseButton: true,
-                }));
+            withNotification(handleSubmit, notification);
         } else {
             return handleSubmit();
         }
