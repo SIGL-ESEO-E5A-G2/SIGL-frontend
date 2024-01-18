@@ -26,7 +26,6 @@ export function GrilleEvaluation() {
     const [key, setKey] = useState();
 
     useEffect(() => {
-        console.log("TAG user", user)
         if (isApprenti) return;
 
         if (isMA) {
@@ -47,6 +46,8 @@ export function GrilleEvaluation() {
                                 .then(res => res.data))
                         );
 
+                        console.log("TAG apprentis", usersApprentis)
+
                         setApprentis(usersApprentis.map(apprenti => ({
                             ...apprenti,
                             value: apprenti.id + "",
@@ -63,7 +64,9 @@ export function GrilleEvaluation() {
         request(`/apprentiutilisateurdetail?utilisateur=${apprentiSelectedId}`, 'get')
             .then(res => res.data ? res.data[0] : null)
             .then(apprenti => {
-                setApprentis([apprenti.utilisateur]);
+                if (!apprentis.find(userApprenti => userApprenti.id === apprenti.id)) {
+                    setApprentis(old => [...old, apprenti.utilisateur]);
+                }
 
                 setKey(apprenti.promotion?.semestre);
 
@@ -91,9 +94,11 @@ export function GrilleEvaluation() {
             });
     }, [apprentiSelectedId]);
 
+    const apprentiSelected = apprentiSelectedId && apprentis.length > 0 ? apprentis.find(userApprenti => userApprenti.id === apprentiSelectedId) : null;
+
     return <Stack gap="lg">
         {
-            !apprentis.length > 1 && <Select
+            apprentis.length > 1 && <Select
                 label="Apprentis"
                 data={apprentis}
                 onChange={selected => setApprentiSelectedId(parseInt(selected))}
@@ -101,10 +106,10 @@ export function GrilleEvaluation() {
         }
 
         {
-            !isApprenti && apprentiSelectedId && apprentis.length > 0 && <Paper shadow="md" p="md">
+            !isApprenti && apprentiSelected && <Paper shadow="md" p="md">
                 <Group>
                     <Text>Apprenti:</Text>
-                    <Text fw="bold">{((apprentis[0].prenom || "") + " " + (apprentis[0].nom || "")).trim()}</Text>
+                    <Text fw="bold">{((apprentiSelected.prenom || "") + " " + (apprentiSelected.nom || "")).trim()}</Text>
                 </Group>
             </Paper>
         }
