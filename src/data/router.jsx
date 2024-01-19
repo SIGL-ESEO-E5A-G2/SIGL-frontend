@@ -6,13 +6,15 @@ import {
     ShieldLock
 } from 'react-bootstrap-icons';
 
-import Entreprise from '../pages/Entreprise';
 import Admin from '../pages/Admin';
 import CoordinatriceAlternance from '../pages/CoordinatriceAlternance';
 import ApprentiListing from '../pages/ApprentiListing';
 import Profil from '../pages/Profil';
 import Journal from '../pages/Journal';
 import GrilleEvaluation from '../pages/GrilleEvaluation';
+import ApprenticeshipForm from '../pages/Entreprise/form/ApprenticeshipForm';
+import Apprentis from '../pages/ApprentiListing/List/Apprentis';
+import Promotions from '../pages/ApprentiListing/List/Promotions';
 
 export default {
     path: "",
@@ -24,13 +26,13 @@ export default {
             path: "inscription",
             name: "Inscription entrerpise",
             icon: LayoutTextWindowReverse,
-            element: <Entreprise />,
+            element: <ApprenticeshipForm />,
             children: [],
             roles: [3], //admin
         },
         {
             path: "admin",
-            name: "Page admin",
+            name: "Administration",
             icon: ShieldLock,
             element: <Admin />,
             children: [],
@@ -64,6 +66,20 @@ export default {
             name: "Grille d'évaluation",
             element: <GrilleEvaluation />,
             roles: [1, 2, 5],
-        }
+        },
+        {
+            path: "promotions",
+            name: "Promotions",
+            icon: JournalText,
+            element: <Promotions />,
+            children: [],
+            roles: [3, 4], //coordinatrice
+        },
+        {
+            path: "apprentis",
+            name: "Apprentis",
+            element: <Apprentis />,
+            roles: [4] // coordinatrice
+        },
     ]
 }
