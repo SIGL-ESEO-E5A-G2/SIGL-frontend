@@ -3,7 +3,6 @@ import { useContext, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@mantine/core";
 
-import UserHome from "./UserHome";
 import { UserContext } from "../context/UserContext";
 import flatLinks from "./flattenedNavigation";
 
@@ -20,7 +19,8 @@ export default function ({ deconnect }) {
         .join(', ')
 
     const navigation = useMemo(() => {
-        return flatLinks(null, router.children, user);
+        return flatLinks(null, router.children, user)
+            .filter(row => row);
     }, [user]);
 
     return (
@@ -33,10 +33,16 @@ export default function ({ deconnect }) {
                         </div>
                     </Link>
 
-                    <div className="menu-items">
-                        <UserHome>
-                            {navigation}
-                        </UserHome>
+                    <div>
+                        {
+                            navigation.map(row => <Link
+                                to={row.path}
+                                className="menu-items menu-block"
+                                key={row.path}
+                            >
+                                {row.name}
+                            </Link>)
+                        }
                     </div>
                 </div>
 
@@ -46,6 +52,7 @@ export default function ({ deconnect }) {
                         type="button"
                         component={Link}
                         to="login"
+                        radius="0"
                         onClick={deconnect}
                     >
                         Déconnexion
