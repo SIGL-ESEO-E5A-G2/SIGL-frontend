@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Group, Table, TextInput, Select, Checkbox } from '@mantine/core';
+
 import { request } from '../../../utils/request.js';
 import { roles } from '../../../data/constantes.js';
 import { putUtilisateur } from '../../../utils/api.js';
@@ -39,15 +40,15 @@ const ManageUsers = () => {
     hashPassword(passwords[id])
       .then((hashedPassword) => {
         request(`/utilisateur/${id}`)
-        .then((jsonUser) => {
+          .then((jsonUser) => {
             const updateUser = {
-                "password":hashedPassword,
+              "password": hashedPassword,
             };
             putUtilisateur(id, jsonUser.data, updateUser);
-        })
-        .catch((error) => {
+          })
+          .catch((error) => {
             console.error("Erreur lors de la mise à jour de l'apprenti :", error.message);
-        });
+          });
         setError("");
         setSuccessMessage("Mot de passe changé avec succès!");
       })
@@ -93,7 +94,7 @@ const ManageUsers = () => {
         <Select
           id="selectRole"
           label="Sélectionner le profil"
-          data={roles}
+          data={roles.map(role => role.name)}
           value={selectedRole}
           onChange={handleRoleChange}
         />
