@@ -1,15 +1,11 @@
 import {
-    JournalBookmarkFill,
     JournalText,
-    LayoutTextSidebar,
-    LayoutTextWindow,
     LayoutTextWindowReverse,
     Mortarboard,
     PersonVideo2,
     ShieldLock
 } from 'react-bootstrap-icons';
 
-import Home from '../pages/Home';
 import Entreprise from '../pages/Entreprise';
 import Admin from '../pages/Admin';
 import CoordinatriceAlternance from '../pages/CoordinatriceAlternance';
@@ -21,15 +17,9 @@ import GrilleEvaluation from '../pages/GrilleEvaluation';
 export default {
     path: "",
     roles: [],
+    element: <Journal />,
     disabled: false,
     children: [
-        {
-            path: "journal",
-            icon: JournalBookmarkFill,
-            element: <Journal />,
-            name: "Journal de l'apprenti",
-            roles: []
-        },
         {
             path: "inscription",
             name: "Inscription entrerpise",

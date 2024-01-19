@@ -17,7 +17,14 @@ export const semesters = semestersData.map(semester => "S" + semester.numero);
 
 export const etatCompetences = ["Non acquis", "En cours d'acquisition", "Acquis"];
 
-export const roles = ['Apprenti', 'TuteurPedagogique', 'MaitreAlternance', 'CoordinatriceAlternance', 'Administrateur', 'ResponsableEntreprise'];
+export const roles = [
+    { id: 1, name: 'Apprenti' },
+    { id: 2, name: 'Tuteur Pédagogique' },
+    { id: 3, name: 'Administrateur' },
+    { id: 4, name: 'Coordinateur d\'Alternance' },
+    { id: 5, name: 'Maître d\'Alternance' },
+    { id: 6, name: 'Responsable Entreprise' }
+];
 
 export const tailleMaxFileEnMo = 1;
 

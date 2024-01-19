@@ -40,8 +40,11 @@ a:visited {
     font-weight: bold;
 }
 
-.app{
-    margin-top: 7rem;
+
+/* App container */
+
+.app {
+    margin-top: 5rem;
     margin-left: 14rem;
     margin-right: 1rem;
 }
