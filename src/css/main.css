@@ -1,5 +1,6 @@
 body {
-    background-color: #F4F8FF;
+    font-family: League Spartan;
+    background: var(--SIGL_Main, #F4F8FF);
 }
 
 
@@ -37,4 +38,22 @@ a:visited {
 
 .mantine-Modal-title {
     font-weight: bold;
+}
+
+
+/* App container */
+
+.app {
+    margin-top: 8rem;
+    margin-left: 14rem;
+    margin-right: 1rem;
+}
+
+
+/* Accordion */
+
+.mantine-Accordion-control {
+    border-radius: 5px;
+    background-color: var(--mantine-color-blue-7);
+    color: var(--mantine-color-white);
 }

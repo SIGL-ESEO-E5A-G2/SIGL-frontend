@@ -1,3 +1,41 @@
+.container {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  width: 80%;
+  /* Ajustez la largeur selon vos besoins */
+  background-color: var(--mantine-color-white);
+  /* Couleur de fond similaire à Facebook */
+  margin-top: 7%;
+}
+
+.row {
+  height: 100%;
+  width: 100%;
+  display: flex;
+}
+
+.title-editor,
+.text-editor {
+  width: 100%;
+  margin-bottom: 0;
+}
+
+.title-input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.editor-input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 4px;
+  font-size: 16px;
+
+}
+
 .post-section-header {
   background-color: var(--mantine-color-blue-3);
   color: var(--mantine-color-white);
