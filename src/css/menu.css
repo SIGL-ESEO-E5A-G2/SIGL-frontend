@@ -1,14 +1,20 @@
-.menu-container {
+.menu{
+    width: 13rem;
     position: fixed;
     top: 0;
     left: 0;
-    right: 0;
-    height: 90px;
+    height: 100vh;
     display: flex;
+    flex-direction: column;
+    background: linear-gradient(180deg, #F4F8FF 91.18%, rgba(244, 248, 255, 0.00) 100%);
+    box-shadow: 0px 0px 26.8px 0px rgba(34, 36, 39, 0.15);
     align-items: center;
-    background-color: var(--mantine-color-blue-9);
-    color: var(--mantine-color-white);
-    z-index: 100;
+    justify-content: flex-end;
+}
+
+.menu-container {
+    position: fixed;
+    top: 0;
 }
 
 .menu-title {
@@ -20,12 +26,77 @@
 }
 
 .menu-user {
-    margin-left: auto;
-    margin-right: 20px;
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
 }
 
-.menu-image {
-    background-color: var(--mantine-color-white);
-    border-radius: 5px;
-    padding: 5px;
+.menu-block_logo{
+    width: 13rem;
+    height: 6rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--SIGL_Main, #F4F8FF);
+    box-shadow: -6px 0px 26.8px 0px rgba(34, 36, 39, 0.15);
+}
+
+.menu-block{
+    width: 13rem;
+    height: 6rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--SIGL_Main, #F4F8FF);
+    box-shadow: -6px 0px 26.8px 0px rgba(34, 36, 39, 0.15);
+
+    color: var(--SIGL_Blue_ESEO, #457DBF);
+    text-align: center;
+    font-size: 1.875rem;
+    font-weight: 400;
+    text-decoration: none;
+
+}
+
+.menu-items :hover{
+    background: var(--SIGL_Main, #F4F8FF);
+    box-shadow: 0px 0px 26.8px 0px var(--SIGL_Secondv2, #AFCBEB) inset;
+}
+
+.menu-items{
+    text-align: center;
+}
+
+.menu-logout{
+    padding-bottom: 2rem;
+    width: 100%;
+}
+
+.menu-logout_btn{
+    width: 100%;
+    height: 3.5625rem;
+
+    color: var(--SIGL_Main, #F4F8FF) !important;
+    font-size: 1.875rem;
+    font-weight: 400;
+    background: var(--SIGL_Danger, #FF4E4E);
+    box-shadow: -6px 0px 26.8px 0px rgba(34, 36, 39, 0.15);
+}
+
+.menu-user{
+    width: 15.875rem;
+    height: 4.9375rem;
+    display: flex;
+    border-radius: 6.125rem;
+    background: var(--SIGL_Main, #F4F8FF);
+    box-shadow: 0px 0px 26.8px 0px rgba(34, 36, 39, 0.15);
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    z-index: 1;
+}
+
+.menu-user_infos{
+    margin: 0;
+    padding-left: 1.5rem;
 }

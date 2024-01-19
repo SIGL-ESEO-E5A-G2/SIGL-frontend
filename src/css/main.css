@@ -1,5 +1,6 @@
 body {
-    background-color: #F4F8FF;
+    font-family: League Spartan;
+    background: var(--SIGL_Main, #F4F8FF);
 }
 
 
@@ -37,4 +38,10 @@ a:visited {
 
 .mantine-Modal-title {
     font-weight: bold;
+}
+
+.app{
+    margin-top: 7rem;
+    margin-left: 14rem;
+    margin-right: 1rem;
 }

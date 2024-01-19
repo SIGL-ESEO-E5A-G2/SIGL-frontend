@@ -20,7 +20,6 @@ import GrilleEvaluation from '../pages/GrilleEvaluation';
 
 export default {
     path: "",
-    element: <Home />,
     roles: [],
     disabled: false,
     children: [
