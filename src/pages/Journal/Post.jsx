@@ -8,7 +8,6 @@ import {
   Paper,
   Stack,
   Text,
-  TextInput,
   Title
 } from '@mantine/core';
 
@@ -17,7 +16,6 @@ import { Commentaire, NouveauCommentaireForm } from './Commentaire';
 
 import { dateString } from '../../utils/formatDate';
 import { useState } from 'react';
-import { Send } from 'react-bootstrap-icons';
 
 function Post({ user, post, updatePost }) {
   const [showMoreCommentaires, setShowMoreCommentaires] = useState();
