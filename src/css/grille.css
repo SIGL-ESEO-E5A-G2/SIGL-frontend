@@ -1,11 +1,11 @@
-.grille-evaluation .mantine-Accordion-label,
-.grille-evaluation .mantine-Accordion-chevron {
-    font-weight: bold;
-    color: var(--mantine-color-white);
+.grille-evaluation .mantine-Tabs-tab {
+    border-radius: 5px 5px 0px 0px;
 }
 
-.grille-evaluation .mantine-Accordion-panel {
-    background-color: var(--mantine-color-white);
+.grille-component {
+    border-radius: 0px 10px 10px 10px;
+    border-width: 4px;
+    border-style: solid;
 }
 
 .grille-competence {
