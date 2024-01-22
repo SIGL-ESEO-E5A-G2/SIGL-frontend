@@ -56,3 +56,35 @@ export function withNotification(asyncFunc, notification) {
       withCloseButton: true,
     }));
 }
+
+export function getNomUser(user) {
+  if (!user) return;
+
+  const { nom, prenom } = user;
+  return ((nom || "") + " " + (prenom || "")).trim();
+}
+
+export function addRow(row, setData) {
+  setData(old => [row, ...old]);
+}
+
+export function removeRow(rowId, setData) {
+  setData(old => {
+    return [...old.filter(oldRow => oldRow.id !== rowId)];
+  });
+}
+
+export function updateRow(row, setData) {
+  setData(old => {
+    const index = old.findIndex(oldRow => oldRow.id === row.id);
+
+    if (index >= 0) {
+      old[index] = {
+        ...old[index],
+        ...row,
+      };
+
+      return [...old];
+    } else return old;
+  });
+}

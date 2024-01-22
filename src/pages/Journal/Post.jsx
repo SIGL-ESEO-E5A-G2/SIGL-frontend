@@ -16,6 +16,7 @@ import { Commentaire, NouveauCommentaireForm } from './Commentaire';
 
 import { dateString } from '../../utils/formatDate';
 import { useState } from 'react';
+import { getNomUser } from '../../utils/divers';
 
 function Post({ user, post, updatePost }) {
   const [showMoreCommentaires, setShowMoreCommentaires] = useState();
@@ -23,7 +24,7 @@ function Post({ user, post, updatePost }) {
 
   const dateFormatted = dateString(new Date(post.date));
   const timeFormatted = post.time?.substring(0, 5)?.replace(':', 'h');
-  const createur = post.createur?.id ? `${post.createur.prenom} ${post.createur.nom}` : post.createur;
+  const createur = post.createur?.id ? getNomUser(post.createur) : post.createur;
 
   let Decoration = null;
   let decorationTitle = "";
