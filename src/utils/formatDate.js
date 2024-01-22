@@ -3,10 +3,17 @@ import { locale } from '../data/constantes';
 /**
  *
  * @param {Date} date
+ * @param {boolean} withTime
+ * 
  * @return {string}
  */
-export function dateString(date) {
-  return date?.toLocaleDateString(locale);
+export function dateString(date, withTime) {
+  return date?.toLocaleDateString(locale) + (withTime ? ` ${timeString(date)}` : "");
+}
+
+export function timeString(date) {
+  if (!date) return "";
+  return date.toLocaleTimeString(locale).replace(':', 'h').substring(0, 5);
 }
 
 export function getCurrentDate() {

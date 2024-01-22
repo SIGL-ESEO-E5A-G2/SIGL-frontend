@@ -1,7 +1,7 @@
 import "../css/menu.css";
 import { useContext, useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Button } from "@mantine/core";
+import { Button, Flex, Group } from "@mantine/core";
 
 import { UserContext } from "../context/UserContext";
 import flatLinks from "./flattenedNavigation";
@@ -9,6 +9,7 @@ import flatLinks from "./flattenedNavigation";
 import logo from '../assets/images/logo.svg';
 import router from "../data/router";
 import { roles } from "../data/constantes";
+import { Person } from "react-bootstrap-icons";
 
 export default function ({ deconnect }) {
     const user = useContext(UserContext);
@@ -71,13 +72,21 @@ export default function ({ deconnect }) {
                 </div>
             </div>
 
-            <div className="menu-user">
-                <p className="menu-user_infos">
-                    <b>{user.nom}</b> {user.prenom}
-                </p>
+            <Link to="reset-password">
+                <div className="menu-user">
+                    <Group p="md">
+                        <Person size="4rem" />
 
-                <p className="menu-user_infos">{userRole}</p>
-            </div>
+                        <div>
+                            <p className="menu-user_infos">
+                                <b>{user.nom}</b> {user.prenom}
+                            </p>
+
+                            <p className="menu-user_infos">{userRole}</p>
+                        </div>
+                    </Group>
+                </div>
+            </Link>
         </>
     );
 }
