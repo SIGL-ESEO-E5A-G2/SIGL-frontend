@@ -1,14 +1,17 @@
-import ChangePasswordForm from "./form/ChangePassword";
 import { useContext } from "react";
+import { Center, Stack, Text } from "@mantine/core";
+
+import ChangePasswordForm from "./form/ChangePassword";
 import { UserContext } from "../../context/UserContext";
 
 export default function () {
   const user = useContext(UserContext);
 
-  return (
-    <>
-      <p>Bonjour, {user.nomComplet} !</p>
-      <ChangePasswordForm user={user} />
-    </>
-  );
+  return <Stack w="max-content">
+    <Text>Bonjour, {user.nomComplet} !</Text>
+
+    <br />
+
+    <ChangePasswordForm user={user} />
+  </Stack>
 }

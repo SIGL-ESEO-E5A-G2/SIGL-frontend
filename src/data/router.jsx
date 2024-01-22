@@ -48,7 +48,7 @@ export default {
             roles: [3, 4], //coordinatrice
         },
         {
-            path: "profil",
+            path: "reset-password",
             element: <Profil />,
             roles: [], //user
             children: [],
@@ -75,11 +75,10 @@ export default {
             roles: [4] // coordinatrice
         },
         {
-            path: "modification",
-            name: "Modifications données",
-            icon: null,
+            path: "profil",
+            name: "Profil",
             element: <ModifInfo/>,
-            roles: [], //user
+            roles: [1], // user
             
             
         },
