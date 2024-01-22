@@ -100,7 +100,7 @@ const ManageUsers = () => {
         />
       </Group>
 
-      <Table striped bordered hover>
+      <Table striped highlightOnHover withTableBorder>
         <Table.Thead>
           <Table.Tr>
             <Table.Th>Nom</Table.Th>
