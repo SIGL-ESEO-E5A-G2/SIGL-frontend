@@ -17,3 +17,10 @@
     /* border: 2px solid var(--mantine-color-red-7); */
     box-shadow: inset 1px -1px 0.1875rem rgba(0, 0, 0, 0.1), inset -1px 1px 0.1875rem rgba(0, 0, 0, 0.1);
 }
+
+.grille-evaluation .mantine-Tabs-tab:not([data-active=true]) {
+    border-top: 4px solid var(--tabs-color);
+    /* border-left: 4px solid var(--tabs-color);
+    border-right: 4px solid var(--tabs-color); */
+    color: var(--tabs-color);
+}

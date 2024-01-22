@@ -20,10 +20,10 @@ export function GrilleEvaluation() {
     const [apprentis, setApprentis] = useState([]);
     const [apprentiSelectedId, setApprentiSelectedId] = useState(isApprenti ? user.id : null);
 
-    const [semestres, setSemestres] = useState();
+    const [values, setValues] = useState();
     const [competences, setCompetences] = useState();
 
-    const [key, setKey] = useState();
+    const [key, setKey] = useState("S5");
 
     useEffect(() => {
         if (isApprenti) return;
@@ -45,8 +45,6 @@ export function GrilleEvaluation() {
                             apprentis.map(apprenti => request(`/utilisateur/${apprenti.utilisateur}`, 'get')
                                 .then(res => res.data))
                         );
-
-                        console.log("TAG apprentis", usersApprentis)
 
                         setApprentis(usersApprentis.map(apprenti => ({
                             ...apprenti,
@@ -90,7 +88,7 @@ export function GrilleEvaluation() {
                 });
 
                 setCompetences(competences);
-                setSemestres(semestres);
+                setValues(semestres);
             });
     }, [apprentiSelectedId]);
 
@@ -144,12 +142,23 @@ export function GrilleEvaluation() {
             >
                 {
                     semestersData.map(semestre => {
-                        const grille = semestres ? semestres["S" + semestre.numero] : null;
+                        const grille = values ? values["S" + semestre.numero] : null;
+
+                        function setGrille(updateValue) {
+                            setValues(old => {
+                                console.log("TAG old", [...old.S9])
+                                old["S" + semestre.numero] = updateValue(old["S" + semestre.numero]);
+                                console.log("TAG new", old.S9)
+
+                                return { ...old };
+                            });
+                        }
 
                         return <Tabs.Panel value={"S" + semestre.numero}>
                             <GrilleTab
                                 canEdit={isTuteur}
                                 grille={grille}
+                                setGrille={setGrille}
                                 competences={competences}
                             />
                         </Tabs.Panel>
@@ -160,7 +169,7 @@ export function GrilleEvaluation() {
     </Stack>
 }
 
-function GrilleTab({ canEdit, grille, competences }) {
+function GrilleTab({ canEdit, grille, setGrille, competences }) {
     function handleSubmit(e) {
         e.preventDefault();
 
@@ -200,9 +209,24 @@ function GrilleTab({ canEdit, grille, competences }) {
 
                     const competenceGrille = grille?.find(val => val.competence === competence.id);
 
+                    function updateGrille(key, value) {
+                        setGrille(old => {
+                            const index = old.findIndex(oldRow => oldRow.competence === competence.id);
+                            console.log("TAG index", index, competence.id)
+
+                            if (index >= 0) {
+                                old[index][key] = value;
+                                return old;
+                            }
+
+                            return old;
+                        });
+                    }
+
                     return <Competence
                         index={idx}
                         canEdit={canEdit}
+                        updateGrille={updateGrille}
                         description={competence.description}
                         libelle={competence.libelle}
                         evaluation={competenceGrille.evaluation}
@@ -216,7 +240,7 @@ function GrilleTab({ canEdit, grille, competences }) {
     </form>
 }
 
-function Competence({ index, canEdit, description, libelle, evaluation, commentaire }) {
+function Competence({ index, canEdit, updateGrille, description, libelle, evaluation, commentaire }) {
     return <Paper p="sm" className="grille-competence">
         <Group grow>
             {/* Title */}
@@ -241,7 +265,8 @@ function Competence({ index, canEdit, description, libelle, evaluation, commenta
                 edit={<Select
                     name={"status" + index}
                     data={etatCompetences}
-                    defaultValue={evaluation}
+                    value={evaluation}
+                    onChange={selected => updateGrille("semestre", selected)}
                 />}
             >
                 <LabelCompetence>{evaluation}</LabelCompetence>
@@ -251,7 +276,11 @@ function Competence({ index, canEdit, description, libelle, evaluation, commenta
             <GrilleDetail
                 label="Commentaires"
                 isTuteur={canEdit}
-                edit={<TextInput name={"commentaire" + index} defaultValue={commentaire} />}
+                edit={<TextInput
+                    name={"commentaire" + index}
+                    value={commentaire}
+                    onChange={e => updateGrille("commentaire", e.target.value)}
+                />}
             >
                 <Text>{commentaire}</Text>
             </GrilleDetail>
