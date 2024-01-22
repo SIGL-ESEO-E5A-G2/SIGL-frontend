@@ -1,7 +1,7 @@
 import '../../css/grille.css';
 
 import { useContext, useEffect, useState } from "react";
-import { Accordion, Button, Flex, Group, Paper, Select, Stack, Text, TextInput, Title, Tooltip } from "@mantine/core";
+import { Accordion, Button, Flex, Group, Paper, Select, Skeleton, Stack, Tabs, Text, TextInput, Title, Tooltip } from "@mantine/core";
 import { QuestionCircle } from "react-bootstrap-icons";
 
 import { request } from "../../utils/request";
@@ -20,13 +20,12 @@ export function GrilleEvaluation() {
     const [apprentis, setApprentis] = useState([]);
     const [apprentiSelectedId, setApprentiSelectedId] = useState(isApprenti ? user.id : null);
 
-    const [semestres, setSemestres] = useState();
+    const [values, setValues] = useState();
     const [competences, setCompetences] = useState();
 
-    const [key, setKey] = useState();
+    const [key, setKey] = useState("S5");
 
     useEffect(() => {
-        console.log("TAG user", user)
         if (isApprenti) return;
 
         if (isMA) {
@@ -63,7 +62,9 @@ export function GrilleEvaluation() {
         request(`/apprentiutilisateurdetail?utilisateur=${apprentiSelectedId}`, 'get')
             .then(res => res.data ? res.data[0] : null)
             .then(apprenti => {
-                setApprentis([apprenti.utilisateur]);
+                if (!apprentis.find(userApprenti => userApprenti.id === apprenti.id)) {
+                    setApprentis(old => [...old, apprenti.utilisateur]);
+                }
 
                 setKey(apprenti.promotion?.semestre);
 
@@ -87,78 +88,88 @@ export function GrilleEvaluation() {
                 });
 
                 setCompetences(competences);
-                setSemestres(semestres);
+                setValues(semestres);
             });
     }, [apprentiSelectedId]);
 
+    const apprentiSelected = apprentiSelectedId && apprentis.length > 0 ? apprentis.find(userApprenti => userApprenti.id === apprentiSelectedId) : null;
+
     return <Stack gap="lg">
         {
-            !apprentis.length > 1 && <Select
-                label="Apprentis"
-                data={apprentis}
-                onChange={selected => setApprentiSelectedId(parseInt(selected))}
-            />
-        }
-
-        {
-            !isApprenti && apprentiSelectedId && apprentis.length > 0 && <Paper shadow="md" p="md">
-                <Group>
-                    <Text>Apprenti:</Text>
-                    <Text fw="bold">{((apprentis[0].prenom || "") + " " + (apprentis[0].nom || "")).trim()}</Text>
-                </Group>
-            </Paper>
-        }
-
-        <Accordion value={key} variant="separated" className="grille-evaluation">
-            {
-                semestersData.map(semestre => {
-                    const grille = semestres ? semestres["S" + semestre.numero] : null;
-                    const currentKey = "S" + semestre.numero;
-
-                    const handleClick = () => setKey(old => {
-                        if (old === currentKey) return null;
-                        else return currentKey;
-                    })
-
-                    if (grille)
-                        return <GrilleItem
-                            numero={semestre.numero}
-                            color={semestre.color}
-                            grille={grille}
-                            competences={competences}
-                            isTuteur={isTuteur}
-                            onClick={handleClick}
-                        />
-                    else return <ProxyGrilleItem
-                        numero={semestre.numero}
-                        color={semestre.color}
-                        onClick={handleClick}
+            !isApprenti && <>
+                {
+                    apprentis.length > 1 && <Select
+                        label="Apprentis"
+                        data={apprentis}
+                        onChange={selected => setApprentiSelectedId(parseInt(selected))}
                     />
-                })
-            }
-        </Accordion>
+                }
+
+                {
+                    apprentiSelected && <Paper shadow="md" p="md">
+                        <Group>
+                            <Text>Apprenti:</Text>
+                            <Text fw="bold">{((apprentiSelected.prenom || "") + " " + (apprentiSelected.nom || "")).trim()}</Text>
+                        </Group>
+                    </Paper>
+                }
+            </>
+        }
+
+        <Tabs
+            variant="pills"
+            className="grille-evaluation"
+            value={key}
+            onChange={setKey}
+        >
+            <Tabs.List>
+                {
+                    semestersData.map(({ color, numero }) => <Tabs.Tab
+                        p="md"
+                        value={"S" + numero}
+                        color={color}
+                    >
+                        Semestre {numero}
+                    </Tabs.Tab>)
+                }
+            </Tabs.List>
+
+            <Paper
+                p="md"
+                shadow="md"
+                className="grille-component"
+                style={{ borderColor: semestersData.find(({ numero }) => "S" + numero === key)?.color }}
+            >
+                {
+                    semestersData.map(semestre => {
+                        const grille = values ? values["S" + semestre.numero] : null;
+
+                        function setGrille(updateValue) {
+                            setValues(old => {
+                                console.log("TAG old", [...old.S9])
+                                old["S" + semestre.numero] = updateValue(old["S" + semestre.numero]);
+                                console.log("TAG new", old.S9)
+
+                                return { ...old };
+                            });
+                        }
+
+                        return <Tabs.Panel value={"S" + semestre.numero}>
+                            <GrilleTab
+                                canEdit={isTuteur}
+                                grille={grille}
+                                setGrille={setGrille}
+                                competences={competences}
+                            />
+                        </Tabs.Panel>
+                    })
+                }
+            </Paper>
+        </Tabs>
     </Stack>
 }
 
-function ProxyGrilleItem({ numero, color, onClick }) {
-    return <Accordion.Item
-        key={numero}
-        value={"S" + numero}
-        style={{ backgroundColor: color }}
-    >
-        <Accordion.Control onClick={onClick}>
-            Semestre {numero}
-        </Accordion.Control>
-
-        <Paper shadow="md" ta="center">
-            <Accordion.Panel>
-                En cours de chargement ...
-            </Accordion.Panel>
-        </Paper>
-    </Accordion.Item>
-}
-
-function GrilleItem({ numero, color, onClick, isTuteur, grille, competences }) {
+function GrilleTab({ canEdit, grille, setGrille, competences }) {
     function handleSubmit(e) {
         e.preventDefault();
 
@@ -187,72 +198,110 @@ function GrilleItem({ numero, color, onClick, isTuteur, grille, competences }) {
         });
     }
 
-    return <Accordion.Item
-        key={numero}
-        value={"S" + numero}
-        style={{ backgroundColor: color }}
-    >
-        <Accordion.Control onClick={onClick}>
-            Semestre {numero}
-        </Accordion.Control>
+    return <form onSubmit={handleSubmit}>
+        <Stack p="sm">
+            {/* Pdt chargement */}
+            {!competences?.length && (new Array(8)).fill(0).map(() => <CompetenceLoading />)}
 
-        <Paper shadow="md">
-            <Accordion.Panel>
-                <form onSubmit={handleSubmit}>
-                    <Stack p="sm">
-                        {
-                            competences?.map((competence, idx) => {
-                                const competenceGrille = grille.find(val => val.competence === competence.id);
+            {
+                competences?.map((competence, idx) => {
+                    if (!grille) return <CompetenceLoading />
 
-                                return <Paper p="sm" className="grille-competence">
-                                    <Group grow>
-                                        {/* Title */}
-                                        <Flex>
-                                            <Title order={3}>{competence.libelle}</Title>
-                                            <Tooltip
-                                                label={competence.description}
-                                                position="bottom"
-                                                w="20vw"
-                                                multiline
-                                            >
-                                                <Button variant="transparent">
-                                                    <QuestionCircle size="1rem" />
-                                                </Button>
-                                            </Tooltip>
-                                        </Flex>
+                    const competenceGrille = grille?.find(val => val.competence === competence.id);
 
-                                        {/* Status */}
-                                        <GrilleDetail
-                                            label="Status"
-                                            isTuteur={isTuteur}
-                                            edit={<Select
-                                                name={"status" + idx}
-                                                data={etatCompetences}
-                                                defaultValue={competenceGrille.evaluation}
-                                            />}
-                                        >
-                                            <Competence>{competenceGrille.evaluation}</Competence>
-                                        </GrilleDetail>
+                    function updateGrille(key, value) {
+                        setGrille(old => {
+                            const index = old.findIndex(oldRow => oldRow.competence === competence.id);
+                            console.log("TAG index", index, competence.id)
 
-                                        {/* Détaille */}
-                                        <GrilleDetail
-                                            label="Commentaires"
-                                            isTuteur={isTuteur}
-                                            edit={<TextInput name={"commentaire" + idx} defaultValue={competenceGrille.commentaire} />}
-                                        >
-                                            <Text>{competenceGrille.commentaire}</Text>
-                                        </GrilleDetail>
-                                    </Group>
-                                </Paper>
-                            })
-                        }
+                            if (index >= 0) {
+                                old[index][key] = value;
+                                return old;
+                            }
 
-                        {isTuteur && <Button type='submit'>Enregistrer</Button>}
-                    </Stack>
-                </form>
-            </Accordion.Panel>
-        </Paper>
-    </Accordion.Item>
+                            return old;
+                        });
+                    }
+
+                    return <Competence
+                        index={idx}
+                        canEdit={canEdit}
+                        updateGrille={updateGrille}
+                        description={competence.description}
+                        libelle={competence.libelle}
+                        evaluation={competenceGrille.evaluation}
+                        commentaire={competenceGrille.commentaire}
+                    />
+                })
+            }
+
+            {canEdit && <Button type='submit'>Enregistrer</Button>}
+        </Stack>
+    </form>
+}
+
+function Competence({ index, canEdit, updateGrille, description, libelle, evaluation, commentaire }) {
+    return <Paper p="sm" className="grille-competence">
+        <Group grow>
+            {/* Title */}
+            <Flex>
+                <Title order={3}>{libelle}</Title>
+                <Tooltip
+                    label={description}
+                    position="bottom"
+                    w="20vw"
+                    multiline
+                >
+                    <Button variant="transparent">
+                        <QuestionCircle size="1rem" />
+                    </Button>
+                </Tooltip>
+            </Flex>
+
+            {/* Status */}
+            <GrilleDetail
+                label="Status"
+                isTuteur={canEdit}
+                edit={<Select
+                    name={"status" + index}
+                    data={etatCompetences}
+                    // value={evaluation}
+                    // onChange={selected => updateGrille("semestre", selected)}
+                />}
+            >
+                <LabelCompetence>{evaluation}</LabelCompetence>
+            </GrilleDetail>
+
+            {/* Détaille */}
+            <GrilleDetail
+                label="Commentaires"
+                isTuteur={canEdit}
+                edit={<TextInput
+                    name={"commentaire" + index}
+                    // value={commentaire}
+                    // onChange={e => updateGrille("commentaire", e.target.value)}
+                />}
+            >
+                <Text>{commentaire}</Text>
+            </GrilleDetail>
+        </Group>
+    </Paper>
+}
+
+function CompetenceLoading() {
+    return <Paper p="md" className="grille-competence">
+        <Group grow>
+            <Skeleton height={44} radius="xl" />
+
+            <GrilleDetail label="Status">
+                <Skeleton height={22} radius="xl" />
+            </GrilleDetail>
+
+            <GrilleDetail label="Commentaires">
+                <Skeleton height={22} radius="xl" />
+            </GrilleDetail>
+        </Group>
+    </Paper>
 }
 
 function GrilleDetail({ label, isTuteur, edit, children }) {
@@ -262,7 +311,7 @@ function GrilleDetail({ label, isTuteur, edit, children }) {
     </Stack>
 }
 
-function Competence({ children }) {
+function LabelCompetence({ children }) {
     const acquis = etatCompetences.findIndex(etat => children === etat);
 
     return <Text c={acquis === 0 ? "red" : (acquis === 1 ? "orange" : (acquis === 2 ? "green" : "inherit"))}>

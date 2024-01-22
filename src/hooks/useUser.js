@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import { request } from '../utils/request';
 import { encryptData, parseToken } from '../utils/encryption';
+import { getNomUser } from "../utils/divers";
 
 /**
  * 
@@ -80,6 +81,9 @@ async function fetchToken(email, password) {
                 throw new Error(`Utilisateur non trouvé`);
             }
 
+            // update derniere date de connexion
+            request(`/utilisateur/${id}`, 'patch', { last_login: new Date() });
+
             return data.jwt_token;
         })
     // .then((data) => encryptData(data));
@@ -99,12 +103,26 @@ function getUserFromToken(token) {
         throw new Error("Utilisateur non trouvé");
     }
 
+    const roles = JSON.parse(user.roles).map(role => role.pk);
+    // return getUserFromRoles(user.id, roles); // TODO
+
     // map data to user
     user = {
         ...user,
-        roles: JSON.parse(user.roles).map(role => role.pk),
-        nomComplet: ((user.nom || '') + ' ' + (user.prenom || '')).trim()
+        roles,
+        nomComplet: getNomUser(user)
     }
 
     return user;
+}
+
+async function getUserFromRoles(userId, roles) {
+    let url = "";
+    if (roles.includes(1)) url = "";
+    else if (roles.includes(2)) url = "";
+    else if (roles.includes(3)) url = "";
+    else if (roles.includes(4)) url = "";
+    else if (roles.includes(5)) url = "";
+
+    return request(url);
 }

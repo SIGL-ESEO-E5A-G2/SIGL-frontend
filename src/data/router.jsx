@@ -7,6 +7,7 @@ import {
 } from 'react-bootstrap-icons';
 
 import Admin from '../pages/Admin';
+import ModifInfo from '../pages/Admin/ModifInfo';
 import CoordinatriceAlternance from '../pages/CoordinatriceAlternance';
 import ApprentiListing from '../pages/ApprentiListing';
 import Profil from '../pages/Profil';
@@ -48,7 +49,7 @@ export default {
             roles: [3, 4], //coordinatrice
         },
         {
-            path: "profil",
+            path: "reset-password",
             element: <Profil />,
             roles: [], //user
             children: [],
@@ -66,13 +67,19 @@ export default {
             icon: JournalText,
             element: <Promotions />,
             children: [],
-            roles: [3, 4], //coordinatrice
+            roles: [4], //coordinatrice
         },
         {
             path: "apprentis",
             name: "Apprentis",
             element: <Apprentis />,
             roles: [4] // coordinatrice
+        },
+        {
+            path: "profil",
+            name: "Profil",
+            element: <ModifInfo/>,
+            roles: [1], // user
         },
         {
             path: "calendrier",

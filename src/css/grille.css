@@ -1,11 +1,11 @@
-.grille-evaluation .mantine-Accordion-label,
-.grille-evaluation .mantine-Accordion-chevron {
-    font-weight: bold;
-    color: var(--mantine-color-white);
+.grille-evaluation .mantine-Tabs-tab {
+    border-radius: 5px 5px 0px 0px;
 }
 
-.grille-evaluation .mantine-Accordion-panel {
-    background-color: var(--mantine-color-white);
+.grille-component {
+    border-radius: 0px 10px 10px 10px;
+    border-width: 4px;
+    border-style: solid;
 }
 
 .grille-competence {
@@ -16,4 +16,11 @@
     border-radius: 5px;
     /* border: 2px solid var(--mantine-color-red-7); */
     box-shadow: inset 1px -1px 0.1875rem rgba(0, 0, 0, 0.1), inset -1px 1px 0.1875rem rgba(0, 0, 0, 0.1);
+}
+
+.grille-evaluation .mantine-Tabs-tab:not([data-active=true]) {
+    border-top: 4px solid var(--tabs-color);
+    /* border-left: 4px solid var(--tabs-color);
+    border-right: 4px solid var(--tabs-color); */
+    color: var(--tabs-color);
 }

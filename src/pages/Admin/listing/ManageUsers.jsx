@@ -1,75 +1,53 @@
-import React, { useState, useEffect } from 'react';
-import { Button, Group, Table, TextInput, Select, Checkbox } from '@mantine/core';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Key } from 'react-bootstrap-icons';
+import { Link } from 'react-router-dom';
+import { Button, Group, Table, TextInput, Select, Checkbox, Stack, Badge } from '@mantine/core';
 
-import { request } from '../../../utils/request.js';
+import { ModalChangePassword } from '../modal/ModalChangePassword.jsx';
+import { ModalSuppressionUsers } from '../modal/ModalSuppressionUsers.jsx';
 import { roles } from '../../../data/constantes.js';
-import { putUtilisateur } from '../../../utils/api.js';
-import { hashPassword } from '../../../utils/encryption.js';
+import { request } from '../../../utils/request.js';
+import { getNomUser } from '../../../utils/divers.jsx';
+import useArray from "../../../hooks/useArray.js";
+import { dateString } from '../../../utils/formatDate.js';
 
 const ManageUsers = () => {
+  const [filters, setFilter] = useArray();
+
+  const [currentRow, setCurrentRow] = useState();
   const [users, setUsers] = useState([]);
-  const [passwords, setPasswords] = useState({});
-  const [selectedRole, setSelectedRole] = useState('');
-  const [filteredUsers, setFilteredUsers] = useState([]);
+  const userFiltered = useMemo(() => {
+    let filtered = users;
+    const roleFilter = parseInt(filters.roles);
+    const nomFilter = filters.nom?.toLowerCase()?.trim();
+    const emailFilter = filters.email?.toLowerCase()?.trim();
+
+    if (roleFilter && roleFilter >= 0) {
+      filtered = filtered.filter((user) => {
+        return user.roles.some((userRole) => userRole.id === roleFilter);
+      });
+    }
+
+    if (nomFilter) {
+      filtered = filtered.filter(user => getNomUser(user)?.toLowerCase()?.includes(nomFilter));
+    }
+
+    if (emailFilter) {
+      filtered = filtered.filter(user => user.email?.toLowerCase()?.includes(emailFilter));
+    }
+
+    return filtered;
+  }, [users, filters]);
+
   const [selectedUsers, setSelectedUsers] = useState([]);
-  const [error, setError] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
+
+  const [showModalSuppreUsers, setShowModalSuppreUsers] = useState();
+  const [showModalModifPass, setShowModalModifPass] = useState();
 
   useEffect(() => {
     request('/utilisateurDetail/')
-      .then((res) => {
-        setUsers(res.data);
-        setFilteredUsers(res.data);
-      })
-      .catch((error) => {
-        console.error('Error fetching user data:', error.message);
-      });
+      .then((res) => setUsers(res.data))
   }, []);
-
-  const handleDeleteClick = () => {
-    selectedUsers.forEach((userId) => {
-      request(`/utilisateur/${userId}`, 'delete')
-        .catch((error) => {
-          console.error('Erreur lors de la suppression de l\'utilisateur avec ID', userId, ':', error.message);
-        });
-    });
-    window.location.reload();
-  };
-
-  const handleChangePassword = async (id) => {
-    hashPassword(passwords[id])
-      .then((hashedPassword) => {
-        request(`/utilisateur/${id}`)
-          .then((jsonUser) => {
-            const updateUser = {
-              "password": hashedPassword,
-            };
-            putUtilisateur(id, jsonUser.data, updateUser);
-          })
-          .catch((error) => {
-            console.error("Erreur lors de la mise à jour de l'apprenti :", error.message);
-          });
-        setError("");
-        setSuccessMessage("Mot de passe changé avec succès!");
-      })
-      .catch((error) => {
-        console.error('Erreur lors du hachage du mot de passe :', error);
-        setError("Erreur lors de la modification du mot de passe.");
-        setSuccessMessage('');
-      })
-  };
-
-  const handleRoleChange = (role) => {
-    setSelectedRole(role);
-    filterUsersByRole(role);
-  };
-
-  const filterUsersByRole = (role) => {
-    const filtered = users.filter((user) => {
-      return user.roles.some((userRole) => userRole.libelle === role);
-    });
-    setFilteredUsers(filtered);
-  };
 
   const handleCheckboxChange = (id) => {
     setSelectedUsers((prevSelected) => {
@@ -81,71 +59,94 @@ const ManageUsers = () => {
     });
   };
 
-  const handlePasswordChange = (id, value) => {
-    setPasswords((prevPasswords) => ({
-      ...prevPasswords,
-      [id]: value,
-    }));
-  };
-
   return (
-    <div>
-      <Group>
+    <Stack p="md">
+      <Group align="end">
+        <Button onClick={() => setShowModalSuppreUsers(selectedUsers.length > 0)}>Supprimer les utilisateurs sélectionnés</Button>
+
+        {/* Filter roles */}
         <Select
-          id="selectRole"
-          label="Sélectionner le profil"
-          data={roles.map(role => role.name)}
-          value={selectedRole}
-          onChange={handleRoleChange}
+          label="Profile d'utilisateur"
+          data={[{ value: "-1", label: "Tous" }, ...roles.map(role => ({ label: role.name, value: role.id + "" }))]}
+          placeholder="Sélectionner le profil"
+          value={filters.roles}
+          onChange={selected => setFilter('roles', selected)}
+        />
+
+        {/* Filter nom */}
+        <TextInput
+          label="Nom"
+          placeholder="Saisissez un nom"
+          value={filters.nom}
+          onChange={e => setFilter("nom", e.target.value)}
+        />
+
+        {/* Filter email */}
+        <TextInput
+          label="Email"
+          type="email"
+          placeholder="Saisissez un email"
+          value={filters.email}
+          onChange={e => setFilter("email", e.target.value)}
         />
       </Group>
 
+      {/* Modal suppression users */}
+      <ModalSuppressionUsers
+        show={showModalSuppreUsers}
+        close={() => setShowModalSuppreUsers(false)}
+        userIds={selectedUsers}
+      />
+
+      {/* Modal change pass */}
+      <ModalChangePassword
+        show={showModalModifPass}
+        close={() => setShowModalModifPass(false)}
+        row={currentRow}
+      />
+
+      {/* Data */}
       <Table striped highlightOnHover withTableBorder>
         <Table.Thead>
           <Table.Tr>
+            <Table.Th w="2vw"></Table.Th>
             <Table.Th>Nom</Table.Th>
-            <Table.Th>Prénom</Table.Th>
-            <Table.Th>Mot de passe</Table.Th>
-            <Table.Th>Action</Table.Th>
+            <Table.Th>Email</Table.Th>
+            <Table.Th>Activé</Table.Th>
+            <Table.Th>Dernière connexion</Table.Th>
+            <Table.Th w="6vw">Mot de passe</Table.Th>
           </Table.Tr>
         </Table.Thead>
 
         <Table.Tbody>
-          {filteredUsers.map((user) => (
-            <Table.Tr key={user.id}>
-              <Table.Td>
-                <Checkbox
-                  id={`checkbox_${user.id}`}
-                  checked={selectedUsers.includes(user.id)}
-                  onChange={() => handleCheckboxChange(user.id)}
-                />
-              </Table.Td>
-              <Table.Td>{user.nom}</Table.Td>
-              <Table.Td>{user.prenom}</Table.Td>
-              <Table.Td>
-                <TextInput
-                  id={`password_${user.id}`}
-                  type="password"
-                  placeholder="Nouveau mot de passe"
-                  value={passwords[user.id] || ''}
-                  onChange={(e) => handlePasswordChange(user.id, e.target.value)}
-                />
-              </Table.Td>
-              <Table.Td>
-                <Button onClick={() => handleChangePassword(user.id)}>
-                  Changer le mot de passe
-                </Button>
-              </Table.Td>
-            </Table.Tr>
-          ))}
+          {
+            userFiltered.map((user) => (
+              <Table.Tr key={user.id}>
+                <Table.Td>
+                  <Checkbox
+                    id={`checkbox_${user.id}`}
+                    checked={selectedUsers.includes(user.id)}
+                    onChange={() => handleCheckboxChange(user.id)}
+                  />
+                </Table.Td>
+                <Table.Td>{getNomUser(user)}</Table.Td>
+                <Table.Td><Link to={"mailto:" + user.email}>{user.email}</Link></Table.Td>
+                <Table.Td>
+                  {user.is_active ? <Badge color="green">Activé</Badge> : <Badge color="red">Désactivé</Badge>}
+                </Table.Td>
+                <Table.Td>{user.last_login ? dateString(new Date(user.last_login), true) : ""}</Table.Td>
+                <Table.Td>
+                  <Button onClick={() => {
+                    setShowModalModifPass(true)
+                    setCurrentRow(user);
+                  }}><Key /></Button>
+                </Table.Td>
+              </Table.Tr>
+            ))
+          }
         </Table.Tbody>
       </Table>
-
-      {error && <div style={{ color: 'red' }}>{error}</div>}
-      {successMessage && <div style={{ color: 'green' }}>{successMessage}</div>}
-
-      <Button onClick={handleDeleteClick}>Supprimer les utilisateurs sélectionnés</Button>
-    </div>
+    </Stack>
   );
 };
 
