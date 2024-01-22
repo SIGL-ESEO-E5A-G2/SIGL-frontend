@@ -7,6 +7,7 @@ import {
 } from 'react-bootstrap-icons';
 
 import Admin from '../pages/Admin';
+import ModifInfo from '../pages/Admin/ModifInfo';
 import CoordinatriceAlternance from '../pages/CoordinatriceAlternance';
 import ApprentiListing from '../pages/ApprentiListing';
 import Profil from '../pages/Profil';
@@ -72,6 +73,15 @@ export default {
             name: "Apprentis",
             element: <Apprentis />,
             roles: [4] // coordinatrice
+        },
+        {
+            path: "modification",
+            name: "Modifications données",
+            icon: null,
+            element: <ModifInfo/>,
+            roles: [], //user
+            
+            
         },
     ]
 }
