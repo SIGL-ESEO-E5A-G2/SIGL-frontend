@@ -15,6 +15,7 @@ import GrilleEvaluation from '../pages/GrilleEvaluation';
 import ApprenticeshipForm from '../pages/Entreprise/form/ApprenticeshipForm';
 import Apprentis from '../pages/ApprentiListing/List/Apprentis';
 import Promotions from '../pages/ApprentiListing/List/Promotions';
+import { Calendar } from '../pages/Calendar';
 
 export default {
     path: "",
@@ -72,6 +73,12 @@ export default {
             name: "Apprentis",
             element: <Apprentis />,
             roles: [4] // coordinatrice
+        },
+        {
+            path: "calendrier",
+            name: "Calendrier",
+            element: <Calendar />,
+            roles: [1] // apprenti
         },
     ]
 }

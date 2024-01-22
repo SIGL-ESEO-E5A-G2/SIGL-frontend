@@ -13,6 +13,10 @@ export function isFunc(obj) {
   return obj instanceof Function;
 }
 
+export function capitalize(text) {
+  return text?.substring(0, 1)?.toUpperCase() + text?.substring(1, text?.length)?.toLowerCase();
+}
+
 /**
  * Envoie une notification apres une fonction
  * 
