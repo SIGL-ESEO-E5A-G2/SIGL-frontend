@@ -1,6 +1,6 @@
 import "../css/menu.css";
 import { useContext, useMemo } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Button } from "@mantine/core";
 
 import { UserContext } from "../context/UserContext";
@@ -16,7 +16,13 @@ export default function ({ deconnect }) {
     const userRole = roles
         .filter(role => user.roles?.includes(role.id))
         .map(role => role.name)
-        .join(', ')
+        .join(', ');
+
+    const location = useLocation();
+    const currentLinkSelected = useMemo(() => {
+        const pathname = location.pathname.split('/');
+        return pathname[pathname.length - 1];
+    }, [location]);
 
     const navigation = useMemo(() => {
         return flatLinks(null, router.children, user)
@@ -35,13 +41,18 @@ export default function ({ deconnect }) {
 
                     <div>
                         {
-                            navigation.map(row => <Link
-                                to={row.path}
-                                className="menu-items menu-block"
-                                key={row.path}
-                            >
-                                {row.name}
-                            </Link>)
+                            navigation.map(row => {
+                                let id = row.path.split('/');
+                                id = id[id.length - 1];
+
+                                return <Link
+                                    to={row.path}
+                                    className={"menu-items menu-block" + (id === currentLinkSelected ? " menu-items-selected" : "")}
+                                    key={row.path}
+                                >
+                                    {row.name}
+                                </Link>
+                            })
                         }
                     </div>
                 </div>

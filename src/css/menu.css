@@ -58,7 +58,8 @@
 
 }
 
-.menu-items:hover {
+.menu-items:hover,
+.menu-items-selected {
     background: var(--SIGL_Main, #F4F8FF);
     box-shadow: 0px 0px 26.8px 0px var(--SIGL_Secondv2, #AFCBEB) inset;
 }
@@ -84,7 +85,7 @@
 }
 
 .menu-user {
-    width: 15.875rem;
+    width: max-content;
     height: 4.9375rem;
     display: flex;
     border-radius: 6.125rem;
@@ -98,5 +99,5 @@
 
 .menu-user_infos {
     margin: 0;
-    padding-left: 1.5rem;
+    padding: 0px 1.5rem;
 }
