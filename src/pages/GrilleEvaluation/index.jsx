@@ -265,8 +265,8 @@ function Competence({ index, canEdit, updateGrille, description, libelle, evalua
                 edit={<Select
                     name={"status" + index}
                     data={etatCompetences}
-                    value={evaluation}
-                    onChange={selected => updateGrille("semestre", selected)}
+                    // value={evaluation}
+                    // onChange={selected => updateGrille("semestre", selected)}
                 />}
             >
                 <LabelCompetence>{evaluation}</LabelCompetence>
@@ -278,8 +278,8 @@ function Competence({ index, canEdit, updateGrille, description, libelle, evalua
                 isTuteur={canEdit}
                 edit={<TextInput
                     name={"commentaire" + index}
-                    value={commentaire}
-                    onChange={e => updateGrille("commentaire", e.target.value)}
+                    // value={commentaire}
+                    // onChange={e => updateGrille("commentaire", e.target.value)}
                 />}
             >
                 <Text>{commentaire}</Text>
