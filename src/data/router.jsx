@@ -47,14 +47,6 @@ export default {
             roles: [3, 4], //coordinatrice
         },
         {
-            path: "gererPromotions",
-            name: "Gerer les promotions",
-            icon: JournalText,
-            element: <ApprentiListing />,
-            children: [],
-            roles: [3, 4], //coordinatrice
-        },
-        {
             path: "profil",
             element: <Profil />,
             roles: [], //user
