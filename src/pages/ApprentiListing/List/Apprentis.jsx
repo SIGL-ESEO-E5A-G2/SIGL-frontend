@@ -63,9 +63,9 @@ export function Apprentis() {
 
         <Group align="end">
             {/* Btn ajout */}
-            <Button onClick={() => setShowAdd(true)} w="max-content">
+            {/* <Button onClick={() => setShowAdd(true)} w="max-content">
                 Ajouter un(e) apprenti(e)
-            </Button>
+            </Button> */}
 
             {/* Filtres promotion */}
             <Select
