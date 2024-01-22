@@ -20,11 +20,9 @@ function ModifInfo() {
 
 
     useEffect(() => {
-        // Exemple de requête HTTP pour récupérer les données de l'utilisateur actuel
         request('/apprentiutilisateurdetail?utilisateur=' + user.id, 'get')
             .then((res) => res.data ? res.data[0] : null)
             .then((data) => {
-                // Mettre à jour le state avec les données de l'utilisateur actuel
                 setUserInfo({
                     ...data?.utilisateur,
                     ...data
@@ -47,12 +45,10 @@ function ModifInfo() {
         Promise.all([apprenticeRequest, userRequest])
             .then((responses) => {
                 console.log('Informations mises à jour avec succès.');
-                // Ajouter ici la logique pour gérer le succès de la mise à jour
             })
             .catch((errors) => {
                 // Affichez les erreurs ou effectuez une action en cas d'échec de l'une des requêtes
                 console.error('Erreur lors de la mise à jour des informations :', errors);
-                // Ajouter ici la logique pour gérer les erreurs
             });
     };
 
