@@ -11,43 +11,46 @@ function Modal({
     children,       // le formulaire
     ...rest
 }) {
-    async function submit() {
+    async function submit(e) {
+        e.preventDefault();
+
         if (isFunc(checkErrors)) {
             // arrete l'envoie si erreurs trouvees
-            if (checkErrors()) return;
+            if (checkErrors(e)) return;
         }
 
         rest.onClose();
 
         if (notification) {
-            withNotification(handleSubmit, notification);
+            withNotification(() => handleSubmit(e), notification);
         } else {
-            return handleSubmit();
+            return handleSubmit(e);
         }
     }
 
     return <ModalMantine {...rest}>
-        <Stack p="md">
-            {children}
+        <form onSubmit={submit}>
+            <Stack p="md">
+                {children}
 
-            <Group justify="right">
-                <Button
-                    color="red"
-                    type="button"
-                    onClick={rest.onClose}
-                >
-                    Annuler
-                </Button>
+                <Group justify="right">
+                    <Button
+                        color="red"
+                        type="button"
+                        onClick={rest.onClose}
+                    >
+                        Annuler
+                    </Button>
 
-                <Button
-                    color="green"
-                    type="button"
-                    onClick={submit}
-                >
-                    {validateLabel}
-                </Button>
-            </Group>
-        </Stack>
+                    <Button
+                        color="green"
+                        type="submit"
+                    >
+                        {validateLabel || "Valider"}
+                    </Button>
+                </Group>
+            </Stack>
+        </form>
     </ModalMantine>
 }
 

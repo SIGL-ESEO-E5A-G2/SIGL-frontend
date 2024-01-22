@@ -26,6 +26,8 @@ export const roles = [
     { id: 6, name: 'Responsable Entreprise' }
 ];
 
+export const typeTag = ['Livrable', 'Note', 'Autre'];
+
 export const tailleMaxFileEnMo = 1;
 
 export const notifTimeoutShort = 1000;
