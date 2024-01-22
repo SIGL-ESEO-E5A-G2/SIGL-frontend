@@ -3,97 +3,101 @@ import { Button, Select } from '@mantine/core';
 
 import FormTemplate from '../../../components/FormTemplate';
 import { request } from '../../../utils/request.js';
+import { getNomUser } from '../../../utils/divers';
 
 function userToLabel(data = []) {
-    return data.map(row => ({
-        ...row,
-        value: row.id + "",
-        label: `${row.utilisateur?.prenom} ${row.utilisateur?.nom}`
-    }));
+  return data.map(row => ({
+    ...row,
+    value: row.id + "",
+    label: getNomUser(row?.utilisateur)
+  }));
 }
 
 const TeamAssociatonForm = () => {
-    const [apprentis, setApprentis] = useState([]);
-    const [maitresApprentissage, setMaitresApprentissage] = useState([]);
-    const [tuteurs, setTuteurs] = useState([]);
+  const [apprentis, setApprentis] = useState([]);
+  const [maitresApprentissage, setMaitresApprentissage] = useState([]);
+  const [tuteurs, setTuteurs] = useState([]);
+  const [apprentiId, setApprentiId] = useState(null);
+  const [maId, setMaId] = useState(null);
+  const [tuteurId, setTuteurId] = useState(null);
 
-    useEffect(() => {
-        // load apprentis
-        request("/apprentidetail/")
-            .then(({ data }) => setApprentis(userToLabel(data)));
+  useEffect(() => {
+    // load apprentis
+    request("/apprentidetail/")
+      .then(({ data }) => setApprentis(userToLabel(data)));
 
-        // load MA
-        request("/maitrealternancedetail/")
-            .then(({ data }) => setMaitresApprentissage(userToLabel(data)));
+    // load MA
+    request("/maitrealternancedetail/")
+      .then(({ data }) => setMaitresApprentissage(userToLabel(data)));
 
-        //load tuteur
-        request("/tuteurpedagogiquedetail/")
-            .then(({ data }) => setTuteurs(userToLabel(data)));
-    }, []);
+    //load tuteur
+    request("/tuteurpedagogiquedetail/")
+      .then(({ data }) => setTuteurs(userToLabel(data)));
+  }, []);
 
-    const handleAssocierClick = () => {
-        const apprentiId = parseInt(document.getElementById('associerApprenti').value, 10);
-        const maId = parseInt(document.getElementById('associerMA').value, 10);
-        const tuteurId = parseInt(document.getElementById('associerTuteur').value, 10);
+  const handleAssocierClick = () => {
+    const selectedApprentiId = parseInt(apprentiId, 10);
+    const selectedMaId = parseInt(maId, 10);
+    const selectedTuteurId = parseInt(tuteurId, 10);
+    request("/apprenti/" + apprentiId + "/")
+      .then((response) => {
 
-        request("/apprenti/" + apprentiId + "/")
-            .then((response) => {
-                console.log("GET request successful:", response.data.id);
+        const data = {
+          "optionMineure": response.data.optionMineure,
+          "optionMajeure": response.data.optionMajeure,
+          "utilisateur": response.data.utilisateur,
+          "maitreAlternance": maId,
+          "tuteurPedagogique": tuteurId,
+        };
 
-                const data = {
-                    "optionMineure": response.data.optionMineure,
-                    "optionMajeure": response.data.optionMajeure,
-                    "utilisateur": response.data.utilisateur,
-                    "maitreAlternance": maId,
-                    "tuteurPedagogique": tuteurId,
-                };
+        return request("/apprenti/" + apprentiId + "/", "put", data);
+      })
+      .catch((error) => {
+        // Handle errors for both GET and PUT requests
+        if (error.response) {
+          // The request was made, but the server responded with an error code
+          console.error("Server error response:", error.response.data);
+        } else if (error.request) {
+          // The request was made, but no response was received
+          console.error("No response received from the server:", error.request);
+        } else {
+          // An error occurred while setting up the request
+          console.error("Request setup error:", error.message);
+        }
+      });
+  };
 
-                return request("/apprenti/" + apprentiId + "/", "put", data);
-            })
-            .then((res) => {
-                // Handle the response of the PUT request if necessary
-                console.log("PUT request successful:", res);
-            })
-            .catch((error) => {
-                // Handle errors for both GET and PUT requests
-                if (error.response) {
-                    // La requête a été effectuée, mais le serveur a répondu avec un code d'erreur
-                    console.error("Réponse d'erreur du serveur :", error.response.data);
-                } else if (error.request) {
-                    // La requête a été effectuée, mais aucune réponse n'a été reçue
-                    console.error("Aucune réponse reçue du serveur :", error.request);
-                } else {
-                    // Une erreur s'est produite lors de la configuration de la requête
-                    console.error("Erreur de configuration de la requête :", error.message);
-                }
-            });
-    };
+  return (
+    <FormTemplate title="Associer un apprenti à une équipe tutorale">
+      <Select
+        id="associerApprenti"
+        label="Apprenti"
+        data={apprentis}
+        value={apprentiId}
+        onChange={(event) => setApprentiId(event)}
+      />
 
-    return (
-        <FormTemplate title="Associer un apprenti à une équipe tutorale">
-            <Select
-                id="associerApprenti"
-                label="Apprenti"
-                data={apprentis}
-            />
+      <Select
+        id="associerMA"
+        label="Maitre d'apprentissage"
+        data={maitresApprentissage}
+        value={maId}
+        onChange={(event) => setMaId(event)}
+      />
 
-            <Select
-                id="associerMA"
-                label="Maitre d'apprentissage"
-                data={maitresApprentissage}
-            />
+      <Select
+        id="associerTuteur"
+        label="Tuteur"
+        data={tuteurs}
+        value={tuteurId}
+        onChange={(event) => setTuteurId(event)}
+      />
 
-            <Select
-                id="associerTuteur"
-                label="Tuteur"
-                data={tuteurs}
-            />
-
-            <Button type="button" onClick={handleAssocierClick}>
-                Associer
-            </Button>
-        </FormTemplate>
-    );
+      <Button type="button" onClick={handleAssocierClick}>
+        Associer
+      </Button>
+    </FormTemplate>
+  );
 };
 
 export default TeamAssociatonForm;

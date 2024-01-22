@@ -1,46 +1,39 @@
 import {
-    JournalBookmarkFill,
     JournalText,
-    LayoutTextSidebar,
-    LayoutTextWindow,
     LayoutTextWindowReverse,
+    Mortarboard,
     PersonVideo2,
     ShieldLock
 } from 'react-bootstrap-icons';
 
-import Home from '../pages/Home';
-import Entreprise from '../pages/Entreprise';
 import Admin from '../pages/Admin';
 import ModifInfo from '../pages/Admin/ModifInfo';
 import CoordinatriceAlternance from '../pages/CoordinatriceAlternance';
 import ApprentiListing from '../pages/ApprentiListing';
 import Profil from '../pages/Profil';
 import Journal from '../pages/Journal';
+import GrilleEvaluation from '../pages/GrilleEvaluation';
+import ApprenticeshipForm from '../pages/Entreprise/form/ApprenticeshipForm';
+import Apprentis from '../pages/ApprentiListing/List/Apprentis';
+import Promotions from '../pages/ApprentiListing/List/Promotions';
 
 export default {
     path: "",
-    element: <Home />,
     roles: [],
+    element: <Journal />,
     disabled: false,
     children: [
-        {
-            path: "journal",
-            icon: JournalBookmarkFill,
-            element: <Journal />,
-            name: "Journal de l'apprenti",
-            roles: []
-        },
         {
             path: "inscription",
             name: "Inscription entrerpise",
             icon: LayoutTextWindowReverse,
-            element: <Entreprise />,
+            element: <ApprenticeshipForm />,
             children: [],
             roles: [3], //admin
         },
         {
             path: "admin",
-            name: "Page admin",
+            name: "Administration",
             icon: ShieldLock,
             element: <Admin />,
             children: [],
@@ -55,18 +48,31 @@ export default {
             roles: [3, 4], //coordinatrice
         },
         {
-            path: "gererPromotions",
-            name: "Gerer les promotions",
-            icon: JournalText,
-            element: <ApprentiListing />,
-            children: [],
-            roles: [3, 4], //coordinatrice
-        },
-        {
             path: "profil",
             element: <Profil />,
             roles: [], //user
             children: [],
+        },
+        {
+            path: "grilleevaluation",
+            icon: Mortarboard,
+            name: "Grille d'évaluation",
+            element: <GrilleEvaluation />,
+            roles: [1, 2, 5],
+        },
+        {
+            path: "promotions",
+            name: "Promotions",
+            icon: JournalText,
+            element: <Promotions />,
+            children: [],
+            roles: [3, 4], //coordinatrice
+        },
+        {
+            path: "apprentis",
+            name: "Apprentis",
+            element: <Apprentis />,
+            roles: [4] // coordinatrice
         },
         {
             path: "modification",

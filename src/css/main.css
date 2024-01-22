@@ -1,6 +1,11 @@
 body {
-    background-color: #F4F8FF;
+    font-family: League Spartan;
+    background: var(--SIGL_Main, #F4F8FF);
 }
+
+
+
+/* Anchor styling  */
 
 a {
     color: var(--mantine-color-blue-5);
@@ -8,4 +13,47 @@ a {
 
 a:visited {
     color: var(--mantine-color-blue-9);
+}
+
+
+
+/* Modal styling */
+
+.mantine-Modal-content {
+    border-radius: 15px;
+}
+
+.mantine-Modal-body {
+    padding: 0px;
+}
+
+.mantine-Modal-header {
+    background-color: var(--mantine-color-blue-7);
+}
+
+.mantine-Modal-title,
+.mantine-Modal-close {
+    color: var(--mantine-color-white);
+}
+
+.mantine-Modal-title {
+    font-weight: bold;
+}
+
+
+/* App container */
+
+.app {
+    margin-top: 8rem;
+    margin-left: 14rem;
+    margin-right: 1rem;
+}
+
+
+/* Accordion */
+
+.mantine-Accordion-control {
+    border-radius: 5px;
+    background-color: var(--mantine-color-blue-7);
+    color: var(--mantine-color-white);
 }

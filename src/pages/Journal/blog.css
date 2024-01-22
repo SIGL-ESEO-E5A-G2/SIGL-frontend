@@ -2,8 +2,6 @@
   position: fixed;
   top: 0;
   bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
   width: 80%;
   /* Ajustez la largeur selon vos besoins */
   background-color: var(--mantine-color-white);
@@ -35,69 +33,28 @@
   padding: 10px;
   border-radius: 4px;
   font-size: 16px;
+
 }
 
-.preview {
-  position: relative;
-  height: 100%;
-  width: 100%;
-  padding: 10px;
-  overflow-y: scroll;
+.post-section-header {
+  background-color: var(--mantine-color-blue-3);
+  color: var(--mantine-color-white);
 }
 
-.post {
-  margin-bottom: 20px;
-  background-color: var(--mantine-color-white);
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 15px;
+.post-header {
+  background-color: var(--mantine-color-blue-7);
 }
 
-.header {
-  font-size: 14px;
-  color: var(--mantine-color-dimmed);
-}
-
-.post-title {
-  margin-top: 10px;
-  margin-bottom: 10px;
-}
-
-/* Styles facultatifs pour une apparence plus moderne et aérée */
-.row {
-  gap: 20px;
-  /* Espacement entre l'éditeur et la prévisualisation */
-}
-
-@media (max-width: 768px) {
-  .row {
-    flex-direction: column;
-    /* Passer à une disposition de colonne sur les écrans plus petits */
-  }
-
-  .editor,
-  .preview {
-    width: 100%;
-    /* Occuper la largeur complète sur les écrans plus petits */
-  }
+.post-box {
+  box-shadow: 1px -1px 0.1875rem rgba(0, 0, 0, 0.1), -1px 1px 0.1875rem rgba(0, 0, 0, 0.1)
 }
 
 .round-button {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-
   position: fixed;
   bottom: 20px;
   right: 20px;
 
-  border: none;
-  outline: none;
-  cursor: pointer;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  box-shadow: 5px 5px 0.1875rem rgba(0, 0, 0, 0.2);
 }
 
 .popup {

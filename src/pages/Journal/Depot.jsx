@@ -1,49 +1,39 @@
 import { useState } from "react";
 import { saveAs } from 'file-saver';
-import { Button, Alert, FileInput } from "@mantine/core";
+import { Button, Paper, Stack, Group, Text, Badge } from "@mantine/core";
+import { Download, Pen, Upload } from "react-bootstrap-icons";
 
-import { getFile, request, uploadFile } from "../../utils/request";
+import { getFile, uploadFile } from "../../utils/request";
 import { dateString } from "../../utils/formatDate";
+import ModalUploadFile from "./ModalUploadFile";
 
 /**
  * 
  * @param {File, {cheminFichier}} file 
  */
-async function addFile(file, post) {
-    if (!file || !post.id) {
-        alert('Vous devez sélectionner un fichier')
+async function addFile(file, depot, postId) {
+    if (!file || !depot.id || !postId) {
+        alert('Un problème est survenue dans le formulaire')
         return
     }
 
     return uploadFile({
-        id: post.depot.id,
-        cheminFichier: post.depot.cheminFichier
+        id: depot.id,
+        cheminFichier: depot.cheminFichier
     }, file)
-        .then(async () => {
-            // TODO remove
-            return request('/message/' + post.id, 'patch', {
-                tags: [...post.tags.map(tag => tag.id), 9]
-            })
-                .then((res) => {
-                    alert('Votre document est déposé')
-                    return res.data;
-                });
-        })
-        .catch((error) => {
-            alert('Une erreur est survenue');
-            console.error(error);
-        })
+    // .then(async () => request(`/message/${postId}`, 'get'))
+    // .then((res) => res.data);
 }
 
 /**
  * 
- * @param {{cheminFichier}} post 
+ * @param {{cheminFichier}} depot 
  * @returns 
  */
-async function downloadFile(post) {
-    return getFile(post.depot.cheminFichier)
+async function downloadFile(depot) {
+    return getFile(depot.cheminFichier)
         .then(({ data }) => {
-            const filePath = post.depot.cheminFichier.split('/');
+            const filePath = depot.cheminFichier.split('/');
             const fileName = filePath ? filePath[filePath.length - 1] : "Fichier.pdf";
 
             return saveAs(new Blob([data], { type: "application/pdf" }), fileName);
@@ -54,58 +44,82 @@ async function downloadFile(post) {
         })
 }
 
-function Depot({ post }) {
-    const [file, setFile] = useState();
-    const [estDeposer, setDeposer] = useState(post.depot.livraison);
+function Depot({ post: { depot, id } }, updatePost) {
+    const [showModalUpload, setShowModalUpload] = useState();
+    const [estDeposer, setDeposer] = useState(!!depot.dateLivraison);
 
-    const dateEcheance = new Date(post.depot.echeance);
+    const [dateLivraison, setDateLivraison] = useState(depot.dateLivraison ? dateString(new Date(depot.dateLivraison)) : null);
+
+    const dateEcheance = new Date(depot.echeance);
     const echeance = dateString(dateEcheance);
-    const dateComparaison = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - 1);
 
+    const dateComparaison = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - 1);
     const isLate = dateComparaison > dateEcheance;
 
-    return <div className="post-file">
-        <Alert
-            variant="light"
-            title={`Date d'échéance: ${echeance}`}
-            color={estDeposer ? "green" : isLate ? "red" : "blue"}
-        />
+    async function handleAddFile(file) {
+        return addFile(file, depot, id)
+            .then(() => {
+                // update depot
+                // TODO update (cheminFichier + dateLivraison)
+                setDeposer(true);
+                setDateLivraison(dateString(new Date()));
+            });
+    }
 
-        {
-            !estDeposer && <>
-                <br />
+    return <Paper shadow="md" p="md" className="post-box">
+        <Group justify="space-between">
+            <Stack gap={5}>
+                {/* Status */}
+                <Group align="center">
+                    <Text>Statut:</Text>
+                    <Badge color={estDeposer ? "green" : isLate ? "red" : "yellow"}>
+                        {estDeposer ? "Déposé" : "Non déposé"}
+                    </Badge>
+                </Group>
 
-                <div className="post-file-form">
-                    <FileInput
-                        clearable
-                        accept=".pdf"
-                        onChange={(e) => setFile(e.target.files ? e.target.files[0] : null)}
-                    />
+                {/* Echeance */}
+                <Text>
+                    Echéance le: <i>{echeance}</i>
+                    {estDeposer ? <>, Livrer le: <i>{dateLivraison}</i></> : ""}
+                </Text>
+            </Stack>
 
+            {
+                showModalUpload && <ModalUploadFile
+                    show={showModalUpload}
+                    close={() => setShowModalUpload(false)}
+                    uploadFile={handleAddFile}
+                />
+            }
+
+            {/* Btn upload / download */}
+            {
+                estDeposer ?
+                    <Stack>
+                        <Button
+                            onClick={() => setShowModalUpload(true)}
+                            rightSection={<Pen />}
+                        >
+                            Modifier
+                        </Button>
+
+                        <Button
+                            onClick={() => downloadFile(depot)}
+                            rightSection={<Download />}
+                        >
+                            Télécharger
+                        </Button>
+                    </Stack>
+                    :
                     <Button
-                        onClick={async () => {
-                            addFile(file, post)
-                                .then(() => setDeposer(true));
-                            setFile(null);
-                        }}
+                        onClick={() => setShowModalUpload(true)}
+                        rightSection={<Upload />}
                     >
                         Déposer
                     </Button>
-                </div>
-            </>
-        }
-
-        {
-            estDeposer && <>
-                <br />
-                <div className="">
-                    <Button onClick={() => downloadFile(post)}>
-                        Télécharger
-                    </Button>
-                </div>
-            </>
-        }
-    </div>
+            }
+        </Group>
+    </Paper>
 }
 
 export default Depot;

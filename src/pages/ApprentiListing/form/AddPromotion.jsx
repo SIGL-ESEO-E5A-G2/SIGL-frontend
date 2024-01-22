@@ -8,6 +8,7 @@ import { semesters } from '../../../data/constantes.js';
 const AddPromotion = () => {
   const [newPromotionName, setNewPromotionName] = useState("");
   const [selectedSemester, setSelectedSemester] = useState("");
+  const [selectedModifySemester, setSelectedModifySemester] = useState("");
   const [promotions, setPromotions] = useState([]);
   const [modifiedSemesters, setModifiedSemesters] = useState({});
   const [newLibelles, setNewLibelles] = useState({});
@@ -19,6 +20,7 @@ const AddPromotion = () => {
         setPromotions(res.data);
         if (res.data.length > 0) {
           setSelectedSemester(res.data[0].semestre);
+          setSelectedModifySemester(res.data[0].semestre);
           setModifiedSemesters((prev) => ({ ...prev, [res.data[0].id]: res.data[0].semestre }));
         }
       });
@@ -56,7 +58,7 @@ const AddPromotion = () => {
 
   return (
     <div>
-      <Table striped bordered hover>
+      <Table striped highlightOnHover withTableBorder>
         <Table.Thead>
           <Table.Tr>
             <Table.Th>Nom de la promotion</Table.Th>
@@ -77,8 +79,9 @@ const AddPromotion = () => {
                 <Table.Td>
                   <Select
                     data={semesters}
+                    value={selectedModifySemester}
                     w="max-content"
-                    onChange={(e) => handleSemesterChange(promotion.id, e.target.value)}
+                    onChange={(e) => handleSemesterChange(promotion.id, e)}
                   />
                 </Table.Td>
                 <Table.Td>
@@ -117,7 +120,7 @@ const AddPromotion = () => {
           label="Semestre"
           value={selectedSemester}
           data={semesters}
-          onChange={(e) => setSelectedSemester(e.target.value)}
+          onChange={(e) => setSelectedSemester(e)}
         />
       </Group>
 

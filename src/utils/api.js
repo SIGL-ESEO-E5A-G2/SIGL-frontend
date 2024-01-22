@@ -1,5 +1,5 @@
 import { request } from './request';
-import {getCurrentTime, getCurrentDate} from './formatDate';
+import { getCurrentTime, getCurrentDate } from './formatDate';
 
 /**
  * Ajtoue une nouvelle promotion
@@ -13,7 +13,6 @@ export const addNewPromotion = async (newPromotionName, selectedSemester) => {
       libelle: newPromotionName,
       semestre: selectedSemester,
     };
-    console.log(newPromotion);
     request("/promotion/", "post", newPromotion);
     window.location.reload();
   } catch (error) {
@@ -30,18 +29,18 @@ export const addNewPromotion = async (newPromotionName, selectedSemester) => {
  * @param {string} modifiedSemester 
  */
 export const setPromotion = async (promotionId, newLibelle, modifiedSemester) => {
-    try {
-        const modifiedPromotion = {
-            libelle: newLibelle,
-            semestre: modifiedSemester,
-            };
+  try {
+    const modifiedPromotion = {
+      libelle: newLibelle,
+      semestre: modifiedSemester,
+    };
 
-        request("/promotion/"+promotionId+"/", "put", modifiedPromotion);
-        window.location.reload();
-    } catch (error) {
-      console.error("Erreur lors de l'ajout de la promotion :", error.message);
-      throw error;
-    }
+    request("/promotion/" + promotionId + "/", "put", modifiedPromotion);
+    window.location.reload();
+  } catch (error) {
+    console.error("Erreur lors de l'ajout de la promotion :", error.message);
+    throw error;
+  }
 };
 
 /**
@@ -53,23 +52,23 @@ export const setPromotion = async (promotionId, newLibelle, modifiedSemester) =>
  */
 export const putApprenti = async (idApprenti, jsonApprenti, newApprentiAttributes) => {
   try {
-      const updateApprenti = {
-          "optionMineure": newApprentiAttributes.optionMineure || jsonApprenti.optionMineure,
-          "optionMajeure": newApprentiAttributes.optionMajeure || jsonApprenti.optionMajeure,
-          "intitulePoste": newApprentiAttributes.intitulePoste || jsonApprenti.intitulePoste,
-          "descriptifPoste": newApprentiAttributes.descriptifPoste || jsonApprenti.descriptifPoste,
-          "classificationConventionCollective": newApprentiAttributes.classificationConventionCollective || jsonApprenti.classificationConventionCollective,
-          "dureeHebdoContrat": newApprentiAttributes.dureeHebdoContrat || jsonApprenti.dureeHebdoContrat,
-          "utilisateur": newApprentiAttributes.utilisateur || jsonApprenti.utilisateur,
-          "maitreAlternance": newApprentiAttributes.maitreAlternance || jsonApprenti.maitreAlternance,
-          "tuteurPedagogique": newApprentiAttributes.tuteurPedagogique || jsonApprenti.tuteurPedagogique,
-          "promotion": newApprentiAttributes.promotion || jsonApprenti.promotion,
-          "entreprise": newApprentiAttributes.entreprise || jsonApprenti.entreprise,
-          "opco": newApprentiAttributes.opco || jsonApprenti.opco,
-          "grilleEvaluation": newApprentiAttributes.grilleEvaluation || jsonApprenti.grilleEvaluation
-        };
-      request("/apprenti/"+idApprenti+"/", "put", updateApprenti);
-      window.location.reload();
+    const updateApprenti = {
+      "optionMineure": newApprentiAttributes.optionMineure || jsonApprenti.optionMineure,
+      "optionMajeure": newApprentiAttributes.optionMajeure || jsonApprenti.optionMajeure,
+      "intitulePoste": newApprentiAttributes.intitulePoste || jsonApprenti.intitulePoste,
+      "descriptifPoste": newApprentiAttributes.descriptifPoste || jsonApprenti.descriptifPoste,
+      "classificationConventionCollective": newApprentiAttributes.classificationConventionCollective || jsonApprenti.classificationConventionCollective,
+      "dureeHebdoContrat": newApprentiAttributes.dureeHebdoContrat || jsonApprenti.dureeHebdoContrat,
+      "utilisateur": newApprentiAttributes.utilisateur || jsonApprenti.utilisateur,
+      "maitreAlternance": newApprentiAttributes.maitreAlternance || jsonApprenti.maitreAlternance,
+      "tuteurPedagogique": newApprentiAttributes.tuteurPedagogique || jsonApprenti.tuteurPedagogique,
+      "promotion": newApprentiAttributes.promotion || jsonApprenti.promotion,
+      "entreprise": newApprentiAttributes.entreprise || jsonApprenti.entreprise,
+      "opco": newApprentiAttributes.opco || jsonApprenti.opco,
+      "grilleEvaluation": newApprentiAttributes.grilleEvaluation || jsonApprenti.grilleEvaluation
+    };
+    request("/apprenti/" + idApprenti + "/", "put", updateApprenti);
+    window.location.reload();
   } catch (error) {
     console.error("Erreur lors de l'ajout de la promotion :", error.message);
     throw error;
@@ -82,7 +81,7 @@ export const putApprenti = async (idApprenti, jsonApprenti, newApprentiAttribute
  * @param {string} nom 
  * @param {string} prenom 
  */
-export const postApprenti = async (nom,prenom) => {
+export const postApprenti = async (nom, prenom) => {
   try {
     const apprenti = {
       "roles": [1],
@@ -90,24 +89,24 @@ export const postApprenti = async (nom,prenom) => {
       "last_login": "2023-11-20T13:01:16.160Z",
       "is_superuser": true,
       "nom": nom,
-      "prenom":prenom,
-      "email": prenom+"."+nom+"@reseau.eseo.fr" ,
+      "prenom": prenom,
+      "email": prenom + "." + nom + "@reseau.eseo.fr",
       "is_active": true,
       "is_staff": false,
       "groups": [],
       "user_permissions": [],
-  };
-      request("/apprenti/"+idApprenti+"/", "post", apprenti).then((res) => {
-        const apprentiData = {
-          "optionMineure": "N/A",
-          "optionMajeure": "N/A",
-          "utilisateur": res.data.id,
-          "maitreAlternance": 1,
-          "tuteurPedagogique": 1,
-        };
-        request("/apprenti/", "post", apprentiData);
+    };
+    request("/apprenti/" + idApprenti + "/", "post", apprenti).then((res) => {
+      const apprentiData = {
+        "optionMineure": "N/A",
+        "optionMajeure": "N/A",
+        "utilisateur": res.data.id,
+        "maitreAlternance": 1,
+        "tuteurPedagogique": 1,
+      };
+      request("/apprenti/", "post", apprentiData);
     })
-      window.location.reload();
+    window.location.reload();
   } catch (error) {
     console.error("Erreur lors de la création de l'apprenti :", error.message);
     throw error;
@@ -123,21 +122,21 @@ export const postApprenti = async (nom,prenom) => {
  */
 export const putUtilisateur = async (idUtilisateur, jsonUtilisateur, newUsersAttributes) => {
   try {
-      const updateUser = {
-        password: newUsersAttributes.password || jsonUtilisateur.password,
-        last_login: newUsersAttributes.last_login || jsonUtilisateur.last_login,
-        is_superuser: newUsersAttributes.is_superuser || jsonUtilisateur.is_superuser,
-        nom: newUsersAttributes.nom || jsonUtilisateur.nom,
-        prenom: newUsersAttributes.prenom || jsonUtilisateur.prenom,
-        telephone: newUsersAttributes.telephone || jsonUtilisateur.telephone,
-        email: newUsersAttributes.email || jsonUtilisateur.email,
-        is_active: newUsersAttributes.is_active || jsonUtilisateur.is_active,
-        is_staff: newUsersAttributes.is_staff || jsonUtilisateur.is_staff,
-        groups: newUsersAttributes.groups || jsonUtilisateur.groups,
-        user_permissions: newUsersAttributes.user_permissions || jsonUtilisateur.user_permissions,
-        roles: newUsersAttributes.roles || jsonUtilisateur.roles,
-      };
-      request("/utilisateur/"+idUtilisateur+"/", "put", updateUser);
+    const updateUser = {
+      password: newUsersAttributes.password || jsonUtilisateur.password,
+      last_login: newUsersAttributes.last_login || jsonUtilisateur.last_login,
+      is_superuser: newUsersAttributes.is_superuser || jsonUtilisateur.is_superuser,
+      nom: newUsersAttributes.nom || jsonUtilisateur.nom,
+      prenom: newUsersAttributes.prenom || jsonUtilisateur.prenom,
+      telephone: newUsersAttributes.telephone || jsonUtilisateur.telephone,
+      email: newUsersAttributes.email || jsonUtilisateur.email,
+      is_active: newUsersAttributes.is_active || jsonUtilisateur.is_active,
+      is_staff: newUsersAttributes.is_staff || jsonUtilisateur.is_staff,
+      groups: newUsersAttributes.groups || jsonUtilisateur.groups,
+      user_permissions: newUsersAttributes.user_permissions || jsonUtilisateur.user_permissions,
+      roles: newUsersAttributes.roles || jsonUtilisateur.roles,
+    };
+    request("/utilisateur/" + idUtilisateur + "/", "put", updateUser);
   } catch (error) {
     console.error("Erreur lors de l'ajout de la promotion :", error.message);
     throw error;
@@ -155,17 +154,17 @@ export const putUtilisateur = async (idUtilisateur, jsonUtilisateur, newUsersAtt
  */
 export const postMessage = async (title, message, recipient, idTags, idSender) => {
   try {
-      const messageObj = {
-        titre: title,
-        contenu: message,
-        date:  getCurrentDate(),
-        time: getCurrentTime(),
-        createur: idSender,
-        destinataire: recipient,
-        tags: idTags
-      };
-      request("/message/", "post", messageObj);
-      window.location.reload();
+    const messageObj = {
+      titre: title,
+      contenu: message,
+      date: getCurrentDate(),
+      time: getCurrentTime(),
+      createur: idSender,
+      destinataire: recipient,
+      tags: idTags
+    };
+    request("/message/", "post", messageObj);
+    window.location.reload();
   } catch (error) {
     console.error("Erreur lors de l'ajout de la promotion :", error.message);
     throw error;
@@ -174,7 +173,7 @@ export const postMessage = async (title, message, recipient, idTags, idSender) =
 
 
 /**
- * Modifie un apprenti existant
+ * Récupère les apprentis d'une promo
  * 
  * @param {int} idPromo 
  * @returns {Promise} Une promesse qui se résout avec les données des apprentis
@@ -185,6 +184,28 @@ export const getApprentiFromPromo = async (idPromo) => {
     return response.data || [];
   } catch (error) {
     console.error("Erreur lors de l'ajout de la promotion :", error.message);
+    throw error;
+  }
+};
+
+/**
+ * Ajoute un tag
+ * 
+ * @param {String} libelle
+ * @param {String} color
+ * @param {String} type
+ */
+export const addTag = async (libelle, color, type) => {
+  try {
+    const newTag = {
+      libelle: libelle,
+      couleur: color,
+      type: type
+    };
+    request("/tag/", "post", newTag);
+    window.location.reload();
+  } catch (error) {
+    console.error("Erreur lors de l'ajout du tag :", error.message);
     throw error;
   }
 };

@@ -103,7 +103,7 @@ function getUserFromToken(token) {
     user = {
         ...user,
         roles: JSON.parse(user.roles).map(role => role.pk),
-        nomComplet: ((user.prenom || '') + ' ' + (user.nom || '')).trim()
+        nomComplet: ((user.nom || '') + ' ' + (user.prenom || '')).trim()
     }
 
     return user;
