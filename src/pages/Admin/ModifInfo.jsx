@@ -37,14 +37,21 @@ function ModifInfo() {
 
     // Fonction pour envoyer les informations mises à jour à la base de données
     const saveUserInfoToDatabase = () => {
-        // Exemple de requête HTTP pour mettre à jour les informations utilisateur
-        request('/apprenti/' + userInfo.id, 'patch', userInfo)
-            .then((response) => {
-                console.log('Informations utilisateur mises à jour avec succès.');
+        // Crée une copie de userInfo en excluant les propriétés indésirables
+        const { utilisateur, tuteurPedagogique, maitreAlternance, promotion, entreprise, opco, ...userInfoToSend } = userInfo;
+    
+        const apprenticeRequest = request('/apprenti/' + userInfo.id, 'patch', userInfoToSend);
+        const userRequest = request('/utilisateur/' + user.id, 'patch', userInfoToSend);
+    
+        // Utilisation de Promise.all pour attendre que les deux requêtes soient terminées
+        Promise.all([apprenticeRequest, userRequest])
+            .then((responses) => {
+                console.log('Informations mises à jour avec succès.');
                 // Ajouter ici la logique pour gérer le succès de la mise à jour
             })
-            .catch((error) => {
-                console.error('Erreur lors de la mise à jour des informations utilisateur :', error);
+            .catch((errors) => {
+                // Affichez les erreurs ou effectuez une action en cas d'échec de l'une des requêtes
+                console.error('Erreur lors de la mise à jour des informations :', errors);
                 // Ajouter ici la logique pour gérer les erreurs
             });
     };
