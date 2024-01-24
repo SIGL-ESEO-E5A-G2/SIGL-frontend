@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { Button, Stack, Table, Title } from "@mantine/core"
-import { Pen, Trash } from "react-bootstrap-icons";
+import { FilePlus, Pen, Trash } from "react-bootstrap-icons";
 
 import { UserContext } from "../../../context/UserContext";
 import ModalAddPromotion from '../modal/ModalAddPromotion';
@@ -82,7 +82,7 @@ export function Promotions() {
                 <Table.Tr>
                     <Table.Th>Nom</Table.Th>
                     <Table.Th>Semestre en cours</Table.Th>
-                    <Table.Th w="6vw">Ajouter un dépôt</Table.Th>
+                    <Table.Th w="7vw">Ajouter un dépôt</Table.Th>
                     <Table.Th w="6vw">Modifier</Table.Th>
                     <Table.Th w="6vw">Supprimer</Table.Th>
                 </Table.Tr>
@@ -105,7 +105,7 @@ export function Promotions() {
                             <Button onClick={() => {
                                 setCurrentRow(row);
                                 setShowAddDepot(true);
-                            }}><Pen /></Button>
+                            }}><FilePlus /></Button>
                         </Table.Td>
                         <Table.Td>
                             <Button onClick={() => {
