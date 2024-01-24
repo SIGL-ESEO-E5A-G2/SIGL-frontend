@@ -1,6 +1,7 @@
 body {
     font-family: League Spartan;
     background: var(--SIGL_Main, #F4F8FF);
+    height: max-content;
 }
 
 
@@ -13,6 +14,11 @@ a {
 
 a:visited {
     color: var(--mantine-color-blue-9);
+}
+
+.pass-visible {
+    cursor: pointer;
+    display: flex;
 }
 
 

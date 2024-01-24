@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Select } from '@mantine/core';
+
 import FormTemplate from '../../../components/FormTemplate';
 import { request } from '../../../utils/request.js';
+import { getNomUser } from '../../../utils/divers';
 
 function userToLabel(data = []) {
   return data.map(row => ({
     ...row,
     value: row.id + "",
-    label: `${row.utilisateur?.prenom} ${row.utilisateur?.nom}`
+    label: getNomUser(row?.utilisateur)
   }));
 }
 
@@ -63,39 +65,39 @@ const TeamAssociatonForm = () => {
           console.error("Request setup error:", error.message);
         }
       });
-    };
-
-    return (
-      <FormTemplate title="Associer un apprenti à une équipe tutorale">
-        <Select
-          id="associerApprenti"
-          label="Apprenti"
-          data={apprentis}
-          value={apprentiId}
-          onChange={(event) => setApprentiId(event)}
-        />
-  
-        <Select
-          id="associerMA"
-          label="Maitre d'apprentissage"
-          data={maitresApprentissage}
-          value={maId}
-          onChange={(event) => setMaId(event)}
-        />
-  
-        <Select
-          id="associerTuteur"
-          label="Tuteur"
-          data={tuteurs}
-          value={tuteurId}
-          onChange={(event) => setTuteurId(event)}
-        />
-  
-        <Button type="button" onClick={handleAssocierClick}>
-          Associer
-        </Button>
-      </FormTemplate>
-    );
   };
-  
-  export default TeamAssociatonForm;
+
+  return (
+    <FormTemplate title="Associer un apprenti à une équipe tutorale">
+      <Select
+        id="associerApprenti"
+        label="Apprenti"
+        data={apprentis}
+        value={apprentiId}
+        onChange={(event) => setApprentiId(event)}
+      />
+
+      <Select
+        id="associerMA"
+        label="Maitre d'apprentissage"
+        data={maitresApprentissage}
+        value={maId}
+        onChange={(event) => setMaId(event)}
+      />
+
+      <Select
+        id="associerTuteur"
+        label="Tuteur"
+        data={tuteurs}
+        value={tuteurId}
+        onChange={(event) => setTuteurId(event)}
+      />
+
+      <Button type="button" onClick={handleAssocierClick}>
+        Associer
+      </Button>
+    </FormTemplate>
+  );
+};
+
+export default TeamAssociatonForm;
