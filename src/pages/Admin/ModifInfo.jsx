@@ -31,11 +31,16 @@ function ModifInfo() {
     // Fonction pour envoyer les informations mises à jour à la base de données
     const saveUserInfoToDatabase = () => {
         // Crée une copie de userInfo en excluant les propriétés indésirables
-        const { utilisateur, tuteurPedagogique, maitreAlternance, promotion, entreprise, opco, ...userInfoToSend } = userInfo;
-        delete userInfoToSend.ResponsableAdministration;
-        delete userInfoToSend.ResponsableFinance;
-        const apprenticeRequest = request('/apprenti/' + userInfo.id, 'patch', userInfoToSend);
-        const userRequest = request('/utilisateur/' + user.id, 'patch', userInfoToSend);
+        const apprenticeRequest = request('/apprenti/' + userInfo.id, 'patch', {
+            optionMajeure: userInfo.optionMajeure,
+            optionMajeure: userInfo.optionMajeure,
+            intitulePoste: userInfo.intitulePoste,
+            descriptifPoste: userInfo.descriptifPoste,
+        });
+        const userRequest = request('/utilisateur/' + user.id, 'patch', {
+            nom: userInfo.nom,
+            prenom: userInfo.prenom
+        });
 
         // Utilisation de Promise.all pour attendre que les deux requêtes soient terminées
         withNotification(() => Promise.all([apprenticeRequest, userRequest]), {

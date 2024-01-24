@@ -26,7 +26,6 @@ function Depot({ post: { depot, id } }, updatePost) {
         return uploadFile(user, depot?.id, file)
             .then(() => {
                 // update depot
-                // TODO update (cheminFichier + dateLivraison)
                 setDeposer(true);
                 setDateLivraison(dateString(new Date()));
             });

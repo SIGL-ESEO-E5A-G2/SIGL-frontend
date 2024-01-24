@@ -60,7 +60,11 @@ export function ModalAddDepotPromotion({ show, close, tags, row: promotion, user
                 date: getCurrentDate(),
                 time: getCurrentTime(),
                 createur: user.id,
-                destinataire: [apprenti?.utilisateur?.id],
+                destinataire: [
+                    apprenti?.utilisateur?.id,
+                    apprenti?.maitreAlternance?.utilisateur?.id,
+                    apprenti?.tuteurPedagogique?.utilisateur?.id,
+                ],
                 tags: tags
             };
 
@@ -86,7 +90,7 @@ export function ModalAddDepotPromotion({ show, close, tags, row: promotion, user
         checkErrors={checkIfFormIncorrect}
         handleSubmit={handleSubmit}
         notification={{
-            title: "Envoie du message",
+            title: "Envoi du message",
             message: "Le dépôt est en cour d'enregistrement",
             messageSuccess: "Le dépôt a été enregistrer",
             messageError: "Une erreur est survenue lors de l'enregistrement du dépôt"
