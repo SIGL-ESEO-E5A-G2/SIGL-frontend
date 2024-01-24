@@ -3,15 +3,7 @@ import { Button, Select } from '@mantine/core';
 
 import FormTemplate from '../../../components/FormTemplate';
 import { request } from '../../../utils/request.js';
-import { getNomUser } from '../../../utils/divers';
-
-function userToLabel(data = []) {
-  return data.map(row => ({
-    ...row,
-    value: row.id + "",
-    label: getNomUser(row?.utilisateur)
-  }));
-}
+import { getNomUser, userToLabel } from '../../../utils/divers';
 
 const TeamAssociatonForm = () => {
   const [apprentis, setApprentis] = useState([]);

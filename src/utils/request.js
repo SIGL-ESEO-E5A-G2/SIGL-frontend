@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { getSimpleDate } from './formatDate';
+import { apiTimeout } from '../data/constantes';
 const urlBack = import.meta.env.VITE_URL_BACK;
 
 /**
@@ -26,7 +26,7 @@ export async function request(url, method = "get", data) {
         url: mappedUrl,
         baseURL: urlBack,
         data: data,
-        timeout: 1000,
+        timeout: apiTimeout,
         headers: {
             'Content-Type': 'application/json',
         }
@@ -52,7 +52,7 @@ export async function uploadFile(user, depotId, file) {
             file_path: cheminFichier
             // utilisateur: userId,
         },
-        timeout: 1000,
+        timeout: apiTimeout,
         headers: {
             'Content-Type': 'multipart/form-data',
         }
@@ -75,7 +75,7 @@ export async function getFile(userId, path) {
             file_path: path,
             utilisateur: userId,
         },
-        timeout: 1000,
+        timeout: apiTimeout,
         headers: {
             'Content-Type': 'application/pdf',
         }
@@ -88,7 +88,7 @@ export async function getFiles(userId) {
         url: "/get-pdf/",
         baseURL: urlBack,
         data: { utilisateur: userId },
-        timeout: 1000,
+        timeout: apiTimeout,
         headers: {
             'Content-Type': 'application/pdf',
         }
