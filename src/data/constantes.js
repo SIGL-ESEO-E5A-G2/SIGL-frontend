@@ -33,3 +33,5 @@ export const tailleMaxFileEnMo = 1;
 export const notifTimeoutShort = 1000;
 
 export const notifTimeoutLong = 3000;
+
+export const apiTimeout = 5000;

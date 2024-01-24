@@ -6,10 +6,13 @@ import { ModalPlannificationSoutenance } from "../modal/ModalSoutenance";
 import ModalModificationApprenti from "../modal/ModalModificationApprenti";
 
 import { request } from "../../../utils/request";
-import { getNomUser } from "../../../utils/divers";
+import { getNomUser, updateRow, userToLabel } from "../../../utils/divers";
 import useArray from "../../../hooks/useArray";
 
 export function Apprentis() {
+    const [tuteurs, setTuteurs] = useState([]);
+    const [maitreAlternances, setMaitresAlternances] = useState([]);
+
     const [promotions, setPromotions] = useState([]);
     const [filtres, setFiltre, setFiltres] = useArray();
 
@@ -37,9 +40,19 @@ export function Apprentis() {
     const [showPlannSoutenance, setShowPlannSoutenance] = useState();
 
     useEffect(() => {
+        // load apprentis
         request('/apprentidetail', 'get')
             .then(res => setData(res.data));
 
+        // load MA
+        request("/maitrealternancedetail/")
+            .then(({ data }) => setMaitresAlternances(userToLabel(data)));
+
+        // load tuteur
+        request("/tuteurpedagogiquedetail/")
+            .then(({ data }) => setTuteurs(userToLabel(data)));
+
+        // load promos
         request("/promotion/")
             .then((res) => {
                 const data = [{ value: "-1", label: "Sans promotion" }];
@@ -62,6 +75,10 @@ export function Apprentis() {
             show={showModif}
             close={() => setShowModif(false)}
             row={currentRow}
+            tuteurs={tuteurs}
+            maitreAlternances={maitreAlternances}
+            promotions={promotions}
+            callback={(row) => updateRow(row, setData)}
         />
 
         {/* Modal de plannification de soutenance */}
@@ -105,7 +122,7 @@ export function Apprentis() {
                     <Table.Th>Tuteur</Table.Th>
                     <Table.Th>Maitre d'Alternance</Table.Th>
                     <Table.Th w="6vw">Modifier</Table.Th>
-                    <Table.Th w="6vw">Plannifier une soutenance</Table.Th>
+                    {/* <Table.Th w="6vw">Plannifier une soutenance</Table.Th> */}
                 </Table.Tr>
             </Table.Thead>
 
@@ -133,12 +150,12 @@ export function Apprentis() {
                                     setCurrentRow(row);
                                 }}><Pen /></Button>
                             </Table.Td>
-                            <Table.Td>
+                            {/* <Table.Td>
                                 <Button onClick={() => {
                                     setShowPlannSoutenance(true);
                                     setCurrentRow(row);
                                 }}><CalendarPlus /></Button>
-                            </Table.Td>
+                            </Table.Td> */}
                         </Table.Tr>
                     })
                 }

@@ -1,25 +1,33 @@
-import React, { useState, useEffect } from 'react';
+import React, { useContext } from 'react';
+import { Accordion } from "@mantine/core";
+
+import { UserContext } from "../../context/UserContext";
 import DynamicFormTutoralTeam from "./form/DynamicFormTutoralTeam";
 import DynamicFormPlanningDates from "./form/DynamicFormPlanningDates";
 import TeamAssociationForm from "./form/TeamAssociationForm";
-import { useContext } from "react";
-import { UserContext } from "../../context/UserContext";
 
 export default function () {
     const user = useContext(UserContext);
+
     return (
-        <>
-        <div>
+        <Accordion variant="separated" color="blue">
+            {/* <div>
             <TeamAssociationForm />
-        </div>
+        </div> */}
 
-        <div>
-            <DynamicFormTutoralTeam />
-        </div>
+            <Accordion.Item value="equipe-tutorale">
+                <Accordion.Control>Ajouter des membres à l'équipe tutorale</Accordion.Control>
+                <Accordion.Panel p="md">
+                    <DynamicFormTutoralTeam />
+                </Accordion.Panel>
+            </Accordion.Item>
 
-        <div>
-            <DynamicFormPlanningDates user={user}/>
-        </div>
-        </>
+            <Accordion.Item value="echeances">
+                <Accordion.Control>Saisie des échéances par promotion</Accordion.Control>
+                <Accordion.Panel p="md">
+                    <DynamicFormPlanningDates user={user} />
+                </Accordion.Panel>
+            </Accordion.Item>
+        </Accordion>
     );
 }

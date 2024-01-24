@@ -21,6 +21,14 @@ export function capitalize(text) {
   return text?.substring(0, 1)?.toUpperCase() + text?.substring(1, text?.length)?.toLowerCase();
 }
 
+export function userToLabel(data = []) {
+  return data.map(row => ({
+    ...row,
+    value: row.id + "",
+    label: getNomUser(row?.utilisateur)
+  }));
+}
+
 export function getMonday(d) {
   d = new Date(d);
   var day = d.getDay(),
