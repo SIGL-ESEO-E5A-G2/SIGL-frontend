@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { apiTimeout } from '../data/constantes';
+import { getCurrentDate } from './formatDate';
 const urlBack = import.meta.env.VITE_URL_BACK;
 
 /**
@@ -62,7 +63,7 @@ export async function uploadFile(user, depotId, file) {
             return request('/depot/' + depotId, 'patch', {
                 // cheminFichier: file.name,
                 cheminFichier: cheminFichier,
-                livraison: new Date() // TODO ou dateLivraison (verifier)
+                dateLivraison: getCurrentDate()
             })
         });
 }

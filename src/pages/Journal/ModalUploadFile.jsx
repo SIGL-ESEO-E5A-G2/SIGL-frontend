@@ -41,7 +41,7 @@ function ModalUploadFile({ show, close, uploadFile }) {
         handleSubmit={() => uploadFile(file)}
 
         notification={{
-            title: "Envoie du fichier",
+            title: "Envoi du fichier",
             message: "Votre fichier est envoyer et en cours d'enregistrement",
             messageSuccess: "Votre fichier est déposé sur le serveur",
             messageError: "Une erreur est survenue lors du dépôt de votre fichier",

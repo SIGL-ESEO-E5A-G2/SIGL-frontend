@@ -39,7 +39,7 @@ function createPost({ title, body, tags }, apprenti) {
         .catch(err => {
             notifications.show({
                 title: "Erreur",
-                message: "Une erreur est survenue lors de l'envoie du message",
+                message: "Une erreur est survenue lors de l'envoi du message",
                 color: 'red',
                 icon: <X />,
                 autoClose: notifTimeoutShort,
@@ -75,7 +75,7 @@ async function createPostAdmin({ title, body, tags, promo }, user) {
         .catch(err => {
             notifications.show({
                 title: "Erreur",
-                message: "Une erreur est survenue lors de l'envoie du message",
+                message: "Une erreur est survenue lors de l'envoi du message",
                 color: 'red',
                 icon: <X />,
                 autoClose: notifTimeoutShort,
