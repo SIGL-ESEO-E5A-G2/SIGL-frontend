@@ -1,0 +1,9 @@
+.calendar-off-day {
+    background: var(--SIGL_Main, #F4F8FF);
+}
+
+.event {
+    border-radius: 5px;
+    text-align: center;
+    padding: 5px;
+}

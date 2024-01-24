@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
+import { CalendarPlus, Pen } from "react-bootstrap-icons";
 import { Button, Group, Select, Stack, Table, TextInput, Title } from "@mantine/core";
 
+import { ModalPlannificationSoutenance } from "../modal/ModalSoutenance";
 import ModalModificationApprenti from "../modal/ModalModificationApprenti";
+
 import { request } from "../../../utils/request";
 import { getNomUser } from "../../../utils/divers";
 import useArray from "../../../hooks/useArray";
-import { Pen } from "react-bootstrap-icons";
 
 export function Apprentis() {
     const [promotions, setPromotions] = useState([]);
@@ -32,6 +34,7 @@ export function Apprentis() {
     }, [data, filtres]);
 
     const [showModif, setShowModif] = useState();
+    const [showPlannSoutenance, setShowPlannSoutenance] = useState();
 
     useEffect(() => {
         request('/apprentidetail', 'get')
@@ -58,6 +61,13 @@ export function Apprentis() {
         <ModalModificationApprenti
             show={showModif}
             close={() => setShowModif(false)}
+            row={currentRow}
+        />
+
+        {/* Modal de plannification de soutenance */}
+        <ModalPlannificationSoutenance
+            show={showPlannSoutenance}
+            close={() => setShowPlannSoutenance(false)}
             row={currentRow}
         />
 
@@ -95,6 +105,7 @@ export function Apprentis() {
                     <Table.Th>Tuteur</Table.Th>
                     <Table.Th>Maitre d'Alternance</Table.Th>
                     <Table.Th w="6vw">Modifier</Table.Th>
+                    <Table.Th w="6vw">Plannifier une soutenance</Table.Th>
                 </Table.Tr>
             </Table.Thead>
 
@@ -121,6 +132,12 @@ export function Apprentis() {
                                     setShowModif(true);
                                     setCurrentRow(row);
                                 }}><Pen /></Button>
+                            </Table.Td>
+                            <Table.Td>
+                                <Button onClick={() => {
+                                    setShowPlannSoutenance(true);
+                                    setCurrentRow(row);
+                                }}><CalendarPlus /></Button>
                             </Table.Td>
                         </Table.Tr>
                     })
