@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { TextInput, Textarea, NumberInput, Radio, Stack, Group, Text, Title, Button, Box } from "@mantine/core";
 
-import { postApprenti, postCompany, postMaitreAlternance, postOpco, postRepresentantEntreprise, postUtilisateur } from '../../../utils/api.js';
+import { postApprenti, postCompany, postMaitreAlternance, postOpco, postRepresentantEntreprise, postResponsableAdmin, postResponsableFinance, postUtilisateur } from '../../../utils/api.js';
 
 const ApprenticeshipForm = () => {
   const [formData, setFormData] = useState({
@@ -63,7 +63,6 @@ const ApprenticeshipForm = () => {
   };
 
   const handleSubmit = async (e) => {
-    console.log(formData);
     e.preventDefault();
     //données de l'entreprise
     const entreprise = {
@@ -80,7 +79,6 @@ const ApprenticeshipForm = () => {
       email: formData.adminContactEmail,
       nombreSalarie: formData.membersNum
     }
-    console.log(entreprise);
     
     //données de l'opco
     const opco = {
@@ -123,7 +121,7 @@ const ApprenticeshipForm = () => {
       prenom: formData.billingContactFirstName,
       telephone: formData.billingContactPhone,
       email: formData.billingContactEmail,
-      roles:[6]
+      roles:[9]
     }
 
     //données responsable administratif
@@ -132,30 +130,28 @@ const ApprenticeshipForm = () => {
       prenom: formData.adminContactFirstName,
       telephone: formData.adminContactPhone,
       email: formData.adminContactEmail,
-      roles:[6]
+      roles:[10]
     }
 
 
 
     postOpco(opco).then((responseOpco) => {
-      console.log(responseOpco);
+
       postCompany(entreprise).then((responseCompany) => {
-        console.log("responseCompany : "+responseCompany);
+
         postUtilisateur(companyRepresentative).then((responseUserRepresentative) =>{
-          console.log("responseUserRepresentative : "+responseUserRepresentative);
-          const respresentativeData = {
+
+          let respresentativeData = {
             fonction: formData.companyRepresentativeFunction,
             ancienEseo: formData.companyRepresentativeIsAlumni,
             utilisateur: responseUserRepresentative.id,
             entreprise: responseCompany.id
           }
-    
           postRepresentantEntreprise(respresentativeData);
         });
         
         postUtilisateur(maitreAlternance).then((responseUserMaitreAlternance) =>{
-          console.log("responseUserMaitreAlternance : "+responseUserMaitreAlternance);
-          const maitreAlternanceData = {
+          let maitreAlternanceData = {
             fonction: formData.masterFunction,
             dernierdiplome: formData.masterLastDiploma,
             ancienEseo: formData.isMasterEseoAlumni,
@@ -163,25 +159,46 @@ const ApprenticeshipForm = () => {
             entreprise: responseCompany.id
           }
           postMaitreAlternance(maitreAlternanceData).then((responseMaitreAlternance) => {
-            console.log("responseMaitreAlternance : "+responseMaitreAlternance);
-            postUtilisateur(apprenti).then((responseUserApprenti) => {
-              const apprenti = {
-                optionMajeure: "N/A",
-                optionMineure: "N/A",
-                intitulePoste: formData.apprenticePostName,
-                descriptifPoste:formData.positionDescription,
-                classificationConventionCollective: formData.conventionCoef,
-                dureeHebdoContrat: formData.workHours || formData.workHoursOther,
-                utilisateur: responseUserApprenti.id,
-                tuteurPedagogique: 0,
-                maitreAlternance: responseMaitreAlternance.id,
-                promotion: 0,
-                entreprise: responseCompany.id,
-                opco: responseOpco.id,
-                grilleEvaluation: 0
+            
+            postUtilisateur(responsableFinance).then((responseUserFinance) => {
+              let financeData = {
+                ancienEseo: formData.isBillingContactEseoAlumni,
+                utilisateur: responseUserFinance.id,
               }
 
-              postApprenti(apprenti);
+              postResponsableFinance(financeData).then((responseResponsableFinance)=> {
+
+                postUtilisateur(responsableAdmin).then((responseUserAdmin) => {
+                  let adminData = {
+                    ancienEseo: formData.isAdminContactEseoAlumni,
+                    utilisateur: responseUserAdmin.id,
+                  }
+                  
+                  postResponsableAdmin(adminData).then((responseResponsableAdmin) =>{
+                    postUtilisateur(apprenti).then((responseUserApprenti) => {
+                      let apprenti = {
+                        optionMajeure: "N/A",
+                        optionMineure: "N/A",
+                        intitulePoste: formData.apprenticePostName,
+                        descriptifPoste:formData.positionDescription,
+                        classificationConventionCollective: formData.conventionCoef,
+                        dureeHebdoContrat: formData.workHours || formData.workHoursOther,
+                        utilisateur: responseUserApprenti.id,
+                        tuteurPedagogique: null,
+                        maitreAlternance: responseMaitreAlternance.id,
+                        promotion: null,
+                        entreprise: responseCompany.id,
+                        opco: responseOpco.id,
+                        grilleEvaluation: null,
+                        ResponsableFinance: responseResponsableFinance.id,
+                        ResponsableAdministration: responseResponsableAdmin.id,
+                      }
+        
+                      postApprenti(apprenti);
+                    });
+                  })
+                });
+              });
             });
           });
         });

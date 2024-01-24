@@ -1,6 +1,7 @@
 import { request } from './request';
 import { getCurrentTime, getCurrentDate } from './formatDate';
 import { generatePassword } from './encryption';
+import { userHasRole } from './userRights';
 
 /**
  * Ajtoue une nouvelle promotion
@@ -66,7 +67,10 @@ export const putApprenti = async (idApprenti, jsonApprenti, newApprentiAttribute
       "promotion": newApprentiAttributes.promotion || jsonApprenti.promotion,
       "entreprise": newApprentiAttributes.entreprise || jsonApprenti.entreprise,
       "opco": newApprentiAttributes.opco || jsonApprenti.opco,
-      "grilleEvaluation": newApprentiAttributes.grilleEvaluation || jsonApprenti.grilleEvaluation
+      "grilleEvaluation": newApprentiAttributes.grilleEvaluation || jsonApprenti.grilleEvaluation,
+      "ResponsableFinance": newApprentiAttributes.ResponsableFinance || jsonApprenti.ResponseResponsableFinance,
+      "ResponsableAdministration": newApprentiAttributes.ResponsableAdministration || jsonApprenti.ResponseResponsableAdmin,
+
     };
     request("/apprenti/" + idApprenti + "/", "put", updateApprenti);
     window.location.reload();
@@ -245,7 +249,6 @@ export const postMaitreAlternance = async (maitreAlternanceData) => {
  * @param {json} apprentiData
  */
 export const postApprenti = async (apprentiData) => {
-  console.log(apprentiData);
   return request("/apprenti/", "post", apprentiData)
   .then((response) => {
     return response.data
@@ -256,6 +259,37 @@ export const postApprenti = async (apprentiData) => {
   });
 };
 
+/**
+ * Ajoute un representant des finances de l'entreprise
+ * 
+ * @param {json} financeData
+ */
+export const postResponsableFinance= async (financeData) => {
+  return request("/responsablefinance/", "post", financeData)
+  .then((response) => {
+    return response.data
+  })
+  .catch((error)=>{
+    console.error("Erreur lors de l'ajout de l'opco :", error.message);
+    throw error;
+  });
+};
+
+/**
+ * Ajoute un representant du suivi administratif
+ * 
+ * @param {json} adminData
+ */
+export const postResponsableAdmin= async (adminData) => {
+  return request("/responsableadministration/", "post", adminData)
+  .then((response) => {
+    return response.data
+  })
+  .catch((error)=>{
+    console.error("Erreur lors de l'ajout de l'opco :", error.message);
+    throw error;
+  });
+};
 
 /**
  * Ajoute un utilisateur
@@ -285,10 +319,8 @@ export const postUtilisateur = async (userData) => {
         "roles": userData.roles
       }
   
-      console.log(newUser);
       return request("/utilisateur/", "post", newUser)
       .then((response) => {
-        console.log("user Data "+ response.data);
         return response.data
       })
       .catch((error)=>{
@@ -302,3 +334,23 @@ export const postUtilisateur = async (userData) => {
     });
 };
 
+
+
+export async function getApprentis(user) {
+  const isApprenti = userHasRole(user, [1]);
+  const isTuteur = userHasRole(user, [2]);
+  const isMA = userHasRole(user, [5]);
+
+  if (isApprenti) {
+    return request(`/apprentiutilisateurdetail?utilisateur=${user.id}`)
+      .then((res) => res.data ? [res.data[0]] : []);
+  }
+  else if (isMA) {
+    return request(`/maitrealternanceutilisateurdetail?utilisateur=${user.id}`, "get")
+      .then(res => res.data?.length > 0 && res.data[0].apprentis?.length > 0 ? [res.data[0].apprentis[0]] : [])
+  }
+  else if (isTuteur) {
+    return request(`/tuteurpedagogiqueutilisateurdetail?utilisateur=${user.id}`, "get")
+      .then(res => res.data?.length > 0 ? res.data[0].apprentis : []);
+  }
+}

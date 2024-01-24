@@ -1,4 +1,11 @@
 body {
+    --color-s5: #0077b6;
+    --color-s6: #7209b7;
+    --color-s7: #ef233c;
+    --color-s8: #f18701;
+    --color-s9: #ffd166;
+    --color-s10: #99d98c;
+
     background: var(--SIGL_Main, #F4F8FF);
     height: max-content;
 }
@@ -61,4 +68,37 @@ a:visited {
     border-radius: 5px;
     background-color: var(--mantine-color-blue-7);
     color: var(--mantine-color-white);
+}
+
+
+/* Semestres */
+
+.S5 {
+    background-color: var(--color-s5);
+    color: var(--mantine-color-white);
+}
+
+.S6 {
+    background-color: var(--color-s6);
+    color: var(--mantine-color-white);
+}
+
+.S7 {
+    background-color: var(--color-s7);
+    color: var(--mantine-color-white);
+}
+
+.S8 {
+    background-color: var(--color-s8);
+    color: var(--mantine-color-black);
+}
+
+.S9 {
+    background-color: var(--color-s9);
+    color: var(--mantine-color-black);
+}
+
+.S10 {
+    background-color: var(--color-s10);
+    color: var(--mantine-color-black);
 }

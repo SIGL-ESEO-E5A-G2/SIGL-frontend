@@ -146,9 +146,7 @@ export function GrilleEvaluation() {
 
                         function setGrille(updateValue) {
                             setValues(old => {
-                                console.log("TAG old", [...old.S9])
                                 old["S" + semestre.numero] = updateValue(old["S" + semestre.numero]);
-                                console.log("TAG new", old.S9)
 
                                 return { ...old };
                             });
@@ -212,7 +210,6 @@ function GrilleTab({ canEdit, grille, setGrille, competences }) {
                     function updateGrille(key, value) {
                         setGrille(old => {
                             const index = old.findIndex(oldRow => oldRow.competence === competence.id);
-                            console.log("TAG index", index, competence.id)
 
                             if (index >= 0) {
                                 old[index][key] = value;

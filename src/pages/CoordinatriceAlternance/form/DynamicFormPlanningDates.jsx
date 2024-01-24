@@ -75,10 +75,6 @@ const DynamicFormPlanningDates = ({ user }) => {
   };
 
   const handleSubmit = () => {
-    console.log('selectedFormat:', selectedFormat);
-    console.log('Dates:', dates);
-    console.log('Selected Promotion:', selectedPromotion);
-
     getApprentiFromPromo(selectedPromotion)
       .then((apprentis) => {
         const apprentisID = apprentis.map((apprenti) => apprenti.id);

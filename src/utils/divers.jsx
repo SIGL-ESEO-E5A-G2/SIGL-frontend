@@ -13,6 +13,21 @@ export function isFunc(obj) {
   return obj instanceof Function;
 }
 
+export function isDateValid(dateStr) {
+  return !isNaN(new Date(dateStr));
+}
+
+export function capitalize(text) {
+  return text?.substring(0, 1)?.toUpperCase() + text?.substring(1, text?.length)?.toLowerCase();
+}
+
+export function getMonday(d) {
+  d = new Date(d);
+  var day = d.getDay(),
+    diff = d.getDate() - day + (day == 0 ? -6 : 1); // adjust when day is sunday
+  return new Date(d.setDate(diff));
+}
+
 /**
  * Envoie une notification apres une fonction
  * 

@@ -46,3 +46,18 @@ export function getSimpleDate(date) {
   const dateISO = date.toISOString()?.split('T');
   return dateISO ? dateISO[0] : null;
 }
+
+/**
+ * 
+ * @param {Date} date 
+ * @returns 
+ */
+export function getMonthName(date) {
+  if (!date) return "";
+  return date.toLocaleDateString(locale, { month: "long" });
+}
+
+export function getDayName(date) {
+  if (!date) return "";
+  return date.toLocaleDateString("fr-FR", { weekday: "long" });
+}

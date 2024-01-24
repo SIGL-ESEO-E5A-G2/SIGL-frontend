@@ -8,6 +8,7 @@ import Post from './Post';
 
 import { request } from '../../utils/request';
 import { UserContext } from '../../context/UserContext';
+import { userHasRole } from '../../utils/userRights';
 import ModalAddMessage from './ModalAddMessage';
 import FiltresPosts, { handleFilters } from './FiltresPosts';
 import useArray from '../../hooks/useArray';
@@ -23,8 +24,26 @@ const BlogComponent = () => {
 
   const [apprentidetail, setApprentidetail] = useState([]);
   const [tags, setTags] = useState([]);
-
+  const [promotions, setPromotions] = useState([]);
+  
   const user = useContext(UserContext);
+  const shouldAddPromotion = userHasRole(user,[3]);
+
+  const modalProps = {
+    show: showPopup,
+    close: () => setShowPopup(false),
+    tags: tags,
+    apprenti: apprentidetail,
+    addPost: newMessage => setPosts(old => [newMessage, ...old]),
+    user: user
+  };
+
+  if (shouldAddPromotion) {
+    modalProps.isPromotions = true;
+    modalProps.promotions = promotions;
+  }else{
+    modalProps.isPromotions = false;
+  }
 
   useEffect(() => {
     // TODO en fn du type d'user
@@ -39,6 +58,13 @@ const BlogComponent = () => {
         ...tag,
         value: tag.id + "",
         label: tag.libelle
+      }))));
+
+    request('/promotion', 'get') // TODO rendre certains tags inacessibles
+      .then(({ data }) => setPromotions((data || []).map(promotion => ({
+        ...promotion,
+        value: promotion.id + "",
+        label: promotion.libelle
       }))));
   }, []);
 
@@ -83,14 +109,8 @@ const BlogComponent = () => {
     </Stack>
 
     {/* Modal ajout message */}
-    <ModalAddMessage
-      show={showPopup}
-      close={() => setShowPopup(false)}
-      tags={tags}
-      apprenti={apprentidetail}
-      addPost={newMessage => setPosts(old => [newMessage, ...old])}
-    />
-
+    <ModalAddMessage {...modalProps} />
+  
     {/* Btn ajouter message */}
     <Button
       onClick={() => setShowPopup(true)}
