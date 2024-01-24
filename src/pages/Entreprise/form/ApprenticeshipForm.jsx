@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { TextInput, Textarea, NumberInput, Radio, Stack, Group, Text, Title, Button, Box } from "@mantine/core";
 
-import { postApprenti } from '../../../utils/api.js';
+import { postApprenti, postCompany, postMaitreAlternance, postOpco, postRepresentantEntreprise, postResponsableAdmin, postResponsableFinance, postUtilisateur } from '../../../utils/api.js';
 
 const ApprenticeshipForm = () => {
   const [formData, setFormData] = useState({
@@ -11,6 +11,7 @@ const ApprenticeshipForm = () => {
     positionDescription: '',
     conventionCoef: '',
     workHours: '',
+    workHoursOther: '',    
     socialName: '',
     siretNum: '',
     membersNum: '',
@@ -30,6 +31,7 @@ const ApprenticeshipForm = () => {
     opcoAddress: '',
     opcoPhoneNumber: '',
     opcoEmail: '',
+    companyRepresentativeEmail: '',
     companyRepresentativeLastName: '',
     companyRepresentativeFirstName: '',
     companyRepresentativeFunction: '',
@@ -41,27 +43,167 @@ const ApprenticeshipForm = () => {
     masterEmail: '',
     masterFunction: '',
     masterLastDiploma: '',
+    isMasterEseoAlumni: '',
     billingContactLastName: '',
     billingContactFirstName: '',
     billingContactPhone: '',
     billingContactEmail: '',
-    isBillingContactEseoAlumnus: '',
+    isBillingContactEseoAlumni: '',
     adminContactLastName: '',
     adminContactFirstName: '',
     adminContactPhone: '',
     adminContactEmail: '',
-    isAdminContactEseoAlumnus: '',
+    isAdminContactEseoAlumni: '',
     hasInternationalExperience: '',
   });
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const {name , value} = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    postApprenti(formData.apprenticeLastName, formData.apprenticeFirstName);
+    //données de l'entreprise
+    const entreprise = {
+      raisonSociale: formData.socialName,
+      adresse: formData.formationPlaceAddress,
+      secteurDactivite: formData.activitySector,
+      description: formData.positionDescription,
+      siret: formData.siretNum,
+      libelleCPNE: formData.cpne,
+      codeIDCC: formData.idcc,
+      conventionCollective: formData.collectiveConvention,
+      codeNAF: formData.nafCode,
+      telephone: formData.adminContactPhone,
+      email: formData.adminContactEmail,
+      nombreSalarie: formData.membersNum
+    }
+    
+    //données de l'opco
+    const opco = {
+      raisonSociale: formData.opcoName,
+      adresse: formData.opcoAddress,
+      siret: formData.opcoSiret,
+      telephone: formData.opcoPhoneNumber,
+      email: formData.opcoEmail
+    }
+
+    //données apprenti
+    const apprenti = {
+      nom: formData.apprenticeLastName,
+      prenom: formData.apprenticeFirstName,
+      email: formData.apprenticeFirstName+"."+formData.apprenticeLastName+"@reseau.eseo.fr",
+      roles: [1]
+    }
+
+    //données du representant d'entreprise
+    const companyRepresentative = {
+      nom: formData.companyRepresentativeLastName,
+      prenom: formData.companyRepresentativeFirstName,
+      telephone: formData.companyRepresentativePhoneNumber,
+      email: formData.companyRepresentativeEmail,
+      roles:[6]
+    }
+
+    //données du maitre d'alternance
+    const maitreAlternance ={
+      nom: formData.masterLastName,
+      prenom: formData.masterFirstName,
+      telephone: formData.masterPhoneNumber,
+      email: formData.masterEmail,
+      roles:[5]
+    }
+
+    //données responsable des finances
+    const responsableFinance = {
+      nom: formData.billingContactLastName,
+      prenom: formData.billingContactFirstName,
+      telephone: formData.billingContactPhone,
+      email: formData.billingContactEmail,
+      roles:[9]
+    }
+
+    //données responsable administratif
+    const responsableAdmin = {
+      nom: formData.adminContactLastName,
+      prenom: formData.adminContactFirstName,
+      telephone: formData.adminContactPhone,
+      email: formData.adminContactEmail,
+      roles:[10]
+    }
+
+
+
+    postOpco(opco).then((responseOpco) => {
+
+      postCompany(entreprise).then((responseCompany) => {
+
+        postUtilisateur(companyRepresentative).then((responseUserRepresentative) =>{
+
+          let respresentativeData = {
+            fonction: formData.companyRepresentativeFunction,
+            ancienEseo: formData.companyRepresentativeIsAlumni,
+            utilisateur: responseUserRepresentative.id,
+            entreprise: responseCompany.id
+          }
+          postRepresentantEntreprise(respresentativeData);
+        });
+        
+        postUtilisateur(maitreAlternance).then((responseUserMaitreAlternance) =>{
+          let maitreAlternanceData = {
+            fonction: formData.masterFunction,
+            dernierdiplome: formData.masterLastDiploma,
+            ancienEseo: formData.isMasterEseoAlumni,
+            utilisateur: responseUserMaitreAlternance.id,
+            entreprise: responseCompany.id
+          }
+          postMaitreAlternance(maitreAlternanceData).then((responseMaitreAlternance) => {
+            
+            postUtilisateur(responsableFinance).then((responseUserFinance) => {
+              let financeData = {
+                ancienEseo: formData.isBillingContactEseoAlumni,
+                utilisateur: responseUserFinance.id,
+              }
+
+              postResponsableFinance(financeData).then((responseResponsableFinance)=> {
+
+                postUtilisateur(responsableAdmin).then((responseUserAdmin) => {
+                  let adminData = {
+                    ancienEseo: formData.isAdminContactEseoAlumni,
+                    utilisateur: responseUserAdmin.id,
+                  }
+                  
+                  postResponsableAdmin(adminData).then((responseResponsableAdmin) =>{
+                    postUtilisateur(apprenti).then((responseUserApprenti) => {
+                      let apprenti = {
+                        optionMajeure: "N/A",
+                        optionMineure: "N/A",
+                        intitulePoste: formData.apprenticePostName,
+                        descriptifPoste:formData.positionDescription,
+                        classificationConventionCollective: formData.conventionCoef,
+                        dureeHebdoContrat: formData.workHours || formData.workHoursOther,
+                        utilisateur: responseUserApprenti.id,
+                        tuteurPedagogique: null,
+                        maitreAlternance: responseMaitreAlternance.id,
+                        promotion: null,
+                        entreprise: responseCompany.id,
+                        opco: responseOpco.id,
+                        grilleEvaluation: null,
+                        ResponsableFinance: responseResponsableFinance.id,
+                        ResponsableAdministration: responseResponsableAdmin.id,
+                      }
+        
+                      postApprenti(apprenti);
+                    });
+                  })
+                });
+              });
+            });
+          });
+        });
+      });
+    });
   };
 
   return (
@@ -123,16 +265,15 @@ const ApprenticeshipForm = () => {
           >
             <Group>
               <Radio value="35" label="35 heures" />
-              <Radio value="37.5" label="37 heures 30" />
+              <Radio value="37" label="37 heures" />
               <Radio value="39" label="39 heures" />
               <Group>
                 <Radio value="" label="Autre" />
                 <NumberInput
-                  name="workHours"
-                  size="xs"
-                  disabled={["35", "37.5", "39"].includes(formData.workHours)}
-                  value={formData.workHours}
-                  onChange={handleChange}
+                 size="xs"
+                 disabled={["35", "37.5", "39"].includes(formData.workHours)}
+                 value={formData.workHoursOther}
+                 onChange={(value) => handleChange({ target: { value, name: "workHoursOther" } })}
                 />
               </Group>
             </Group>
@@ -339,17 +480,25 @@ const ApprenticeshipForm = () => {
             name="companyRepresentativePhoneNumber"
             required
             type="tel"
-            label="Fonction"
+            label="Numéro de téléphone"
             value={formData.companyRepresentativePhoneNumber}
             onChange={handleChange}
           />
 
+          <TextInput
+            name="companyRepresentativeEmail"
+            required
+            type="email"
+            label="Email"
+            value={formData.companyRepresentativeEmail}
+            onChange={handleChange}
+          />
+
           <Radio.Group
-            name="companyRepresentativeIsEseoAlumnus"
             required
             label="Ancien(ne) de l'ESEO"
-            value={formData.companyRepresentativeIsEseoAlumnus}
-            onChange={handleChange}
+            value={formData.companyRepresentativeIsAlumni}
+            onChange={(value) => handleChange({ target: { name: 'companyRepresentativeIsAlumni', value } })}
           >
             <Group>
               <Radio value="true" label="Oui" />
@@ -428,11 +577,10 @@ const ApprenticeshipForm = () => {
           />
 
           <Radio.Group
-            name="isMasterEseoAlumni"
             required
             label="Ancien(ne) de l'ESEO"
             value={formData.isMasterEseoAlumni}
-            onChange={handleChange}
+            onChange={(value) => handleChange({ target: { name: 'isMasterEseoAlumni', value } })}
           >
             <Group>
               <Radio value="true" label="Oui" />
@@ -480,11 +628,10 @@ const ApprenticeshipForm = () => {
           />
 
           <Radio.Group
-            name="isBillingContactEseoAlumnus"
             required
             label="Ancien(ne) de l'ESEO"
-            value={formData.isBillingContactEseoAlumnus}
-            onChange={handleChange}
+            value={formData.isBillingContactEseoAlumni}
+            onChange={(value) => handleChange({ target: { name: 'isBillingContactEseoAlumni', value } })}
           >
             <Group>
               <Radio value="true" label="Oui" />
@@ -532,11 +679,10 @@ const ApprenticeshipForm = () => {
           />
 
           <Radio.Group
-            name="isAdminContactEseoAlumnus"
             required
             label="Ancien(ne) de l'ESEO"
-            value={formData.isAdminContactEseoAlumnus}
-            onChange={handleChange}
+            value={formData.isAdminContactEseoAlumni}
+            onChange={(value) => handleChange({ target: { name: 'isAdminContactEseoAlumni', value } })}
           >
             <Group>
               <Radio value="true" label="Oui" />

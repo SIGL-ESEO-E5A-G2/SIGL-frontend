@@ -49,7 +49,6 @@ const ChangePasswordForm = ({ user }) => {
 
     return withNotification(async () => hashPassword(password)
       .then(async (hashedPassword) => {
-        console.log('Mot de passe hashé :', hashedPassword);
 
         return request(`/utilisateur/${user.id}`, 'patch', {
           password: hashedPassword

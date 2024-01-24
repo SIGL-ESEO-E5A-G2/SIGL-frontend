@@ -54,7 +54,6 @@ export function Calendar() {
     useEffect(() => {
         getApprentis(user)
             .then(apprentis => {
-                console.log("TAG apprentis", apprentis)
                 return apprentis;
             })
             .then(apprentis => {
