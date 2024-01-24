@@ -32,7 +32,8 @@ function ModifInfo() {
     const saveUserInfoToDatabase = () => {
         // Crée une copie de userInfo en excluant les propriétés indésirables
         const { utilisateur, tuteurPedagogique, maitreAlternance, promotion, entreprise, opco, ...userInfoToSend } = userInfo;
-
+        delete userInfoToSend.ResponsableAdministration;
+        delete userInfoToSend.ResponsableFinance;
         const apprenticeRequest = request('/apprenti/' + userInfo.id, 'patch', userInfoToSend);
         const userRequest = request('/utilisateur/' + user.id, 'patch', userInfoToSend);
 
