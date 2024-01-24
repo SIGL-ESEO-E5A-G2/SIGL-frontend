@@ -83,12 +83,14 @@ export async function getFile(userId, path) {
     });
 }
 
-export async function getFiles(userId) {
+export async function getFiles(userId, cheminFichier) {
     return axios({
         method: "post",
         url: "/get-pdf/",
         baseURL: urlBack,
-        data: { utilisateur: userId },
+        data: {
+            path_file: cheminFichier
+        },
         timeout: apiTimeout,
         headers: {
             'Content-Type': 'application/pdf',
