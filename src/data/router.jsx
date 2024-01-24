@@ -17,6 +17,7 @@ import ApprenticeshipForm from '../pages/Entreprise/form/ApprenticeshipForm';
 import Apprentis from '../pages/ApprentiListing/List/Apprentis';
 import Promotions from '../pages/ApprentiListing/List/Promotions';
 import { Calendar } from '../pages/Calendar';
+import { DepotList } from '../pages/DepotList';
 
 export default {
     path: "",
@@ -26,7 +27,7 @@ export default {
     children: [
         {
             path: "inscription",
-            name: "Inscription entrerpise",
+            name: "Inscription entreprise",
             icon: LayoutTextWindowReverse,
             element: <ApprenticeshipForm />,
             children: [],
@@ -78,7 +79,7 @@ export default {
         {
             path: "profil",
             name: "Profil",
-            element: <ModifInfo/>,
+            element: <ModifInfo />,
             roles: [1], // user
         },
         {
@@ -86,6 +87,12 @@ export default {
             name: "Calendrier",
             element: <Calendar />,
             roles: [1, 2, 5] // apprenti
+        },
+        {
+            path: "depots",
+            name: "Dépôts",
+            element: <DepotList />,
+            roles: [3, 4],
         },
     ]
 }

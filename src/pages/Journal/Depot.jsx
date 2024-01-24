@@ -3,30 +3,10 @@ import { saveAs } from 'file-saver';
 import { Button, Paper, Stack, Group, Text, Badge } from "@mantine/core";
 import { Download, Pen, Upload } from "react-bootstrap-icons";
 
-import { getFile, uploadFile } from "../../utils/request";
+import { downloadFile, getFile, uploadFile } from "../../utils/request";
 import { dateString } from "../../utils/formatDate";
 import ModalUploadFile from "./ModalUploadFile";
 import { UserContext } from "../../context/UserContext";
-
-
-/**
- * 
- * @param {{cheminFichier}} depot 
- * @returns 
- */
-async function downloadFile(userId, depot) {
-    return getFile(userId, depot.cheminFichier)
-        .then(({ data }) => {
-            const filePath = depot.cheminFichier.split('/');
-            const fileName = filePath ? filePath[filePath.length - 1] : "Fichier.pdf";
-
-            return saveAs(new Blob([data], { type: "application/pdf" }), fileName);
-        })
-        .catch((error) => {
-            alert(error?.response?.data || 'Une erreur est survenue');
-            console.error(error);
-        });
-}
 
 function Depot({ post: { depot, id } }, updatePost) {
     const [showModalUpload, setShowModalUpload] = useState();
