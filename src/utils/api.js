@@ -1,5 +1,6 @@
 import { request } from './request';
 import { getCurrentTime, getCurrentDate } from './formatDate';
+import { generatePassword } from './encryption';
 
 /**
  * Ajtoue une nouvelle promotion
@@ -71,44 +72,6 @@ export const putApprenti = async (idApprenti, jsonApprenti, newApprentiAttribute
     window.location.reload();
   } catch (error) {
     console.error("Erreur lors de l'ajout de la promotion :", error.message);
-    throw error;
-  }
-};
-
-/**
- * Créer un apprenti
- * 
- * @param {string} nom 
- * @param {string} prenom 
- */
-export const postApprenti = async (nom, prenom) => {
-  try {
-    const apprenti = {
-      "roles": [1],
-      "password": "autogenerate",
-      "last_login": "2023-11-20T13:01:16.160Z",
-      "is_superuser": true,
-      "nom": nom,
-      "prenom": prenom,
-      "email": prenom + "." + nom + "@reseau.eseo.fr",
-      "is_active": true,
-      "is_staff": false,
-      "groups": [],
-      "user_permissions": [],
-    };
-    request("/apprenti/" + idApprenti + "/", "post", apprenti).then((res) => {
-      const apprentiData = {
-        "optionMineure": "N/A",
-        "optionMajeure": "N/A",
-        "utilisateur": res.data.id,
-        "maitreAlternance": 1,
-        "tuteurPedagogique": 1,
-      };
-      request("/apprenti/", "post", apprentiData);
-    })
-    window.location.reload();
-  } catch (error) {
-    console.error("Erreur lors de la création de l'apprenti :", error.message);
     throw error;
   }
 };
@@ -209,3 +172,133 @@ export const addTag = async (libelle, color, type) => {
     throw error;
   }
 };
+
+/**
+ * Ajoute un opco
+ * 
+ * @param {json} companyData
+ * @returns {Promise} La promesse résultante de la requête POST
+ */
+export const postCompany = async (companyData) => {
+  return request("/entreprise/", "post", companyData)
+  .then((response) => {
+    return response.data
+  })
+  .catch((error)=>{
+    console.error("Erreur lors de l'ajout de l'opco :", error.message);
+    throw error;
+  });
+};
+
+/**
+ * Ajoute un opco
+ * 
+ * @param {json} opcoData
+ * @returns {Promise} La promesse résultante de la requête POST
+ */
+export const postOpco = async (opcoData) => {
+  return request("/opco/", "post", opcoData)
+  .then((response) => {
+    return response.data
+  })
+  .catch((error)=>{
+    console.error("Erreur lors de l'ajout de l'opco :", error.message);
+    throw error;
+  });
+};
+
+/**
+ * Ajoute un representant d'entreprise
+ * 
+ * @param {json} representantData
+ */
+export const postRepresentantEntreprise = async (representantData) => {
+  return request("/responsableentreprise/", "post", representantData)
+  .then((response) => {
+    return response.data
+  })
+  .catch((error)=>{
+    console.error("Erreur lors de l'ajout de l'opco :", error.message);
+    throw error;
+  });
+};
+
+/**
+ * Ajoute un representant d'entreprise
+ * 
+ * @param {json} maitreAlternanceData
+ */
+export const postMaitreAlternance = async (maitreAlternanceData) => {
+  return request("/maitrealternance/", "post", maitreAlternanceData)
+  .then((response) => {
+    return response.data
+  })
+  .catch((error)=>{
+    console.error("Erreur lors de l'ajout de l'opco :", error.message);
+    throw error;
+  });
+};
+
+/**
+ * Ajoute un representant d'entreprise
+ * 
+ * @param {json} apprentiData
+ */
+export const postApprenti = async (apprentiData) => {
+  console.log(apprentiData);
+  return request("/apprenti/", "post", apprentiData)
+  .then((response) => {
+    return response.data
+  })
+  .catch((error)=>{
+    console.error("Erreur lors de l'ajout de l'opco :", error.message);
+    throw error;
+  });
+};
+
+
+/**
+ * Ajoute un utilisateur
+ * 
+ * @param {json} userData
+ */
+export const postUtilisateur = async (userData) => {
+
+    return generatePassword()
+    .then((res) => {
+      const newUser ={
+        "password": res,
+        "last_login": "2024-01-21T09:42:25.602Z",
+        "is_superuser": false,
+        "nom": userData.nom,
+        "prenom": userData.prenom,
+        "telephone": userData.telephone,
+        "email": userData.email,
+        "is_active": true,
+        "is_staff": true,
+        "groups": [
+          0
+        ],
+        "user_permissions": [
+          0
+        ],
+        "roles": userData.roles
+      }
+  
+      console.log(newUser);
+      return request("/utilisateur/", "post", newUser)
+      .then((response) => {
+        console.log("user Data "+ response.data);
+        return response.data
+      })
+      .catch((error)=>{
+        console.error("Erreur lors de l'ajout de l'opco :", error.message);
+        throw error;
+      });
+    })
+    .catch((error)=>{
+      console.error("Erreur lors de l'ajout de l'opco :", error.message);
+      throw error;
+    });
+};
+
