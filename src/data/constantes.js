@@ -35,3 +35,22 @@ export const notifTimeoutShort = 1000;
 export const notifTimeoutLong = 3000;
 
 export const apiTimeout = 5000;
+
+export const textEditorModules = {
+    toolbar: [
+        [{ font: [] }],
+        [{ 'align': [] }],
+        [
+            { color: [] },
+            { background: [] },
+        ],
+        ["bold", "italic", "underline", "strike"],
+        ["code-block", "blockquote"],
+        [
+            { list: "ordered" },
+            { list: "bullet" },
+        ],
+        ["link", "video"],
+        ["clean"]
+    ]
+};

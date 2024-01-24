@@ -1,22 +1,37 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Button, Stack, Table, Title } from "@mantine/core"
 import { Pen, Trash } from "react-bootstrap-icons";
 
+import { UserContext } from "../../../context/UserContext";
 import ModalAddPromotion from '../modal/ModalAddPromotion';
 import ModalRemovePromotion from '../modal/ModalRemovePromotion';
 import ModalModificationPromotion from '../modal/ModalModificationPromotion';
 import { request } from "../../../utils/request";
 import { addRow, removeRow, updateRow } from "../../../utils/divers";
+import ModalAddDepotPromotion from "../modal/ModalAddDepotPromotion";
 
 export function Promotions() {
+    const [tags, setTags] = useState([]);
+
     const [data, setData] = useState([]);
     const [currentRow, setCurrentRow] = useState();
 
+    const [showAddDepot, setShowAddDepot] = useState();
     const [showAdd, setShowAdd] = useState();
     const [showModif, setShowModif] = useState();
     const [showRemove, setShowRemove] = useState();
 
+    const user = useContext(UserContext);
+
     useEffect(() => {
+        request('/tag', 'get') // TODO rendre certains tags inacessibles
+            .then(({ data }) => setTags((data || [])
+                .map(tag => ({
+                    ...tag,
+                    value: tag.id + "",
+                    label: tag.libelle
+                }))));
+
         request('/promotion', 'get')
             .then(res => setData(res.data));
     }, []);
@@ -28,6 +43,15 @@ export function Promotions() {
         <Button onClick={() => setShowAdd(true)} w="max-content">
             Ajouter une promotion
         </Button>
+
+        {/* Modal ajout depot */}
+        <ModalAddDepotPromotion
+            show={showAddDepot}
+            close={() => setShowAddDepot(false)}
+            row={currentRow}
+            tags={tags}
+            user={user}
+        />
 
         {/* Modal ajout */}
         <ModalAddPromotion
@@ -58,6 +82,7 @@ export function Promotions() {
                 <Table.Tr>
                     <Table.Th>Nom</Table.Th>
                     <Table.Th>Semestre en cours</Table.Th>
+                    <Table.Th w="6vw">Ajouter un dépôt</Table.Th>
                     <Table.Th w="6vw">Modifier</Table.Th>
                     <Table.Th w="6vw">Supprimer</Table.Th>
                 </Table.Tr>
@@ -76,6 +101,12 @@ export function Promotions() {
                     data.map(row => <Table.Tr>
                         <Table.Td>{row.libelle}</Table.Td>
                         <Table.Td>{row.semestre}</Table.Td>
+                        <Table.Td>
+                            <Button onClick={() => {
+                                setCurrentRow(row);
+                                setShowAddDepot(true);
+                            }}><Pen /></Button>
+                        </Table.Td>
                         <Table.Td>
                             <Button onClick={() => {
                                 setCurrentRow(row);

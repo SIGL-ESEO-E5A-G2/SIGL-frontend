@@ -9,27 +9,8 @@ import useArray from '../../hooks/useArray';
 import { request } from "../../utils/request";
 import SelectTags from '../../components/SelectTags';
 import { getCurrentDate, getCurrentTime } from "../../utils/formatDate";
-import { notifTimeoutShort, tailleMaxFileEnMo } from "../../data/constantes";
+import { notifTimeoutShort, tailleMaxFileEnMo, textEditorModules } from "../../data/constantes";
 import { getApprentiFromPromo } from "../../utils/api";
-
-const textEditorModules = {
-    toolbar: [
-        [{ font: [] }],
-        [{ 'align': [] }],
-        [
-            { color: [] },
-            { background: [] },
-        ],
-        ["bold", "italic", "underline", "strike"],
-        ["code-block", "blockquote"],
-        [
-            { list: "ordered" },
-            { list: "bullet" },
-        ],
-        ["link", "video"],
-        ["clean"]
-    ]
-}
 
 function createPost({ title, body, tags }, apprenti) {
     if (!title?.trim() || !body?.trim()) {
@@ -140,12 +121,15 @@ function ModalAddMessage({ show, close, addPost, apprenti, tags, promotions, isP
     async function handleSubmit() {
         let post;
         if (isPromotions) {
-          post = await createPostAdmin(values, user);
+            post = await createPostAdmin(values, user);
         } else {
-          post = await createPost(values, apprenti);
+            post = await createPost(values, apprenti);
         }
-        addPost(post);
-      }
+
+        if (post?.id) {
+            addPost(post);
+        }
+    }
 
     return <Modal
         opened={show}
