@@ -85,7 +85,7 @@ export default {
             path: "calendrier",
             name: "Calendrier",
             element: <Calendar />,
-            roles: [1] // apprenti
+            roles: [1, 2, 5] // apprenti
         },
     ]
 }
