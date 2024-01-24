@@ -1,5 +1,6 @@
 import { request } from './request';
 import { getCurrentTime, getCurrentDate } from './formatDate';
+import { userHasRole } from './userRights';
 
 /**
  * Ajtoue une nouvelle promotion
@@ -209,3 +210,22 @@ export const addTag = async (libelle, color, type) => {
     throw error;
   }
 };
+
+export async function getApprentis(user) {
+  const isApprenti = userHasRole(user, [1]);
+  const isTuteur = userHasRole(user, [2]);
+  const isMA = userHasRole(user, [5]);
+
+  if (isApprenti) {
+    return request(`/apprentiutilisateurdetail?utilisateur=${user.id}`)
+      .then((res) => res.data ? [res.data[0]] : []);
+  }
+  else if (isMA) {
+    return request(`/maitrealternanceutilisateurdetail?utilisateur=${user.id}`, "get")
+      .then(res => res.data?.length > 0 && res.data[0].apprentis?.length > 0 ? [res.data[0].apprentis[0]] : [])
+  }
+  else if (isTuteur) {
+    return request(`/tuteurpedagogiqueutilisateurdetail?utilisateur=${user.id}`, "get")
+      .then(res => res.data?.length > 0 ? res.data[0].apprentis : []);
+  }
+}

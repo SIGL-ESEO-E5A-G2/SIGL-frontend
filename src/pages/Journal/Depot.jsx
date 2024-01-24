@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { saveAs } from 'file-saver';
 import { Button, Paper, Stack, Group, Text, Badge } from "@mantine/core";
 import { Download, Pen, Upload } from "react-bootstrap-icons";
@@ -6,32 +6,16 @@ import { Download, Pen, Upload } from "react-bootstrap-icons";
 import { getFile, uploadFile } from "../../utils/request";
 import { dateString } from "../../utils/formatDate";
 import ModalUploadFile from "./ModalUploadFile";
+import { UserContext } from "../../context/UserContext";
 
-/**
- * 
- * @param {File, {cheminFichier}} file 
- */
-async function addFile(file, depot, postId) {
-    if (!file || !depot.id || !postId) {
-        alert('Un problème est survenue dans le formulaire')
-        return
-    }
-
-    return uploadFile({
-        id: depot.id,
-        cheminFichier: depot.cheminFichier
-    }, file)
-    // .then(async () => request(`/message/${postId}`, 'get'))
-    // .then((res) => res.data);
-}
 
 /**
  * 
  * @param {{cheminFichier}} depot 
  * @returns 
  */
-async function downloadFile(depot) {
-    return getFile(depot.cheminFichier)
+async function downloadFile(userId, depot) {
+    return getFile(userId, depot.cheminFichier)
         .then(({ data }) => {
             const filePath = depot.cheminFichier.split('/');
             const fileName = filePath ? filePath[filePath.length - 1] : "Fichier.pdf";
@@ -41,7 +25,7 @@ async function downloadFile(depot) {
         .catch((error) => {
             alert(error?.response?.data || 'Une erreur est survenue');
             console.error(error);
-        })
+        });
 }
 
 function Depot({ post: { depot, id } }, updatePost) {
@@ -56,8 +40,10 @@ function Depot({ post: { depot, id } }, updatePost) {
     const dateComparaison = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - 1);
     const isLate = dateComparaison > dateEcheance;
 
+    const user = useContext(UserContext);
+
     async function handleAddFile(file) {
-        return addFile(file, depot, id)
+        return uploadFile(user, depot?.id, file)
             .then(() => {
                 // update depot
                 // TODO update (cheminFichier + dateLivraison)
@@ -80,7 +66,7 @@ function Depot({ post: { depot, id } }, updatePost) {
                 {/* Echeance */}
                 <Text>
                     Echéance le: <i>{echeance}</i>
-                    {estDeposer ? <>, Livrer le: <i>{dateLivraison}</i></> : ""}
+                    {estDeposer ? <>, Livré le: <i>{dateLivraison}</i></> : ""}
                 </Text>
             </Stack>
 
@@ -104,7 +90,7 @@ function Depot({ post: { depot, id } }, updatePost) {
                         </Button>
 
                         <Button
-                            onClick={() => downloadFile(depot)}
+                            onClick={() => downloadFile(user.id, depot)}
                             rightSection={<Download />}
                         >
                             Télécharger

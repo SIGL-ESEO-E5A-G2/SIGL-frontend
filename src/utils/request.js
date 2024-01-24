@@ -40,20 +40,8 @@ export async function request(url, method = "get", data) {
  * @param {File} file 
  * @returns 
  */
-export async function uploadFile(depot, file) {
-    let nouveauChemin = depot.cheminFichier;
-    if (nouveauChemin.includes('.pdf')) {
-        // remove nom du fichier
-        const parts = nouveauChemin.split('/');
-        parts.pop();
-        nouveauChemin = parts.join('/');
-    }
-
-    // ajoute le nom du fichier
-    nouveauChemin += "/";
-    const nomFichier = depot.id + "_" + getSimpleDate(new Date()) + ".pdf";
-    // nouveauChemin += nomFichier;
-    // TODO remettre le nom secur
+export async function uploadFile(user, depotId, file) {
+    const cheminFichier = `${(user.prenom.substring(0, 1) + user.nom).toLowerCase()}/${file.name}`;
 
     return axios({
         method: 'post',
@@ -61,7 +49,8 @@ export async function uploadFile(depot, file) {
         baseURL: urlBack,
         data: {
             pdf_file: file,
-            file_path: nouveauChemin,
+            file_path: cheminFichier
+            // utilisateur: userId,
         },
         timeout: 1000,
         headers: {
@@ -69,19 +58,36 @@ export async function uploadFile(depot, file) {
         }
     })
         .then(() => {
-            return request('/depot/' + depot.id, 'patch', {
-                cheminFichier: nouveauChemin + file.name,
+            return request('/depot/' + depotId, 'patch', {
+                // cheminFichier: file.name,
+                cheminFichier: cheminFichier,
                 livraison: new Date() // TODO ou dateLivraison (verifier)
             })
         });
 }
 
-export async function getFile(path) {
+export async function getFile(userId, path) {
     return axios({
         method: "post",
         url: "/get-pdf/",
         baseURL: urlBack,
-        data: { file_path: path },
+        data: {
+            file_path: path,
+            utilisateur: userId,
+        },
+        timeout: 1000,
+        headers: {
+            'Content-Type': 'application/pdf',
+        }
+    });
+}
+
+export async function getFiles(userId) {
+    return axios({
+        method: "post",
+        url: "/get-pdf/",
+        baseURL: urlBack,
+        data: { utilisateur: userId },
         timeout: 1000,
         headers: {
             'Content-Type': 'application/pdf',

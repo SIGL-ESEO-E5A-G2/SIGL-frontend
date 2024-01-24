@@ -8,7 +8,6 @@ import {
   Paper,
   Stack,
   Text,
-  TextInput,
   Title
 } from '@mantine/core';
 
