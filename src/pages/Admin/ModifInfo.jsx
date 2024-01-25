@@ -33,7 +33,7 @@ function ModifInfo() {
         // Crée une copie de userInfo en excluant les propriétés indésirables
         const apprenticeRequest = request('/apprenti/' + userInfo.id, 'patch', {
             optionMajeure: userInfo.optionMajeure,
-            optionMajeure: userInfo.optionMajeure,
+            optionMineure: userInfo.optionMineure,
             intitulePoste: userInfo.intitulePoste,
             descriptifPoste: userInfo.descriptifPoste,
         });
