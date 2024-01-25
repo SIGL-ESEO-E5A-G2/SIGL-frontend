@@ -20,7 +20,7 @@ function createPost({ title, body, tags }, apprenti) {
 
     const userId = apprenti.utilisateur.id;
 
-    const cible = [userId, apprenti.tuteurPedagogique?.id, apprenti.maitreAlternance?.id]
+    const cible = [userId, apprenti.tuteurPedagogique?.utilisateur?.id, apprenti.maitreAlternance?.utilisateur?.id]
         .filter(id => id);
 
     const newPost = {
