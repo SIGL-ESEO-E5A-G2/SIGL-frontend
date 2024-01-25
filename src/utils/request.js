@@ -92,6 +92,7 @@ export async function getFiles(userId, cheminFichier) {
         data: {
             path_file: cheminFichier
         },
+        responseType: 'blob',
         timeout: apiTimeout,
         headers: {
             'Content-Type': 'application/pdf',
@@ -110,7 +111,16 @@ export async function downloadFile(userId, depot) {
             const filePath = depot.cheminFichier.split('/');
             const fileName = filePath ? filePath[filePath.length - 1] : "Fichier.pdf";
 
-            return saveAs(new Blob([data], { type: "application/pdf" }), fileName);
+            let binaryString = window.atob(data);
+            let binaryLen = binaryString.length;
+            let bytes = new Uint8Array(binaryLen);
+            for (let i = 0; i < binaryLen; i++) {
+                let ascii = binaryString.charCodeAt(i);
+                bytes[i] = ascii;
+            }
+
+            const blob = new Blob([bytes], { type: "application/pdf" });
+            return saveAs(blob, fileName);
         })
         .catch((error) => {
             alert(error?.response?.data || 'Une erreur est survenue');

@@ -85,13 +85,18 @@ export function ModalNewEvent({ show, close, apprenti, callback }) {
             description: values.description,
             apprenti: apprenti?.id
         })
-            .then(({ data }) => request('/entretiensemestriel/', 'post', {
-                noteSemestre: -1,
-                evenement: data.id,
-                tuteurPedagogique: apprenti?.tuteurPedagogique?.id,
-                maitreAlternance: apprenti?.maitreAlternance?.id,
-            }))
-            .then(res => callback(res.data))
+            .then(async ({ data }) => {
+                return request('/entretiensemestriel/', 'post', {
+                    noteSemestre: -1,
+                    evenement: data.id,
+                    tuteurPedagogique: apprenti?.tuteurPedagogique?.id,
+                    maitreAlternance: apprenti?.maitreAlternance?.id,
+                })
+                    .then(res => callback({
+                        ...res.data,
+                        evenement: data
+                    }));
+            })
         }
 
         notification={{
